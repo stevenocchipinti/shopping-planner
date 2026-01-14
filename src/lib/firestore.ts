@@ -10,7 +10,7 @@ import {
 } from "firebase/firestore"
 import { db } from "./firebase"
 import { slugify } from "./slugify"
-import type { Item, CatalogueEntry, PlannerDay, PlannerItem } from "@/types"
+import type { Item, CatalogueEntry, PlannerDay, PlannerItem, Recipe } from "@/types"
 
 export class FirestoreBackend {
   private listId: string
@@ -90,6 +90,25 @@ export class FirestoreBackend {
       },
       (error) => {
         console.error("Error subscribing to planner:", error)
+      }
+    )
+    this.unsubscribers.push(unsub)
+    return unsub
+  }
+  
+  subscribeToRecipes(callback: (recipes: Record<string, Recipe>) => void): Unsubscribe {
+    const unsub = onSnapshot(
+      this.recipesRef,
+      { includeMetadataChanges: true },
+      (snapshot) => {
+        const recipes = snapshot.docs.reduce((acc, doc) => ({
+          ...acc,
+          [doc.id]: doc.data() as Recipe
+        }), {} as Record<string, Recipe>)
+        callback(recipes)
+      },
+      (error) => {
+        console.error("Error subscribing to recipes:", error)
       }
     )
     this.unsubscribers.push(unsub)
