@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils"
+import { Emoji } from "@/components/ui/emoji"
 import type { PlannerItem } from "@/types"
 
 interface PlannerItemChipProps {
@@ -20,11 +21,7 @@ export function PlannerItemChip({ item, emoji, displayName, onClick }: PlannerIt
         item.type === "recipe" && "border-primary/30 bg-primary/5"
       )}
     >
-      {emoji && (
-        <span className="text-base" role="img" aria-hidden="true">
-          {emoji}
-        </span>
-      )}
+      {emoji && <Emoji id={emoji} size={16} />}
       <span>{displayName}</span>
       {item.type === "recipe" && (
         <span className={cn(

@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
+import { Emoji } from "@/components/ui/emoji"
 import { DayPicker } from "@/components/form/day-picker"
 import { useFirebaseContext } from "@/components/providers/firebase-provider"
 import { Trash2 } from "lucide-react"
@@ -84,9 +85,7 @@ export function EditPlannerItemDialog({ open, onOpenChange, day, item }: EditPla
             <Label>Item</Label>
             <div className="flex items-center gap-2 p-3 border rounded-md bg-muted/50">
               {emoji && (
-                <span className="text-xl" role="img" aria-hidden="true">
-                  {emoji}
-                </span>
+                <Emoji id={emoji} size={24} />
               )}
               <span className="font-medium">{displayName}</span>
               {item.type === "recipe" && (

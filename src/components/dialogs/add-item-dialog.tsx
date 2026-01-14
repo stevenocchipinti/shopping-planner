@@ -10,8 +10,10 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Autocomplete } from "@/components/form/autocomplete"
 import { NumberPicker } from "@/components/form/number-picker"
+import { EmojiPicker } from "@/components/ui/emoji-picker"
 import { useFirebaseContext } from "@/components/providers/firebase-provider"
 import { slugify } from "@/lib/slugify"
+import { searchEmoji } from "@/lib/emoji/emoji-search"
 import type { CatalogueEntry } from "@/types"
 
 interface AddItemDialogProps {
@@ -32,6 +34,7 @@ export function AddItemDialog({ open, onOpenChange }: AddItemDialogProps) {
   const [section, setSection] = useState("")
   const [quantity, setQuantity] = useState(1)
   const [emoji, setEmoji] = useState<string | null>(null)
+  const [userSelectedEmoji, setUserSelectedEmoji] = useState(false)
 
   // Reset form when dialog opens
   useEffect(() => {
@@ -40,8 +43,30 @@ export function AddItemDialog({ open, onOpenChange }: AddItemDialogProps) {
       setSection("")
       setQuantity(1)
       setEmoji(null)
+      setUserSelectedEmoji(false)
     }
   }, [open])
+
+  // Auto-select emoji when item name changes
+  useEffect(() => {
+    // Don't override if user manually selected an emoji
+    if (!itemName.trim() || userSelectedEmoji) return
+
+    const autoSelectEmoji = async () => {
+      const result = await searchEmoji(itemName)
+      setEmoji(result)
+    }
+
+    // Debounce the search
+    const timer = setTimeout(autoSelectEmoji, 300)
+    return () => clearTimeout(timer)
+  }, [itemName, userSelectedEmoji])
+
+  // Handle user emoji selection from picker
+  const handleEmojiChange = (newEmoji: string | null) => {
+    setEmoji(newEmoji)
+    setUserSelectedEmoji(true)
+  }
 
   // Create autocomplete options from catalogue
   const itemOptions = useMemo(() => {
@@ -171,29 +196,7 @@ export function AddItemDialog({ open, onOpenChange }: AddItemDialogProps) {
 
           <div className="space-y-2">
             <Label>Emoji</Label>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                className="flex h-10 w-10 items-center justify-center rounded-md border text-xl hover:bg-accent"
-                onClick={() => {
-                  // TODO: Open emoji picker
-                  // For now, just toggle a default emoji
-                  setEmoji(emoji ? null : "🛒")
-                }}
-              >
-                {emoji || "😀"}
-              </button>
-              {emoji && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setEmoji(null)}
-                >
-                  Clear
-                </Button>
-              )}
-            </div>
+            <EmojiPicker value={emoji} onChange={handleEmojiChange} />
           </div>
 
           <DialogFooter>

@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Autocomplete } from "@/components/form/autocomplete"
 import { NumberPicker } from "@/components/form/number-picker"
+import { EmojiPicker } from "@/components/ui/emoji-picker"
 import { useFirebaseContext } from "@/components/providers/firebase-provider"
 import { slugify } from "@/lib/slugify"
 import type { ItemWithMetadata } from "@/types"
@@ -141,28 +142,7 @@ export function EditItemDialog({ open, onOpenChange, item }: EditItemDialogProps
 
           <div className="space-y-2">
             <Label>Emoji</Label>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                className="flex h-10 w-10 items-center justify-center rounded-md border text-xl hover:bg-accent"
-                onClick={() => {
-                  // TODO: Open emoji picker
-                  setEmoji(emoji ? null : "🛒")
-                }}
-              >
-                {emoji || "😀"}
-              </button>
-              {emoji && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setEmoji(null)}
-                >
-                  Clear
-                </Button>
-              )}
-            </div>
+            <EmojiPicker value={emoji} onChange={setEmoji} />
           </div>
 
           <DialogFooter className="flex-col gap-2 sm:flex-row sm:justify-between">

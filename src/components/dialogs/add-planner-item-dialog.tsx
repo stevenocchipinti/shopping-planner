@@ -10,7 +10,9 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Autocomplete } from "@/components/form/autocomplete"
 import { DayPicker } from "@/components/form/day-picker"
+import { EmojiPicker } from "@/components/ui/emoji-picker"
 import { useFirebaseContext } from "@/components/providers/firebase-provider"
+import { searchEmoji } from "@/lib/emoji/emoji-search"
 import type { DayOfWeek } from "@/types"
 
 interface AddPlannerItemDialogProps {
@@ -25,6 +27,7 @@ export function AddPlannerItemDialog({ open, onOpenChange, defaultDay }: AddPlan
   const [itemName, setItemName] = useState("")
   const [selectedDay, setSelectedDay] = useState<DayOfWeek>(defaultDay)
   const [emoji, setEmoji] = useState<string | null>(null)
+  const [userSelectedEmoji, setUserSelectedEmoji] = useState(false)
   const [isRecipe, setIsRecipe] = useState(false)
   const [ingredients, setIngredients] = useState("")
 
@@ -34,10 +37,32 @@ export function AddPlannerItemDialog({ open, onOpenChange, defaultDay }: AddPlan
       setItemName("")
       setSelectedDay(defaultDay)
       setEmoji(null)
+      setUserSelectedEmoji(false)
       setIsRecipe(false)
       setIngredients("")
     }
   }, [open, defaultDay])
+
+  // Auto-select emoji when item name changes
+  useEffect(() => {
+    // Don't override if user manually selected an emoji
+    if (!itemName.trim() || userSelectedEmoji) return
+
+    const autoSelectEmoji = async () => {
+      const result = await searchEmoji(itemName)
+      setEmoji(result)
+    }
+
+    // Debounce the search
+    const timer = setTimeout(autoSelectEmoji, 300)
+    return () => clearTimeout(timer)
+  }, [itemName, userSelectedEmoji])
+
+  // Handle user emoji selection from picker
+  const handleEmojiChange = (newEmoji: string | null) => {
+    setEmoji(newEmoji)
+    setUserSelectedEmoji(true)
+  }
 
   // Create autocomplete options from catalogue and recipes
   const itemOptions = useMemo(() => {
@@ -70,6 +95,7 @@ export function AddPlannerItemDialog({ open, onOpenChange, defaultDay }: AddPlan
     
     if (recipeEntry) {
       setEmoji(recipeEntry.emoji)
+      setUserSelectedEmoji(true) // Treat selecting from catalogue as user selection
       setIsRecipe(true)
       // Pre-fill ingredients from existing recipe
       const ingredientList = recipeEntry.ingredients.map(i => 
@@ -78,6 +104,7 @@ export function AddPlannerItemDialog({ open, onOpenChange, defaultDay }: AddPlan
       setIngredients(ingredientList)
     } else if (catalogueEntry) {
       setEmoji(catalogueEntry.emoji)
+      setUserSelectedEmoji(true) // Treat selecting from catalogue as user selection
       setIsRecipe(false)
       setIngredients("")
     }
@@ -134,28 +161,7 @@ export function AddPlannerItemDialog({ open, onOpenChange, defaultDay }: AddPlan
 
           <div className="space-y-2">
             <Label>Emoji</Label>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                className="flex h-10 w-10 items-center justify-center rounded-md border text-xl hover:bg-accent"
-                onClick={() => {
-                  // TODO: Open emoji picker
-                  setEmoji(emoji ? null : "🍽️")
-                }}
-              >
-                {emoji || "😀"}
-              </button>
-              {emoji && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setEmoji(null)}
-                >
-                  Clear
-                </Button>
-              )}
-            </div>
+            <EmojiPicker value={emoji} onChange={handleEmojiChange} />
           </div>
 
           <div className="flex items-center gap-2">

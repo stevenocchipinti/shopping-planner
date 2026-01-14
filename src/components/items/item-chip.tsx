@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils"
 import { useLongPress } from "@/hooks/use-long-press"
+import { Emoji } from "@/components/ui/emoji"
 import type { ItemWithMetadata } from "@/types"
 
 interface ItemChipProps {
@@ -26,11 +27,7 @@ export function ItemChip({ item, onToggle, onEdit }: ItemChipProps) {
       )}
       {...longPressHandlers}
     >
-      {item.emoji && (
-        <span className="text-base" role="img" aria-hidden="true">
-          {item.emoji}
-        </span>
-      )}
+      {item.emoji && <Emoji id={item.emoji} size={16} />}
       <span>{item.name}</span>
       {item.quantity > 1 && (
         <span className={cn(
