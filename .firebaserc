@@ -1,0 +1,18 @@
+{
+  "projects": {
+    "default": "shopping-list-app-de905"
+  },
+  "targets": {
+    "shopping-list-app-de905": {
+      "hosting": {
+        "shoppingplanner-beta": [
+          "shoppingplanner-beta"
+        ],
+        "shoppingplanner": [
+          "shoppingplanner"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
