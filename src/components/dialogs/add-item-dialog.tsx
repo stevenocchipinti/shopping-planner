@@ -161,7 +161,7 @@ export function AddItemDialog({ open, onOpenChange }: AddItemDialogProps) {
   }
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange} modal={false}>
+    <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="sm:max-w-md mx-auto">
         <DrawerHeader>
           <DrawerTitle>Add Item</DrawerTitle>
