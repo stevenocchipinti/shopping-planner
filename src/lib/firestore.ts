@@ -82,10 +82,51 @@ export class FirestoreBackend {
       this.plannerRef,
       { includeMetadataChanges: true },
       (snapshot) => {
-        const planner = snapshot.docs.reduce((acc, doc) => ({
-          ...acc,
-          [doc.id]: doc.data() as PlannerDay
-        }), {} as Record<string, PlannerDay>)
+        const planner = snapshot.docs.reduce((acc, doc) => {
+          const data = doc.data()
+          
+          // Normalize day name to lowercase for consistency
+          // Old app uses capitalized "Monday", new app uses lowercase "monday"
+          const dayKey = doc.id.toLowerCase()
+          console.log(`Planner doc ${doc.id} -> ${dayKey}:`, data)
+          
+          // Handle backward compatibility with old app format
+          // Old app might store items differently
+          let items: PlannerItem[] = []
+          
+          if (Array.isArray(data.items)) {
+            // New format: items is an array of { type, name }
+            items = data.items.map((item: unknown) => {
+              if (typeof item === 'string') {
+                // Old format: items might be an array of strings (slugs)
+                return { type: 'item' as const, name: item }
+              }
+              // New format: { type, name }
+              return item as PlannerItem
+            })
+          } else if (data.items && typeof data.items === 'object') {
+            // Old format: items might be an object keyed by slug
+            items = Object.entries(data.items).map(([name, itemData]) => {
+              if (typeof itemData === 'object' && itemData !== null) {
+                return { 
+                  type: (itemData as { type?: string }).type === 'recipe' ? 'recipe' as const : 'item' as const, 
+                  name 
+                }
+              }
+              return { type: 'item' as const, name }
+            })
+          }
+          
+          // Merge items if we already have this day (handles case where both
+          // "Monday" and "monday" exist in Firestore)
+          const existingItems = acc[dayKey]?.items || []
+          
+          return {
+            ...acc,
+            [dayKey]: { items: [...existingItems, ...items] } as PlannerDay
+          }
+        }, {} as Record<string, PlannerDay>)
+        console.log('Processed planner:', planner)
         callback(planner)
       },
       (error) => {

@@ -2,12 +2,12 @@ import { useState } from "react"
 import { useParams } from "react-router-dom"
 import { Copy, Check, Share2 } from "lucide-react"
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog"
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+} from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -53,19 +53,19 @@ export function ShareDialog({ open, onOpenChange }: ShareDialogProps) {
   const supportsNativeShare = typeof navigator.share === "function"
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent className="sm:max-w-md mx-auto">
+        <DrawerHeader>
+          <DrawerTitle className="flex items-center gap-2">
             <Share2 className="h-5 w-5" />
             Share List
-          </DialogTitle>
-          <DialogDescription>
+          </DrawerTitle>
+          <DrawerDescription>
             Share this link with others to let them view and edit this shopping list in real-time.
-          </DialogDescription>
-        </DialogHeader>
+          </DrawerDescription>
+        </DrawerHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-4 px-4 pb-4">
           <div className="space-y-2">
             <Label htmlFor="share-url">Share URL</Label>
             <div className="flex gap-2">
@@ -106,7 +106,7 @@ export function ShareDialog({ open, onOpenChange }: ShareDialogProps) {
             Anyone with this link can view and edit the list
           </p>
         </div>
-      </DialogContent>
-    </Dialog>
+      </DrawerContent>
+    </Drawer>
   )
 }

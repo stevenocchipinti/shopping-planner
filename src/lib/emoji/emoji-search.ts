@@ -1,4 +1,22 @@
 import { customEmojis } from "./custom-emojis"
+import { init, SearchIndex } from "emoji-mart"
+
+// Initialize emoji-mart data
+let emojiDataPromise: Promise<void> | null = null
+
+async function initEmojiData() {
+  if (!emojiDataPromise) {
+    emojiDataPromise = init({
+      data: async () => {
+        const response = await fetch(
+          "https://cdn.jsdelivr.net/npm/@emoji-mart/data"
+        )
+        return response.json()
+      },
+    })
+  }
+  await emojiDataPromise
+}
 
 /**
  * Search for custom emojis by keyword
@@ -30,8 +48,30 @@ function searchCustomEmojis(searchTerm: string): string | null {
 }
 
 /**
+ * Search for standard emojis using emoji-mart
+ * Returns native emoji character or null
+ */
+async function searchStandardEmojis(
+  searchTerm: string
+): Promise<string | null> {
+  try {
+    await initEmojiData()
+    const results = await SearchIndex.search(searchTerm)
+    
+    // Return the first result's native character
+    if (results && results.length > 0) {
+      return results[0].skins[0].native
+    }
+  } catch (error) {
+    console.error("Error searching standard emojis:", error)
+  }
+  
+  return null
+}
+
+/**
  * Search for emojis with custom emojis prioritized
- * Returns emoji ID (either custom-* or null for now - standard emoji search TBD)
+ * Returns emoji ID (custom-* for custom emojis) or native emoji character for standard emojis
  */
 export async function searchEmoji(
   searchTerm: string
@@ -44,9 +84,9 @@ export async function searchEmoji(
     return customResult
   }
 
-  // For now, we'll let the picker handle standard emojis
-  // User can manually select from the picker
-  return null
+  // Try standard emojis
+  const standardResult = await searchStandardEmojis(searchTerm)
+  return standardResult
 }
 
 /**
@@ -69,5 +109,32 @@ export function getCustomEmojiUrl(emojiId: string): string | null {
     }
   }
 
+  return null
+}
+
+/**
+ * Convert an emoji-mart shortcode ID to native emoji character
+ * Used for backward compatibility with data from the old app
+ */
+export async function shortcodeToNative(shortcode: string): Promise<string | null> {
+  try {
+    await initEmojiData()
+    // Search by the exact shortcode
+    const results = await SearchIndex.search(shortcode)
+    
+    // Look for an exact ID match first
+    if (results && results.length > 0) {
+      for (const result of results) {
+        if (result.id === shortcode) {
+          return result.skins[0].native
+        }
+      }
+      // If no exact match, return the first result
+      return results[0].skins[0].native
+    }
+  } catch (error) {
+    console.error("Error converting shortcode to native:", error)
+  }
+  
   return null
 }

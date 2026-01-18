@@ -1,7 +1,6 @@
 import { Plus } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { PlannerItemChip } from "./planner-item-chip"
-import { Button } from "@/components/ui/button"
 import type { PlannerItem, CatalogueEntry, Recipe, DayOfWeek } from "@/types"
 
 interface PlannerDayColumnProps {
@@ -44,13 +43,20 @@ export function PlannerDayColumn({
   const isEmpty = items.length === 0
 
   return (
-    <div className="flex flex-col min-w-[140px] flex-1">
-      {/* Day header */}
+    <div className="flex flex-col min-w-[140px] flex-1 rounded-xl border bg-card shadow-sm overflow-hidden">
+      {/* Day header with + button */}
       <div className={cn(
-        "py-2 px-3 text-center font-semibold text-sm border-b",
+        "py-2 px-3 flex items-center justify-between font-semibold text-sm border-b",
         "bg-muted/50"
       )}>
-        {dayLabel}
+        <span>{dayLabel}</span>
+        <button
+          onClick={() => onAddClick(day)}
+          className="flex items-center justify-center w-6 h-6 rounded-full hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
+          aria-label={`Add item for ${dayLabel}`}
+        >
+          <Plus className="h-4 w-4" />
+        </button>
       </div>
 
       {/* Items container */}
@@ -73,19 +79,6 @@ export function PlannerDayColumn({
             )
           })
         )}
-      </div>
-
-      {/* Add button at bottom */}
-      <div className="p-2 border-t">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="w-full h-8"
-          onClick={() => onAddClick(day)}
-        >
-          <Plus className="h-4 w-4 mr-1" />
-          Add
-        </Button>
       </div>
     </div>
   )

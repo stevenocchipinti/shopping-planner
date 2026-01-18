@@ -1,11 +1,11 @@
 import { useState, useMemo, useEffect } from "react"
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog"
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerFooter,
+} from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Autocomplete } from "@/components/form/autocomplete"
@@ -161,12 +161,12 @@ export function AddItemDialog({ open, onOpenChange }: AddItemDialogProps) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Add Item</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <Drawer open={open} onOpenChange={onOpenChange} modal={false}>
+      <DrawerContent className="sm:max-w-md mx-auto">
+        <DrawerHeader>
+          <DrawerTitle>Add Item</DrawerTitle>
+        </DrawerHeader>
+        <form onSubmit={handleSubmit} className="space-y-4 px-4">
           <div className="space-y-2">
             <Label htmlFor="item">Item</Label>
             <Autocomplete
@@ -176,6 +176,13 @@ export function AddItemDialog({ open, onOpenChange }: AddItemDialogProps) {
               options={itemOptions}
               placeholder="Enter item name..."
               autoFocus
+              startAdornment={
+                <EmojiPicker 
+                  value={emoji} 
+                  onChange={handleEmojiChange}
+                  variant="inline"
+                />
+              }
             />
           </div>
 
@@ -194,12 +201,7 @@ export function AddItemDialog({ open, onOpenChange }: AddItemDialogProps) {
             <NumberPicker value={quantity} onChange={setQuantity} />
           </div>
 
-          <div className="space-y-2">
-            <Label>Emoji</Label>
-            <EmojiPicker value={emoji} onChange={handleEmojiChange} />
-          </div>
-
-          <DialogFooter>
+          <DrawerFooter>
             <Button
               type="button"
               variant="outline"
@@ -210,9 +212,9 @@ export function AddItemDialog({ open, onOpenChange }: AddItemDialogProps) {
             <Button type="submit" disabled={buttonState.disabled}>
               {buttonState.label}
             </Button>
-          </DialogFooter>
+          </DrawerFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </DrawerContent>
+    </Drawer>
   )
 }

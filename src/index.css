@@ -95,11 +95,18 @@
     @apply bg-background text-foreground;
     margin: 0;
     min-height: 100dvh;
+    /* Prevent pull-to-refresh on mobile */
+    overscroll-behavior: none;
   }
   
   #root {
     min-height: 100dvh;
   }
+}
+
+/* Enable smooth scrolling on iOS */
+.overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Prevent text selection on interactive elements for mobile */

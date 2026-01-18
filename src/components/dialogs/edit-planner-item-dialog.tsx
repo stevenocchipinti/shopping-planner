@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react"
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog"
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerFooter,
+} from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Emoji } from "@/components/ui/emoji"
@@ -75,12 +75,24 @@ export function EditPlannerItemDialog({ open, onOpenChange, day, item }: EditPla
   const hasDayChanged = selectedDay !== day
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Edit Planner Item</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4">
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent className="sm:max-w-md mx-auto">
+        <DrawerHeader>
+          <div className="flex items-center justify-between">
+            <DrawerTitle>Edit Planner Item</DrawerTitle>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={handleDelete}
+              className="text-muted-foreground hover:text-destructive"
+            >
+              <Trash2 className="h-4 w-4" />
+              <span className="sr-only">Delete item</span>
+            </Button>
+          </div>
+        </DrawerHeader>
+        <div className="space-y-4 px-4">
           <div className="space-y-2">
             <Label>Item</Label>
             <div className="flex items-center gap-2 p-3 border rounded-md bg-muted/50">
@@ -116,20 +128,12 @@ export function EditPlannerItemDialog({ open, onOpenChange, day, item }: EditPla
             </div>
           )}
 
-          <DialogFooter className="flex-col sm:flex-row gap-2">
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={handleDelete}
-              className="sm:mr-auto"
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Delete
-            </Button>
+          <DrawerFooter className="flex-row gap-2">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
+              className="flex-1"
             >
               Cancel
             </Button>
@@ -137,12 +141,13 @@ export function EditPlannerItemDialog({ open, onOpenChange, day, item }: EditPla
               type="button"
               onClick={handleMoveToDay}
               disabled={!hasDayChanged}
+              className="flex-1"
             >
               {hasDayChanged ? "Move" : "Done"}
             </Button>
-          </DialogFooter>
+          </DrawerFooter>
         </div>
-      </DialogContent>
-    </Dialog>
+      </DrawerContent>
+    </Drawer>
   )
 }

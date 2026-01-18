@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react"
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogDescription,
-} from "@/components/ui/dialog"
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerFooter,
+  DrawerDescription,
+} from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
+import { Emoji } from "@/components/ui/emoji"
 import { useFirebaseContext } from "@/components/providers/firebase-provider"
 import { Check, ShoppingCart } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -144,24 +145,24 @@ export function AddPlanToListDialog({ open, onOpenChange }: AddPlanToListDialogP
   const isEmpty = items.length === 0
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md max-h-[80vh] flex flex-col">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent className="sm:max-w-md mx-auto max-h-[80vh] flex flex-col">
+        <DrawerHeader>
+          <DrawerTitle className="flex items-center gap-2">
             <ShoppingCart className="h-5 w-5" />
             Add Plan to Shopping List
-          </DialogTitle>
-          <DialogDescription>
+          </DrawerTitle>
+          <DrawerDescription>
             {isEmpty 
               ? "No items to add. Add some items to your planner first."
               : "Select the items you want to add to your shopping list."
             }
-          </DialogDescription>
-        </DialogHeader>
+          </DrawerDescription>
+        </DrawerHeader>
 
         {!isEmpty && (
           <>
-            <div className="flex items-center justify-between py-2 border-b">
+            <div className="flex items-center justify-between py-2 px-4 border-b">
               <Button
                 type="button"
                 variant="ghost"
@@ -175,7 +176,7 @@ export function AddPlanToListDialog({ open, onOpenChange }: AddPlanToListDialogP
               </span>
             </div>
 
-            <div className="flex-1 overflow-y-auto py-2 space-y-1 min-h-[200px] max-h-[400px]">
+            <div className="flex-1 overflow-y-auto py-2 px-4 space-y-1 min-h-[200px] max-h-[400px]">
               {items.map(item => (
                 <button
                   key={item.slug}
@@ -196,7 +197,7 @@ export function AddPlanToListDialog({ open, onOpenChange }: AddPlanToListDialogP
                     {item.checked && <Check className="h-3 w-3" />}
                   </div>
                   {item.emoji && (
-                    <span className="text-lg">{item.emoji}</span>
+                    <Emoji id={item.emoji} size={18} />
                   )}
                   <span className="flex-1">{item.displayName}</span>
                   {item.quantity > 1 && (
@@ -210,7 +211,7 @@ export function AddPlanToListDialog({ open, onOpenChange }: AddPlanToListDialogP
           </>
         )}
 
-        <DialogFooter>
+        <DrawerFooter>
           <Button
             type="button"
             variant="outline"
@@ -225,8 +226,8 @@ export function AddPlanToListDialog({ open, onOpenChange }: AddPlanToListDialogP
           >
             {submitting ? "Adding..." : `Add ${checkedCount} Items`}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
   )
 }

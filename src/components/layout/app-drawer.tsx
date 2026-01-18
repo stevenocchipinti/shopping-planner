@@ -97,12 +97,6 @@ export function AppDrawer({
             </button>
           ))}
         </nav>
-
-        <div className="absolute bottom-6 left-6 right-6">
-          <p className="text-xs text-muted-foreground text-center">
-            List ID: {listId}
-          </p>
-        </div>
       </SheetContent>
     </Sheet>
   )

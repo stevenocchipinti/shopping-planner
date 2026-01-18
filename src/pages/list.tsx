@@ -36,15 +36,25 @@ export function ListPage() {
       {} as Record<string, ItemWithMetadata[]>
     )
 
-    // Sort sections: sections with unchecked items first (alphabetically),
+    // Sort sections: empty section first, then sections with unchecked items (alphabetically),
     // then sections with all items done (alphabetically)
     const notDoneSections = Object.keys(itemsBySection)
       .filter((section) => itemsBySection[section].some((item) => !item.done))
-      .sort((a, b) => a.localeCompare(b))
+      .sort((a, b) => {
+        // Empty string should come first
+        if (a === "" && b !== "") return -1
+        if (b === "" && a !== "") return 1
+        return a.localeCompare(b)
+      })
 
     const doneSections = Object.keys(itemsBySection)
       .filter((section) => itemsBySection[section].every((item) => item.done))
-      .sort((a, b) => a.localeCompare(b))
+      .sort((a, b) => {
+        // Empty string should come first
+        if (a === "" && b !== "") return -1
+        if (b === "" && a !== "") return 1
+        return a.localeCompare(b)
+      })
 
     const orderedSections = [...notDoneSections, ...doneSections]
 

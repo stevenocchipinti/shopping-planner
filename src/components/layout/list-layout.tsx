@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useParams, useLocation, Outlet } from "react-router-dom"
-import { Plus, ShoppingCart } from "lucide-react"
+import { Plus, ListPlus } from "lucide-react"
 import { FirebaseProvider } from "@/components/providers/firebase-provider"
 import { ToastProvider, useOnlineStatus } from "@/components/ui/toast"
 import { AppBar } from "./app-bar"
@@ -42,22 +42,25 @@ function ListLayoutContent() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="fixed inset-0 flex flex-col bg-background">
       <AppBar onMenuClick={() => setDrawerOpen(true)} />
-      <main className="flex-1 pb-24">
+      <main 
+        className="flex-1 overflow-y-auto pb-24"
+        style={{ WebkitOverflowScrolling: 'touch' }}
+      >
         <Outlet context={{ setAddDialogOpen }} />
       </main>
       <BottomNav />
       
-      {/* FAB - Floating Action Button */}
+      {/* FAB - Floating Action Button - Centered between tabs, aligned with top of nav bar */}
       <Button
         size="icon"
-        className="fixed bottom-20 right-4 z-50 h-14 w-14 rounded-full shadow-lg"
+        className="fixed bottom-16 left-1/2 -translate-x-1/2 translate-y-1/2 z-50 h-14 w-14 rounded-full shadow-lg"
         onClick={handleFabClick}
         title={isPlannerView ? "Add plan to list" : "Add item"}
       >
         {isPlannerView ? (
-          <ShoppingCart className="h-6 w-6" />
+          <ListPlus className="h-6 w-6" />
         ) : (
           <Plus className="h-6 w-6" />
         )}

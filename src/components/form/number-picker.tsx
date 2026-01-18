@@ -35,14 +35,14 @@ export function NumberPicker({
   }
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center justify-center gap-1">
       <Button
         type="button"
         variant="outline"
         size="icon"
         onClick={handleDecrement}
         disabled={value <= min}
-        className="h-9 w-9"
+        className="h-12 w-12"
       >
         <Minus className="h-4 w-4" />
       </Button>
@@ -52,7 +52,7 @@ export function NumberPicker({
         onChange={handleChange}
         min={min}
         max={max}
-        className="h-9 w-16 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+        className="h-12 w-16 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
       />
       <Button
         type="button"
@@ -60,7 +60,7 @@ export function NumberPicker({
         size="icon"
         onClick={handleIncrement}
         disabled={value >= max}
-        className="h-9 w-9"
+        className="h-12 w-12"
       >
         <Plus className="h-4 w-4" />
       </Button>

@@ -3,6 +3,7 @@ import { Trash2, Search } from "lucide-react"
 import { useFirebaseContext } from "@/components/providers/firebase-provider"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Emoji } from "@/components/ui/emoji"
 import {
   Dialog,
   DialogContent,
@@ -22,7 +23,8 @@ export function CataloguePage() {
     .map(([slug, entry]) => ({
       slug,
       name: slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
-      section: entry.section || "Unsorted",
+      section: entry.section || "",
+      displaySection: entry.section ? entry.section.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) : "",
       emoji: entry.emoji,
     }))
     .filter(item => 
@@ -91,18 +93,18 @@ export function CataloguePage() {
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-2">
                       {item.emoji && (
-                        <span className="text-lg">{item.emoji}</span>
+                        <Emoji id={item.emoji} size={18} />
                       )}
                       <div>
                         <span className="font-medium">{item.name}</span>
                         <span className="sm:hidden text-xs text-muted-foreground block">
-                          {item.section}
+                          {item.displaySection}
                         </span>
                       </div>
                     </div>
                   </td>
                   <td className="py-3 px-4 text-muted-foreground hidden sm:table-cell">
-                    {item.section}
+                    {item.displaySection || <span className="italic opacity-50">None</span>}
                   </td>
                   <td className="py-3 px-2">
                     <Button

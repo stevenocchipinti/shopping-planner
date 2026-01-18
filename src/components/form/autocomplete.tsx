@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react"
 import { Input } from "@/components/ui/input"
+import { Emoji } from "@/components/ui/emoji"
 import { cn } from "@/lib/utils"
 
 interface AutocompleteOption {
@@ -16,6 +17,8 @@ interface AutocompleteProps {
   placeholder?: string
   autoFocus?: boolean
   className?: string
+  endAdornment?: React.ReactNode
+  startAdornment?: React.ReactNode
 }
 
 export function Autocomplete({
@@ -26,6 +29,8 @@ export function Autocomplete({
   placeholder,
   autoFocus,
   className,
+  endAdornment,
+  startAdornment,
 }: AutocompleteProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [highlightedIndex, setHighlightedIndex] = useState(0)
@@ -100,7 +105,10 @@ export function Autocomplete({
   }
 
   const handleFocus = () => {
-    setIsOpen(true)
+    // Only show autocomplete if user has typed something
+    if (value.trim()) {
+      setIsOpen(true)
+    }
   }
 
   const handleBlur = () => {
@@ -110,19 +118,35 @@ export function Autocomplete({
 
   return (
     <div className={cn("relative", className)}>
-      <Input
-        ref={inputRef}
-        type="text"
-        value={value}
-        onChange={handleInputChange}
-        onKeyDown={handleKeyDown}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        placeholder={placeholder}
-        autoFocus={autoFocus}
-        autoComplete="off"
-      />
-      {isOpen && filteredOptions.length > 0 && (
+      <div className="relative">
+        {startAdornment && (
+          <div className="absolute left-1 top-1/2 -translate-y-1/2 z-10">
+            {startAdornment}
+          </div>
+        )}
+        <Input
+          ref={inputRef}
+          type="text"
+          value={value}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          placeholder={placeholder}
+          autoFocus={autoFocus}
+          autoComplete="off"
+          className={cn(
+            startAdornment && "pl-10",
+            endAdornment && "pr-10"
+          )}
+        />
+        {endAdornment && (
+          <div className="absolute right-1 top-1/2 -translate-y-1/2">
+            {endAdornment}
+          </div>
+        )}
+      </div>
+      {isOpen && filteredOptions.length > 0 && value.trim() && (
         <ul
           ref={listRef}
           className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border bg-popover p-1 shadow-md"
@@ -138,7 +162,7 @@ export function Autocomplete({
               onMouseEnter={() => setHighlightedIndex(index)}
             >
               {option.emoji && (
-                <span className="text-base">{option.emoji}</span>
+                <Emoji id={option.emoji} size={16} />
               )}
               <span>{option.label}</span>
             </li>

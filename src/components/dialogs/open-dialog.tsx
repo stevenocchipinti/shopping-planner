@@ -2,13 +2,13 @@ import { useState, useEffect } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { FolderOpen, Plus, Trash2, ExternalLink } from "lucide-react"
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog"
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerFooter,
+} from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -30,12 +30,21 @@ export function OpenDialog({ open, onOpenChange }: OpenDialogProps) {
   const [inputValue, setInputValue] = useState("")
   const [error, setError] = useState("")
 
-  // Add current list to MRU when dialog opens
+  // Pre-populate input with current list ID when dialog opens
   useEffect(() => {
     if (open && currentListId) {
+      setInputValue(currentListId)
       addToMru(currentListId)
     }
   }, [open, currentListId])
+
+  // Reset input when dialog closes
+  useEffect(() => {
+    if (!open) {
+      setInputValue("")
+      setError("")
+    }
+  }, [open])
 
   const addToMru = (listId: string) => {
     // Remove if already exists, then add to front
@@ -97,20 +106,23 @@ export function OpenDialog({ open, onOpenChange }: OpenDialogProps) {
     }
   }
 
+  // Check if the input is different from current list ID
+  const isInputChanged = inputValue.trim() !== "" && extractListId(inputValue) !== currentListId
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent className="sm:max-w-md mx-auto">
+        <DrawerHeader>
+          <DrawerTitle className="flex items-center gap-2">
             <FolderOpen className="h-5 w-5" />
             Open List
-          </DialogTitle>
-          <DialogDescription>
+          </DrawerTitle>
+          <DrawerDescription>
             Open an existing list by URL or ID, or create a new one.
-          </DialogDescription>
-        </DialogHeader>
+          </DrawerDescription>
+        </DrawerHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-4 px-4">
           {/* Input for URL or ID */}
           <div className="space-y-2">
             <Label htmlFor="list-input">List URL or ID</Label>
@@ -126,7 +138,7 @@ export function OpenDialog({ open, onOpenChange }: OpenDialogProps) {
                 placeholder="Paste URL or enter list ID..."
                 className={cn(error && "border-destructive")}
               />
-              <Button onClick={handleOpenList} disabled={!inputValue.trim()}>
+              <Button onClick={handleOpenList} disabled={!isInputChanged} className="h-12">
                 Open
               </Button>
             </div>
@@ -172,7 +184,7 @@ export function OpenDialog({ open, onOpenChange }: OpenDialogProps) {
           )}
         </div>
 
-        <DialogFooter className="flex-col sm:flex-row gap-2">
+        <DrawerFooter className="flex-col sm:flex-row gap-2">
           <Button
             variant="outline"
             className="w-full sm:w-auto"
@@ -181,8 +193,8 @@ export function OpenDialog({ open, onOpenChange }: OpenDialogProps) {
             <Plus className="h-4 w-4 mr-2" />
             Create New List
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
   )
 }

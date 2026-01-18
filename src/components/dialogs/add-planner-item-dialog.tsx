@@ -1,11 +1,11 @@
 import { useState, useMemo, useEffect } from "react"
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog"
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerFooter,
+} from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Autocomplete } from "@/components/form/autocomplete"
@@ -136,12 +136,12 @@ export function AddPlannerItemDialog({ open, onOpenChange, defaultDay }: AddPlan
   const isValid = itemName.trim().length > 0
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Add to Planner</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent className="sm:max-w-md mx-auto">
+        <DrawerHeader>
+          <DrawerTitle>Add to Planner</DrawerTitle>
+        </DrawerHeader>
+        <form onSubmit={handleSubmit} className="space-y-4 px-4">
           <div className="space-y-2">
             <Label htmlFor="item">Item or Recipe</Label>
             <Autocomplete
@@ -151,17 +151,19 @@ export function AddPlannerItemDialog({ open, onOpenChange, defaultDay }: AddPlan
               options={itemOptions}
               placeholder="Enter item or recipe name..."
               autoFocus
+              startAdornment={
+                <EmojiPicker 
+                  value={emoji} 
+                  onChange={handleEmojiChange}
+                  variant="inline"
+                />
+              }
             />
           </div>
 
           <div className="space-y-2">
             <Label>Day</Label>
             <DayPicker value={selectedDay} onChange={setSelectedDay} />
-          </div>
-
-          <div className="space-y-2">
-            <Label>Emoji</Label>
-            <EmojiPicker value={emoji} onChange={handleEmojiChange} />
           </div>
 
           <div className="flex items-center gap-2">
@@ -194,7 +196,7 @@ export function AddPlannerItemDialog({ open, onOpenChange, defaultDay }: AddPlan
             </div>
           )}
 
-          <DialogFooter>
+          <DrawerFooter>
             <Button
               type="button"
               variant="outline"
@@ -205,9 +207,9 @@ export function AddPlannerItemDialog({ open, onOpenChange, defaultDay }: AddPlan
             <Button type="submit" disabled={!isValid}>
               Add
             </Button>
-          </DialogFooter>
+          </DrawerFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </DrawerContent>
+    </Drawer>
   )
 }

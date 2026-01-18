@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils"
+import { useLongPress } from "@/hooks/use-long-press"
 import { Emoji } from "@/components/ui/emoji"
 import type { PlannerItem } from "@/types"
 
@@ -10,16 +11,21 @@ interface PlannerItemChipProps {
 }
 
 export function PlannerItemChip({ item, emoji, displayName, onClick }: PlannerItemChipProps) {
+  const longPressHandlers = useLongPress({
+    onLongPress: onClick,
+    delay: 300,
+  })
+
   return (
     <button
       type="button"
-      onClick={onClick}
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-all select-none",
         "border border-border bg-background shadow-sm",
         "hover:bg-accent/50 active:scale-95",
         item.type === "recipe" && "border-primary/30 bg-primary/5"
       )}
+      {...longPressHandlers}
     >
       {emoji && <Emoji id={emoji} size={16} />}
       <span>{displayName}</span>

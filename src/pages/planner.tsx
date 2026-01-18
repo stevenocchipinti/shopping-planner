@@ -38,21 +38,19 @@ export function PlannerPage() {
   return (
     <div className="container mx-auto p-4">
       {/* Desktop: horizontal scroll, Mobile: vertical stack */}
-      <div className="flex flex-col md:flex-row gap-2 md:gap-0 overflow-x-auto">
-        <div className="flex flex-col md:flex-row md:divide-x border rounded-lg overflow-hidden bg-card min-w-full md:min-w-max">
-          {DAYS.map((day) => (
-            <PlannerDayColumn
-              key={day.value}
-              day={day.value}
-              dayLabel={day.label}
-              items={planner[day.value]?.items || []}
-              catalogue={catalogue}
-              recipes={recipes}
-              onAddClick={handleAddClick}
-              onItemClick={handleItemClick}
-            />
-          ))}
-        </div>
+      <div className="flex flex-col md:flex-row gap-2 overflow-x-auto">
+        {DAYS.map((day) => (
+          <PlannerDayColumn
+            key={day.value}
+            day={day.value}
+            dayLabel={day.label}
+            items={planner[day.value]?.items || []}
+            catalogue={catalogue}
+            recipes={recipes}
+            onAddClick={handleAddClick}
+            onItemClick={handleItemClick}
+          />
+        ))}
       </div>
 
       {/* Add Planner Item Dialog */}

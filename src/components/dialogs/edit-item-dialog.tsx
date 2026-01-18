@@ -1,12 +1,12 @@
 import { useState, useMemo, useEffect } from "react"
 import { Trash2 } from "lucide-react"
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog"
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerFooter,
+} from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Autocomplete } from "@/components/form/autocomplete"
@@ -108,12 +108,24 @@ export function EditItemDialog({ open, onOpenChange, item }: EditItemDialogProps
   if (!item) return null
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Edit Item</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent className="sm:max-w-md mx-auto">
+        <DrawerHeader>
+          <div className="flex items-center justify-between">
+            <DrawerTitle>Edit Item</DrawerTitle>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={handleDelete}
+              className="text-muted-foreground hover:text-destructive"
+            >
+              <Trash2 className="h-4 w-4" />
+              <span className="sr-only">Delete item</span>
+            </Button>
+          </div>
+        </DrawerHeader>
+        <form onSubmit={handleSubmit} className="space-y-4 px-4">
           <div className="space-y-2">
             <Label htmlFor="item">Item</Label>
             <Autocomplete
@@ -122,6 +134,13 @@ export function EditItemDialog({ open, onOpenChange, item }: EditItemDialogProps
               options={[]} // Don't show suggestions when editing
               placeholder="Enter item name..."
               autoFocus
+              startAdornment={
+                <EmojiPicker 
+                  value={emoji} 
+                  onChange={setEmoji}
+                  variant="inline"
+                />
+              }
             />
           </div>
 
@@ -140,36 +159,21 @@ export function EditItemDialog({ open, onOpenChange, item }: EditItemDialogProps
             <NumberPicker value={quantity} onChange={setQuantity} />
           </div>
 
-          <div className="space-y-2">
-            <Label>Emoji</Label>
-            <EmojiPicker value={emoji} onChange={setEmoji} />
-          </div>
-
-          <DialogFooter className="flex-col gap-2 sm:flex-row sm:justify-between">
+          <DrawerFooter className="flex-row gap-2">
             <Button
               type="button"
-              variant="destructive"
-              onClick={handleDelete}
-              className="w-full sm:w-auto"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              className="flex-1"
             >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete
+              Cancel
             </Button>
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
-                Cancel
-              </Button>
-              <Button type="submit" disabled={buttonState.disabled}>
-                {buttonState.label}
-              </Button>
-            </div>
-          </DialogFooter>
+            <Button type="submit" disabled={buttonState.disabled} className="flex-1">
+              {buttonState.label}
+            </Button>
+          </DrawerFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </DrawerContent>
+    </Drawer>
   )
 }
