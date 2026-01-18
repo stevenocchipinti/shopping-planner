@@ -65,15 +65,16 @@ export function AddItemDialog({ open, onOpenChange }: AddItemDialogProps) {
         <form onSubmit={handleSubmit} className="space-y-4 px-4">
           <ItemForm key={formKey.current} ref={formRef} mode="add" />
 
-          <DrawerFooter>
+          <DrawerFooter className="flex-row gap-2">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
+              className="flex-1"
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={buttonState.disabled}>
+            <Button type="submit" disabled={buttonState.disabled} className="flex-1">
               {buttonState.label}
             </Button>
           </DrawerFooter>

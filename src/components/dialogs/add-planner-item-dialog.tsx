@@ -74,15 +74,16 @@ export function AddPlannerItemDialog({ open, onOpenChange, defaultDay }: AddPlan
             />
           )}
 
-          <DrawerFooter>
+          <DrawerFooter className="flex-row gap-2">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
+              className="flex-1"
             >
               Cancel
             </Button>
-            <Button type="submit">
+            <Button type="submit" className="flex-1">
               Add
             </Button>
           </DrawerFooter>
