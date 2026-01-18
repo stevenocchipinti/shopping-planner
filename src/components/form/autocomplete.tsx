@@ -19,6 +19,7 @@ interface AutocompleteProps {
   className?: string
   endAdornment?: React.ReactNode
   startAdornment?: React.ReactNode
+  inputRef?: React.RefObject<HTMLInputElement | null>
 }
 
 export function Autocomplete({
@@ -31,10 +32,12 @@ export function Autocomplete({
   className,
   endAdornment,
   startAdornment,
+  inputRef: externalInputRef,
 }: AutocompleteProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [highlightedIndex, setHighlightedIndex] = useState(0)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const internalInputRef = useRef<HTMLInputElement>(null)
+  const inputRef = externalInputRef || internalInputRef
   const listRef = useRef<HTMLUListElement>(null)
 
   // Filter options based on input value

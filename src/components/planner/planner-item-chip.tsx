@@ -20,23 +20,22 @@ export function PlannerItemChip({ item, emoji, displayName, onClick }: PlannerIt
     <button
       type="button"
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-all select-none",
+        "w-full flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-all select-none",
         "border border-border bg-background shadow-sm",
-        "hover:bg-accent/50 active:scale-95",
+        "hover:bg-accent/50 active:scale-[0.98]",
+        "min-h-[44px]", // Consistent minimum height
         item.type === "recipe" && "border-primary/30 bg-primary/5"
       )}
       {...longPressHandlers}
     >
-      {emoji && <Emoji id={emoji} size={16} />}
-      <span>{displayName}</span>
-      {item.type === "recipe" && (
-        <span className={cn(
-          "ml-0.5 inline-flex items-center justify-center rounded-full px-1.5 py-0.5 text-xs",
-          "bg-primary/10 text-primary"
-        )}>
-          recipe
-        </span>
-      )}
+      <span className="flex-shrink-0 w-6 h-6 flex items-center justify-center">
+        {emoji ? (
+          <Emoji id={emoji} size={20} />
+        ) : (
+          <span className="w-5 h-5 rounded-full bg-muted" />
+        )}
+      </span>
+      <span className="flex-1 text-left truncate">{displayName}</span>
     </button>
   )
 }

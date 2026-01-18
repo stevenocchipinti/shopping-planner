@@ -22,8 +22,11 @@ export function AppBar({ onMenuClick }: AppBarProps) {
     if (isListView && hasDoneItems) {
       await backend.sweepDoneItems(items)
     } else if (isPlannerView && hasPlannerItems) {
-      const plannerDays = Object.keys(planner)
-      await backend.clearPlanner(plannerDays)
+      // Only get days that actually have items
+      const daysWithItems = Object.entries(planner)
+        .filter(([, day]) => day.items?.length > 0)
+        .map(([dayName]) => dayName)
+      await backend.clearPlanner(daysWithItems)
     }
   }
 

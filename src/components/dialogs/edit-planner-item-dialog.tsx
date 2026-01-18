@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useRef, useMemo } from "react"
 import {
   Drawer,
   DrawerContent,
@@ -7,9 +7,7 @@ import {
   DrawerFooter,
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Emoji } from "@/components/ui/emoji"
-import { DayPicker } from "@/components/form/day-picker"
+import { PlannerItemForm, type PlannerItemFormRef, type PlannerItemFormData } from "@/components/form/planner-item-form"
 import { useFirebaseContext } from "@/components/providers/firebase-provider"
 import { Trash2 } from "lucide-react"
 import type { DayOfWeek, PlannerItem } from "@/types"
@@ -23,36 +21,73 @@ interface EditPlannerItemDialogProps {
 
 export function EditPlannerItemDialog({ open, onOpenChange, day, item }: EditPlannerItemDialogProps) {
   const { catalogue, recipes, planner, backend } = useFirebaseContext()
+  const formRef = useRef<PlannerItemFormRef>(null)
 
-  const [selectedDay, setSelectedDay] = useState<DayOfWeek>(day)
-  const [emoji, setEmoji] = useState<string | null>(null)
-
-  // Get display name
-  const displayName = item.name.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
-
-  // Reset form when dialog opens
-  useEffect(() => {
-    if (open) {
-      setSelectedDay(day)
-      
-      // Get emoji from recipe or catalogue
-      if (item.type === "recipe" && recipes[item.name]) {
-        setEmoji(recipes[item.name].emoji)
-      } else if (catalogue[item.name]) {
-        setEmoji(catalogue[item.name].emoji)
-      } else {
-        setEmoji(null)
-      }
+  // Get initial values from the item
+  const initialData = useMemo((): PlannerItemFormData => {
+    const displayName = item.name.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+    
+    // Get emoji from recipe or catalogue
+    let emoji: string | null = null
+    if (item.type === "recipe" && recipes[item.name]) {
+      emoji = recipes[item.name].emoji
+    } else if (catalogue[item.name]) {
+      emoji = catalogue[item.name].emoji
     }
-  }, [open, day, item, recipes, catalogue])
+
+    // Get ingredients if it's a recipe
+    const ingredients = item.type === "recipe" && recipes[item.name]
+      ? recipes[item.name].ingredients.map((i) => {
+          const catalogueEntry = catalogue[i.slug]
+          return {
+            value: i.slug,
+            label: i.slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+            emoji: catalogueEntry?.emoji || null,
+          }
+        })
+      : []
+
+    return {
+      itemName: displayName,
+      selectedDay: day,
+      emoji,
+      ingredients,
+    }
+  }, [item, day, recipes, catalogue])
 
   const handleDelete = async () => {
     await backend.deleteFromPlannerDay(day, item.name, planner)
     onOpenChange(false)
   }
 
-  const handleMoveToDay = async () => {
-    if (selectedDay === day) {
+  const handleSave = async () => {
+    const formData = formRef.current?.getData()
+    if (!formData) return
+    
+    const trimmedName = formData.itemName.trim()
+    if (!trimmedName) return
+
+    // Determine if it's a recipe based on ingredients
+    const isRecipe = formData.ingredients.length > 0
+    const ingredientList = isRecipe 
+      ? formData.ingredients.map(i => i.label)
+      : undefined
+
+    // Check if anything changed
+    const dayChanged = formData.selectedDay !== day
+    const nameChanged = trimmedName.toLowerCase().replace(/\s+/g, "-") !== item.name
+    const typeChanged = isRecipe !== (item.type === "recipe")
+    
+    // Check if ingredients changed
+    const originalIngredients = item.type === "recipe" && recipes[item.name]
+      ? recipes[item.name].ingredients.map(i => i.slug).sort()
+      : []
+    const newIngredients = formData.ingredients.map(i => i.value).sort()
+    const ingredientsChanged = JSON.stringify(originalIngredients) !== JSON.stringify(newIngredients)
+
+    const hasChanges = dayChanged || nameChanged || typeChanged || ingredientsChanged
+
+    if (!hasChanges) {
       onOpenChange(false)
       return
     }
@@ -60,19 +95,21 @@ export function EditPlannerItemDialog({ open, onOpenChange, day, item }: EditPla
     // Remove from current day
     await backend.deleteFromPlannerDay(day, item.name, planner)
     
-    // Add to new day
+    // Add to the (potentially new) day with updated data
     await backend.addToPlannerDay(
-      selectedDay,
-      displayName,
-      item.type,
+      formData.selectedDay,
+      trimmedName,
+      isRecipe ? "recipe" : "item",
       planner,
-      emoji
+      formData.emoji,
+      ingredientList
     )
     
     onOpenChange(false)
   }
 
-  const hasDayChanged = selectedDay !== day
+  // Use item.name + day as key to force form reset when editing different items
+  const formKey = `${item.name}-${day}`
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
@@ -93,40 +130,14 @@ export function EditPlannerItemDialog({ open, onOpenChange, day, item }: EditPla
           </div>
         </DrawerHeader>
         <div className="space-y-4 px-4">
-          <div className="space-y-2">
-            <Label>Item</Label>
-            <div className="flex items-center gap-2 p-3 border rounded-md bg-muted/50">
-              {emoji && (
-                <Emoji id={emoji} size={24} />
-              )}
-              <span className="font-medium">{displayName}</span>
-              {item.type === "recipe" && (
-                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                  recipe
-                </span>
-              )}
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Move to Day</Label>
-            <DayPicker value={selectedDay} onChange={setSelectedDay} />
-          </div>
-
-          {item.type === "recipe" && recipes[item.name] && (
-            <div className="space-y-2">
-              <Label>Ingredients</Label>
-              <div className="p-3 border rounded-md bg-muted/50">
-                <ul className="text-sm text-muted-foreground">
-                  {recipes[item.name].ingredients.map((ing, index) => (
-                    <li key={index}>
-                      {ing.slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          )}
+          <PlannerItemForm
+            key={formKey}
+            ref={formRef}
+            initialData={initialData}
+            catalogue={catalogue}
+            recipes={recipes}
+            mode="edit"
+          />
 
           <DrawerFooter className="flex-row gap-2">
             <Button
@@ -139,11 +150,10 @@ export function EditPlannerItemDialog({ open, onOpenChange, day, item }: EditPla
             </Button>
             <Button
               type="button"
-              onClick={handleMoveToDay}
-              disabled={!hasDayChanged}
+              onClick={handleSave}
               className="flex-1"
             >
-              {hasDayChanged ? "Move" : "Done"}
+              Save
             </Button>
           </DrawerFooter>
         </div>
