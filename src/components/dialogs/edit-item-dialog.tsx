@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react"
+import { useRef } from "react"
 import { Trash2 } from "lucide-react"
 import {
   Drawer,
@@ -8,12 +8,8 @@ import {
   DrawerFooter,
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Autocomplete } from "@/components/form/autocomplete"
-import { NumberPicker } from "@/components/form/number-picker"
-import { EmojiPicker } from "@/components/ui/emoji-picker"
+import { ItemForm, type ItemFormHandle } from "@/components/form/item-form"
 import { useFirebaseContext } from "@/components/providers/firebase-provider"
-import { slugify } from "@/lib/slugify"
 import type { ItemWithMetadata } from "@/types"
 
 interface EditItemDialogProps {
@@ -23,79 +19,19 @@ interface EditItemDialogProps {
 }
 
 export function EditItemDialog({ open, onOpenChange, item }: EditItemDialogProps) {
-  const { items, catalogue, backend } = useFirebaseContext()
-
-  const [itemName, setItemName] = useState("")
-  const [section, setSection] = useState("")
-  const [quantity, setQuantity] = useState(1)
-  const [emoji, setEmoji] = useState<string | null>(null)
-
-  // Initialize form when dialog opens or item changes
-  useEffect(() => {
-    if (open && item) {
-      setItemName(item.name)
-      setSection(item.section)
-      setQuantity(item.quantity)
-      setEmoji(item.emoji)
-    }
-  }, [open, item])
-
-  // Create autocomplete options from catalogue
-  const sectionOptions = useMemo(() => {
-    const sections = new Set(
-      Object.values(catalogue)
-        .map((entry) => entry.section)
-        .filter(Boolean)
-    )
-    return Array.from(sections).map((s) => ({
-      value: s,
-      label: s,
-    }))
-  }, [catalogue])
-
-  // Determine if there are changes
-  const hasChanges = useMemo(() => {
-    if (!item) return false
-    return (
-      itemName.trim() !== item.name ||
-      section !== item.section ||
-      quantity !== item.quantity ||
-      emoji !== item.emoji
-    )
-  }, [item, itemName, section, quantity, emoji])
-
-  // Check if the new name conflicts with an existing item
-  const nameConflict = useMemo(() => {
-    if (!item) return false
-    const trimmedName = itemName.trim()
-    const newSlug = slugify(trimmedName)
-    const oldSlug = item.slug
-    
-    if (newSlug === oldSlug) return false
-    
-    return items.some((i) => slugify(i.name) === newSlug)
-  }, [item, itemName, items])
-
-  const buttonState = useMemo(() => {
-    if (!itemName.trim()) {
-      return { label: "Save", disabled: true }
-    }
-    if (nameConflict) {
-      return { label: "Already exists!", disabled: true }
-    }
-    if (!hasChanges) {
-      return { label: "Save", disabled: true }
-    }
-    return { label: "Save", disabled: false }
-  }, [itemName, nameConflict, hasChanges])
+  const { backend } = useFirebaseContext()
+  const formRef = useRef<ItemFormHandle>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!item || buttonState.disabled) return
+    if (!item || !formRef.current) return
 
-    const trimmedName = itemName.trim()
-    await backend.editItem(item.name, trimmedName, section, quantity, emoji)
+    const buttonState = formRef.current.getButtonState()
+    if (buttonState.disabled) return
+
+    const data = formRef.current.getData()
+    await backend.editItem(item.name, data.name, data.section, data.quantity, data.emoji)
     onOpenChange(false)
   }
 
@@ -106,6 +42,8 @@ export function EditItemDialog({ open, onOpenChange, item }: EditItemDialogProps
   }
 
   if (!item) return null
+
+  const buttonState = formRef.current?.getButtonState() || { label: "Save", disabled: true }
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
@@ -126,38 +64,7 @@ export function EditItemDialog({ open, onOpenChange, item }: EditItemDialogProps
           </div>
         </DrawerHeader>
         <form onSubmit={handleSubmit} className="space-y-4 px-4">
-          <div className="space-y-2">
-            <Label htmlFor="item">Item</Label>
-            <Autocomplete
-              value={itemName}
-              onChange={setItemName}
-              options={[]} // Don't show suggestions when editing
-              placeholder="Enter item name..."
-              autoFocus
-              startAdornment={
-                <EmojiPicker 
-                  value={emoji} 
-                  onChange={setEmoji}
-                  variant="inline"
-                />
-              }
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="section">Section</Label>
-            <Autocomplete
-              value={section}
-              onChange={setSection}
-              options={sectionOptions}
-              placeholder="Enter section (optional)..."
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label>Quantity</Label>
-            <NumberPicker value={quantity} onChange={setQuantity} />
-          </div>
+          <ItemForm key={item.name} ref={formRef} initialItem={item} mode="edit" />
 
           <DrawerFooter className="flex-row gap-2">
             <Button
