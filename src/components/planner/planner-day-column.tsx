@@ -60,24 +60,26 @@ export function PlannerDayColumn({
       </div>
 
       {/* Items container */}
-      <div className="flex-1 p-2 space-y-2 min-h-[120px]">
+      <div className="flex-1 p-2 min-h-[120px]">
         {isEmpty ? (
           <p className="text-xs text-muted-foreground text-center py-4">
             No plans
           </p>
         ) : (
-          items.map((item, index) => {
-            const { displayName, emoji } = getItemDetails(item)
-            return (
-              <PlannerItemChip
-                key={`${item.name}-${index}`}
-                item={item}
-                emoji={emoji}
-                displayName={displayName}
-                onClick={() => onItemClick(day, item)}
-              />
-            )
-          })
+          <div className="flex flex-wrap gap-1.5">
+            {items.map((item, index) => {
+              const { displayName, emoji } = getItemDetails(item)
+              return (
+                <PlannerItemChip
+                  key={`${item.name}-${index}`}
+                  item={item}
+                  emoji={emoji}
+                  displayName={displayName}
+                  onClick={() => onItemClick(day, item)}
+                />
+              )
+            })}
+          </div>
         )}
       </div>
     </div>

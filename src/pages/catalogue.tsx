@@ -5,13 +5,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Emoji } from "@/components/ui/emoji"
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogDescription,
-} from "@/components/ui/dialog"
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerFooter,
+} from "@/components/ui/drawer"
 
 export function CataloguePage() {
   const { catalogue, backend, loading } = useFirebaseContext()
@@ -98,7 +98,7 @@ export function CataloguePage() {
                       <div>
                         <span className="font-medium">{item.name}</span>
                         <span className="sm:hidden text-xs text-muted-foreground block">
-                          {item.displaySection}
+                          {item.displaySection || <span className="italic opacity-50">No section</span>}
                         </span>
                       </div>
                     </div>
@@ -124,26 +124,26 @@ export function CataloguePage() {
         </div>
       )}
 
-      {/* Delete Confirmation Dialog */}
-      <Dialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete from History</DialogTitle>
-            <DialogDescription>
+      {/* Delete Confirmation Drawer */}
+      <Drawer open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>Delete from History</DrawerTitle>
+            <DrawerDescription>
               Are you sure you want to remove "{deleteConfirm?.name}" from your history?
               This won't remove it from your current shopping list.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteConfirm(null)}>
+            </DrawerDescription>
+          </DrawerHeader>
+          <DrawerFooter className="flex-row gap-2">
+            <Button variant="outline" onClick={() => setDeleteConfirm(null)} className="flex-1">
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleDelete}>
+            <Button variant="destructive" onClick={handleDelete} className="flex-1">
               Delete
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </div>
   )
 }

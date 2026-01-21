@@ -87,7 +87,6 @@ export class FirestoreBackend {
           
           // Keep day name as stored in Firebase (capitalized like the old app)
           const dayKey = doc.id
-          console.log(`Planner doc ${doc.id}:`, data)
           
           // Handle backward compatibility with old app format
           // Old app might store items differently
@@ -122,7 +121,6 @@ export class FirestoreBackend {
             [dayKey]: { items } as PlannerDay
           }
         }, {} as Record<string, PlannerDay>)
-        console.log('Processed planner:', planner)
         callback(planner)
       },
       (error) => {
