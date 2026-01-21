@@ -30,10 +30,12 @@ export function ItemChip({ item, onToggle, onEdit }: ItemChipProps) {
       {item.emoji && <Emoji id={item.emoji} size={16} />}
       <span>{item.name}</span>
       {item.quantity > 1 && (
-        <span className={cn(
-          "ml-0.5 inline-flex items-center justify-center rounded-full px-1.5 py-0.5 text-xs font-semibold",
-          "bg-primary/10 text-primary"
-        )}>
+        <span
+          className={cn(
+            "ml-0.5 inline-flex items-center justify-center rounded-full px-1.5 py-0.5 text-xs font-semibold",
+            "bg-primary/10 text-primary"
+          )}
+        >
           x{item.quantity}
         </span>
       )}

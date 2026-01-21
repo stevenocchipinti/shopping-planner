@@ -38,14 +38,14 @@ export function MultiAutocomplete({
   const containerRef = useRef<HTMLDivElement>(null)
 
   // Filter options based on input value and exclude already selected items
-  const selectedValues = new Set(value.map((item) => item.value))
+  const selectedValues = new Set(value.map(item => item.value))
   const filteredOptions = inputValue.trim()
     ? options.filter(
-        (option) =>
+        option =>
           option.label.toLowerCase().includes(inputValue.toLowerCase()) &&
           !selectedValues.has(option.value)
       )
-    : options.filter((option) => !selectedValues.has(option.value))
+    : options.filter(option => !selectedValues.has(option.value))
 
   // Reset highlighted index when filtered options change
   useEffect(() => {
@@ -55,7 +55,9 @@ export function MultiAutocomplete({
   // Scroll highlighted item into view
   useEffect(() => {
     if (isOpen && listRef.current) {
-      const highlightedItem = listRef.current.children[highlightedIndex] as HTMLElement
+      const highlightedItem = listRef.current.children[
+        highlightedIndex
+      ] as HTMLElement
       if (highlightedItem) {
         highlightedItem.scrollIntoView({ block: "nearest" })
       }
@@ -68,14 +70,17 @@ export function MultiAutocomplete({
   }
 
   const handleSelect = (option: MultiAutocompleteOption) => {
-    onChange([...value, { value: option.value, label: option.label, emoji: option.emoji }])
+    onChange([
+      ...value,
+      { value: option.value, label: option.label, emoji: option.emoji },
+    ])
     setInputValue("")
     setIsOpen(false)
     inputRef.current?.focus()
   }
 
   const handleRemove = (itemToRemove: SelectedItem) => {
-    onChange(value.filter((item) => item.value !== itemToRemove.value))
+    onChange(value.filter(item => item.value !== itemToRemove.value))
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -114,13 +119,13 @@ export function MultiAutocomplete({
     switch (e.key) {
       case "ArrowDown":
         e.preventDefault()
-        setHighlightedIndex((prev) =>
+        setHighlightedIndex(prev =>
           prev < filteredOptions.length - 1 ? prev + 1 : 0
         )
         break
       case "ArrowUp":
         e.preventDefault()
-        setHighlightedIndex((prev) =>
+        setHighlightedIndex(prev =>
           prev > 0 ? prev - 1 : filteredOptions.length - 1
         )
         break
@@ -157,7 +162,7 @@ export function MultiAutocomplete({
           "cursor-text"
         )}
       >
-        {value.map((item) => (
+        {value.map(item => (
           <span
             key={item.value}
             className="inline-flex items-center gap-1 rounded-full bg-secondary px-2.5 py-0.5 text-sm font-medium"
@@ -166,7 +171,7 @@ export function MultiAutocomplete({
             <span>{item.label}</span>
             <button
               type="button"
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation()
                 handleRemove(item)
               }}

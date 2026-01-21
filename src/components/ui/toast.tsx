@@ -30,16 +30,16 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
   const addToast = React.useCallback((toast: Omit<Toast, "id">) => {
     const id = Math.random().toString(36).slice(2)
-    setToasts((prev) => [...prev, { ...toast, id }])
+    setToasts(prev => [...prev, { ...toast, id }])
 
     // Auto-remove after 4 seconds
     setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id))
+      setToasts(prev => prev.filter(t => t.id !== id))
     }, 4000)
   }, [])
 
   const removeToast = React.useCallback((id: string) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id))
+    setToasts(prev => prev.filter(t => t.id !== id))
   }, [])
 
   return (
@@ -50,18 +50,18 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   )
 }
 
-function ToastContainer({ 
-  toasts, 
-  removeToast 
-}: { 
+function ToastContainer({
+  toasts,
+  removeToast,
+}: {
   toasts: Toast[]
-  removeToast: (id: string) => void 
+  removeToast: (id: string) => void
 }) {
   if (toasts.length === 0) return null
 
   return (
     <div className="fixed bottom-20 left-4 right-4 z-50 flex flex-col gap-2 pointer-events-none">
-      {toasts.map((toast) => (
+      {toasts.map(toast => (
         <div
           key={toast.id}
           className={cn(
@@ -69,7 +69,8 @@ function ToastContainer({
             "animate-in slide-in-from-bottom-2 fade-in",
             toast.type === "info" && "bg-background border",
             toast.type === "success" && "bg-green-600 text-white",
-            toast.type === "error" && "bg-destructive text-destructive-foreground",
+            toast.type === "error" &&
+              "bg-destructive text-destructive-foreground",
             toast.type === "warning" && "bg-yellow-500 text-white"
           )}
         >

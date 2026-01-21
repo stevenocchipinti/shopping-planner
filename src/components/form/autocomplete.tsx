@@ -42,7 +42,7 @@ export function Autocomplete({
 
   // Filter options based on input value
   const filteredOptions = value.trim()
-    ? options.filter((option) =>
+    ? options.filter(option =>
         option.label.toLowerCase().includes(value.toLowerCase())
       )
     : options
@@ -55,7 +55,9 @@ export function Autocomplete({
   // Scroll highlighted item into view
   useEffect(() => {
     if (isOpen && listRef.current) {
-      const highlightedItem = listRef.current.children[highlightedIndex] as HTMLElement
+      const highlightedItem = listRef.current.children[
+        highlightedIndex
+      ] as HTMLElement
       if (highlightedItem) {
         highlightedItem.scrollIntoView({ block: "nearest" })
       }
@@ -85,13 +87,13 @@ export function Autocomplete({
     switch (e.key) {
       case "ArrowDown":
         e.preventDefault()
-        setHighlightedIndex((prev) =>
+        setHighlightedIndex(prev =>
           prev < filteredOptions.length - 1 ? prev + 1 : 0
         )
         break
       case "ArrowUp":
         e.preventDefault()
-        setHighlightedIndex((prev) =>
+        setHighlightedIndex(prev =>
           prev > 0 ? prev - 1 : filteredOptions.length - 1
         )
         break
@@ -138,10 +140,7 @@ export function Autocomplete({
           placeholder={placeholder}
           autoFocus={autoFocus}
           autoComplete="off"
-          className={cn(
-            startAdornment && "pl-10",
-            endAdornment && "pr-10"
-          )}
+          className={cn(startAdornment && "pl-10", endAdornment && "pr-10")}
         />
         {endAdornment && (
           <div className="absolute right-1 top-1/2 -translate-y-1/2">
@@ -164,9 +163,7 @@ export function Autocomplete({
               onClick={() => handleSelect(option)}
               onMouseEnter={() => setHighlightedIndex(index)}
             >
-              {option.emoji && (
-                <Emoji id={option.emoji} size={16} />
-              )}
+              {option.emoji && <Emoji id={option.emoji} size={16} />}
               <span>{option.label}</span>
             </li>
           ))}

@@ -10,7 +10,12 @@ interface PlannerItemChipProps {
   onClick: () => void
 }
 
-export function PlannerItemChip({ item, emoji, displayName, onClick }: PlannerItemChipProps) {
+export function PlannerItemChip({
+  item,
+  emoji,
+  displayName,
+  onClick,
+}: PlannerItemChipProps) {
   const longPressHandlers = useLongPress({
     onLongPress: onClick,
     delay: 300,

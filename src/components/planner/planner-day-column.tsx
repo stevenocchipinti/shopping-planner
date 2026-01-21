@@ -27,15 +27,19 @@ export function PlannerDayColumn({
     // Check recipes first for recipe type
     if (item.type === "recipe" && recipes[item.name]) {
       return {
-        displayName: item.name.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+        displayName: item.name
+          .replace(/-/g, " ")
+          .replace(/\b\w/g, c => c.toUpperCase()),
         emoji: recipes[item.name].emoji,
       }
     }
-    
+
     // Check catalogue
     const catalogueEntry = catalogue[item.name]
     return {
-      displayName: item.name.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+      displayName: item.name
+        .replace(/-/g, " ")
+        .replace(/\b\w/g, c => c.toUpperCase()),
       emoji: catalogueEntry?.emoji || null,
     }
   }
@@ -45,10 +49,12 @@ export function PlannerDayColumn({
   return (
     <div className="flex flex-col min-w-[140px] flex-1 rounded-xl border bg-card shadow-sm overflow-hidden">
       {/* Day header with + button */}
-      <div className={cn(
-        "py-2 px-3 flex items-center justify-between font-semibold text-sm border-b",
-        "bg-muted/50"
-      )}>
+      <div
+        className={cn(
+          "py-2 px-3 flex items-center justify-between font-semibold text-sm border-b",
+          "bg-muted/50"
+        )}
+      >
         <span>{dayLabel}</span>
         <button
           onClick={() => onAddClick(day)}

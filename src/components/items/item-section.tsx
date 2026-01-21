@@ -9,11 +9,18 @@ interface ItemSectionProps {
   onEditItem: (item: ItemWithMetadata) => void
 }
 
-export function ItemSection({ section, items, onToggleItem, onEditItem }: ItemSectionProps) {
-  const allDone = items.every((item) => item.done)
-  
+export function ItemSection({
+  section,
+  items,
+  onToggleItem,
+  onEditItem,
+}: ItemSectionProps) {
+  const allDone = items.every(item => item.done)
+
   // Capitalize section name for display
-  const displaySection = section.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+  const displaySection = section
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, c => c.toUpperCase())
 
   return (
     <div
@@ -23,15 +30,17 @@ export function ItemSection({ section, items, onToggleItem, onEditItem }: ItemSe
       )}
     >
       {section && (
-        <h3 className={cn(
-          "mb-2 text-sm font-semibold text-muted-foreground",
-          allDone && "line-through"
-        )}>
+        <h3
+          className={cn(
+            "mb-2 text-sm font-semibold text-muted-foreground",
+            allDone && "line-through"
+          )}
+        >
           {displaySection}
         </h3>
       )}
       <div className="flex flex-wrap gap-2">
-        {items.map((item) => (
+        {items.map(item => (
           <ItemChip
             key={item.slug}
             item={item}

@@ -27,9 +27,12 @@ interface ExtractedItem {
   checked: boolean
 }
 
-export function AddPlanToListDialog({ open, onOpenChange }: AddPlanToListDialogProps) {
+export function AddPlanToListDialog({
+  open,
+  onOpenChange,
+}: AddPlanToListDialogProps) {
   const { planner, recipes, catalogue, backend } = useFirebaseContext()
-  
+
   const [items, setItems] = useState<ExtractedItem[]>([])
   const [submitting, setSubmitting] = useState(false)
 
@@ -38,17 +41,20 @@ export function AddPlanToListDialog({ open, onOpenChange }: AddPlanToListDialogP
     if (!open) return
 
     // Collect all items from all days
-    const itemCounts = new Map<string, { 
-      slug: string
-      displayName: string 
-      emoji: string | null
-      section: string
-      count: number 
-    }>()
+    const itemCounts = new Map<
+      string,
+      {
+        slug: string
+        displayName: string
+        emoji: string | null
+        section: string
+        count: number
+      }
+    >()
 
     Object.values(planner).forEach(day => {
       if (!day.items) return
-      
+
       day.items.forEach(plannerItem => {
         if (plannerItem.type === "recipe") {
           // Expand recipe into ingredients
@@ -62,7 +68,9 @@ export function AddPlanToListDialog({ open, onOpenChange }: AddPlanToListDialogP
               } else {
                 itemCounts.set(ing.slug, {
                   slug: ing.slug,
-                  displayName: ing.slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+                  displayName: ing.slug
+                    .replace(/-/g, " ")
+                    .replace(/\b\w/g, c => c.toUpperCase()),
                   emoji: catalogueEntry?.emoji || null,
                   section: catalogueEntry?.section || "",
                   count: 1,
@@ -79,7 +87,9 @@ export function AddPlanToListDialog({ open, onOpenChange }: AddPlanToListDialogP
           } else {
             itemCounts.set(plannerItem.name, {
               slug: plannerItem.name,
-              displayName: plannerItem.name.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+              displayName: plannerItem.name
+                .replace(/-/g, " ")
+                .replace(/\b\w/g, c => c.toUpperCase()),
               emoji: catalogueEntry?.emoji || null,
               section: catalogueEntry?.section || "",
               count: 1,
@@ -105,9 +115,11 @@ export function AddPlanToListDialog({ open, onOpenChange }: AddPlanToListDialogP
   }, [open, planner, recipes, catalogue])
 
   const toggleItem = (slug: string) => {
-    setItems(prev => prev.map(item => 
-      item.slug === slug ? { ...item, checked: !item.checked } : item
-    ))
+    setItems(prev =>
+      prev.map(item =>
+        item.slug === slug ? { ...item, checked: !item.checked } : item
+      )
+    )
   }
 
   const toggleAll = () => {
@@ -153,10 +165,9 @@ export function AddPlanToListDialog({ open, onOpenChange }: AddPlanToListDialogP
             Add Plan to Shopping List
           </DrawerTitle>
           <DrawerDescription>
-            {isEmpty 
+            {isEmpty
               ? "No items to add. Add some items to your planner first."
-              : "Select the items you want to add to your shopping list."
-            }
+              : "Select the items you want to add to your shopping list."}
           </DrawerDescription>
         </DrawerHeader>
 
@@ -188,17 +199,17 @@ export function AddPlanToListDialog({ open, onOpenChange }: AddPlanToListDialogP
                     !item.checked && "opacity-50"
                   )}
                 >
-                  <div className={cn(
-                    "flex h-5 w-5 items-center justify-center rounded border",
-                    item.checked 
-                      ? "bg-primary border-primary text-primary-foreground" 
-                      : "border-border"
-                  )}>
+                  <div
+                    className={cn(
+                      "flex h-5 w-5 items-center justify-center rounded border",
+                      item.checked
+                        ? "bg-primary border-primary text-primary-foreground"
+                        : "border-border"
+                    )}
+                  >
                     {item.checked && <Check className="h-3 w-3" />}
                   </div>
-                  {item.emoji && (
-                    <Emoji id={item.emoji} size={18} />
-                  )}
+                  {item.emoji && <Emoji id={item.emoji} size={18} />}
                   <span className="flex-1">{item.displayName}</span>
                   {item.quantity > 1 && (
                     <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">

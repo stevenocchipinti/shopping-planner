@@ -7,7 +7,10 @@ import {
   DrawerFooter,
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
-import { PlannerItemForm, type PlannerItemFormRef } from "@/components/form/planner-item-form"
+import {
+  PlannerItemForm,
+  type PlannerItemFormRef,
+} from "@/components/form/planner-item-form"
 import { useFirebaseContext } from "@/components/providers/firebase-provider"
 import type { DayOfWeek } from "@/types"
 
@@ -17,13 +20,17 @@ interface AddPlannerItemDialogProps {
   defaultDay: DayOfWeek
 }
 
-export function AddPlannerItemDialog({ open, onOpenChange, defaultDay }: AddPlannerItemDialogProps) {
+export function AddPlannerItemDialog({
+  open,
+  onOpenChange,
+  defaultDay,
+}: AddPlannerItemDialogProps) {
   const { catalogue, recipes, planner, backend } = useFirebaseContext()
   const formRef = useRef<PlannerItemFormRef>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     const formData = formRef.current?.getData()
     if (!formData || !formRef.current?.isValid()) return
 
@@ -32,7 +39,7 @@ export function AddPlannerItemDialog({ open, onOpenChange, defaultDay }: AddPlan
 
     // Determine if it's a recipe based on ingredients
     const isRecipe = formData.ingredients.length > 0
-    const ingredientList = isRecipe 
+    const ingredientList = isRecipe
       ? formData.ingredients.map(i => i.label)
       : undefined
 

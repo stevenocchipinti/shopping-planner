@@ -25,28 +25,33 @@ interface DialogProps {
 
 function Dialog({ open = false, onOpenChange, children }: DialogProps) {
   return (
-    <DialogContext.Provider value={{ open, onOpenChange: onOpenChange ?? (() => {}) }}>
+    <DialogContext.Provider
+      value={{ open, onOpenChange: onOpenChange ?? (() => {}) }}
+    >
       {children}
     </DialogContext.Provider>
   )
 }
 
-function DialogTrigger({ 
-  children, 
+function DialogTrigger({
+  children,
   asChild,
-  ...props 
-}: { 
+  ...props
+}: {
   children: React.ReactNode
-  asChild?: boolean 
+  asChild?: boolean
 } & React.ButtonHTMLAttributes<HTMLButtonElement>) {
   const { onOpenChange } = useDialogContext()
-  
+
   if (asChild && React.isValidElement(children)) {
-    return React.cloneElement(children as React.ReactElement<{ onClick?: () => void }>, {
-      onClick: () => onOpenChange(true),
-    })
+    return React.cloneElement(
+      children as React.ReactElement<{ onClick?: () => void }>,
+      {
+        onClick: () => onOpenChange(true),
+      }
+    )
   }
-  
+
   return (
     <button onClick={() => onOpenChange(true)} {...props}>
       {children}
@@ -56,15 +61,18 @@ function DialogTrigger({
 
 function DialogPortal({ children }: { children: React.ReactNode }) {
   const { open } = useDialogContext()
-  
+
   if (!open) return null
-  
+
   return <>{children}</>
 }
 
-function DialogOverlay({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+function DialogOverlay({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
   const { onOpenChange } = useDialogContext()
-  
+
   return (
     <div
       className={cn(
@@ -82,26 +90,26 @@ const DialogContent = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, children, ...props }, ref) => {
   const { open, onOpenChange } = useDialogContext()
-  
+
   // Handle escape key
   React.useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape") onOpenChange(false)
     }
-    
+
     if (open) {
       document.addEventListener("keydown", handleEscape)
       document.body.style.overflow = "hidden"
     }
-    
+
     return () => {
       document.removeEventListener("keydown", handleEscape)
       document.body.style.overflow = ""
     }
   }, [open, onOpenChange])
-  
+
   if (!open) return null
-  
+
   return (
     <>
       <DialogOverlay />
@@ -111,7 +119,7 @@ const DialogContent = React.forwardRef<
           "fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg -translate-x-1/2 -translate-y-1/2 gap-4 border bg-background p-6 shadow-lg duration-200 animate-in fade-in-0 zoom-in-95 slide-in-from-left-1/2 slide-in-from-top-[48%] sm:rounded-lg",
           className
         )}
-        onClick={(e) => e.stopPropagation()}
+        onClick={e => e.stopPropagation()}
         {...props}
       >
         {children}

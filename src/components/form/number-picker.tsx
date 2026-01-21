@@ -9,11 +9,11 @@ interface NumberPickerProps {
   max?: number
 }
 
-export function NumberPicker({ 
-  value, 
-  onChange, 
-  min = 1, 
-  max = 99 
+export function NumberPicker({
+  value,
+  onChange,
+  min = 1,
+  max = 99,
 }: NumberPickerProps) {
   const handleDecrement = () => {
     if (value > min) {

@@ -13,7 +13,7 @@ export function ListPage() {
   // Group items by section with metadata from catalogue
   const { orderedSections, sortedItemsBySection } = useMemo(() => {
     // Create items with metadata
-    const itemsWithMetadata: ItemWithMetadata[] = items.map((item) => {
+    const itemsWithMetadata: ItemWithMetadata[] = items.map(item => {
       const slug = slugify(item.name)
       const catalogueEntry = catalogue[slug]
       return {
@@ -39,7 +39,7 @@ export function ListPage() {
     // Sort sections: empty section first, then sections with unchecked items (alphabetically),
     // then sections with all items done (alphabetically)
     const notDoneSections = Object.keys(itemsBySection)
-      .filter((section) => itemsBySection[section].some((item) => !item.done))
+      .filter(section => itemsBySection[section].some(item => !item.done))
       .sort((a, b) => {
         // Empty string should come first
         if (a === "" && b !== "") return -1
@@ -48,7 +48,7 @@ export function ListPage() {
       })
 
     const doneSections = Object.keys(itemsBySection)
-      .filter((section) => itemsBySection[section].every((item) => item.done))
+      .filter(section => itemsBySection[section].every(item => item.done))
       .sort((a, b) => {
         // Empty string should come first
         if (a === "" && b !== "") return -1
@@ -64,10 +64,10 @@ export function ListPage() {
       (acc, section) => {
         const sectionItems = itemsBySection[section]
         const notDone = sectionItems
-          .filter((i) => !i.done)
+          .filter(i => !i.done)
           .sort((a, b) => a.name.localeCompare(b.name))
         const done = sectionItems
-          .filter((i) => i.done)
+          .filter(i => i.done)
           .sort((a, b) => a.name.localeCompare(b.name))
 
         return {
@@ -105,7 +105,7 @@ export function ListPage() {
     <>
       <div className="container mx-auto p-4">
         <div className="flex flex-col gap-3">
-          {orderedSections.map((section) => (
+          {orderedSections.map(section => (
             <ItemSection
               key={section}
               section={section}
@@ -119,7 +119,7 @@ export function ListPage() {
 
       <EditItemDialog
         open={editingItem !== null}
-        onOpenChange={(open) => !open && setEditingItem(null)}
+        onOpenChange={open => !open && setEditingItem(null)}
         item={editingItem}
       />
     </>

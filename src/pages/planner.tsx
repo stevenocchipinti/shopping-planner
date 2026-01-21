@@ -8,18 +8,21 @@ import type { DayOfWeek, PlannerItem } from "@/types"
 
 export function PlannerPage() {
   const { planner, catalogue, recipes, loading } = useFirebaseContext()
-  
+
   const [addDialogOpen, setAddDialogOpen] = useState(false)
   const [addDialogDay, setAddDialogDay] = useState<DayOfWeek>("Monday")
-  
+
   const [editDialogOpen, setEditDialogOpen] = useState(false)
-  const [editItem, setEditItem] = useState<{ day: DayOfWeek; item: PlannerItem } | null>(null)
-  
+  const [editItem, setEditItem] = useState<{
+    day: DayOfWeek
+    item: PlannerItem
+  } | null>(null)
+
   const handleAddClick = (day: DayOfWeek) => {
     setAddDialogDay(day)
     setAddDialogOpen(true)
   }
-  
+
   const handleItemClick = (day: DayOfWeek, item: PlannerItem) => {
     setEditItem({ day, item })
     setEditDialogOpen(true)
@@ -39,7 +42,7 @@ export function PlannerPage() {
     <div className="container mx-auto p-4">
       {/* Desktop: horizontal scroll, Mobile: vertical stack */}
       <div className="flex flex-col md:flex-row gap-2 overflow-x-auto">
-        {DAYS.map((day) => (
+        {DAYS.map(day => (
           <PlannerDayColumn
             key={day.value}
             day={day.value}

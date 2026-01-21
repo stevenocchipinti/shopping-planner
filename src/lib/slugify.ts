@@ -1,9 +1,9 @@
 /**
  * CRITICAL: This must match the old implementation exactly for backward compatibility
  * Old implementation: src/helpers.js lines 8-14
- * 
+ *
  * Convert a string to a URL-safe slug for use as Firestore document ID
- * 
+ *
  * Example: "Whole Milk" -> "whole-milk"
  */
 export function slugify(s: string | undefined | null): string {
@@ -26,7 +26,7 @@ export function unslugify(s: string | undefined | null): string {
     s
       ?.split("-")
       ?.filter(Boolean)
-      ?.map((word) => word[0]?.toUpperCase() + word.slice(1))
+      ?.map(word => word[0]?.toUpperCase() + word.slice(1))
       ?.join(" ") || ""
   )
 }
@@ -42,18 +42,12 @@ function capitalize(s: string): string {
 /**
  * CRITICAL: This must match the old implementation exactly for backward compatibility
  * Old implementation: src/helpers.js lines 3-4
- * 
+ *
  * Prettify user input by trimming, normalizing whitespace, and capitalizing each word.
  * This is applied when storing item names and sections to the database.
- * 
+ *
  * Example: "  whole   milk  " -> "Whole Milk"
  */
 export function prettify(s: string | undefined | null): string {
-  return (
-    s
-      ?.trim()
-      ?.split(/\s+/)
-      ?.map(capitalize)
-      ?.join(" ") || ""
-  )
+  return s?.trim()?.split(/\s+/)?.map(capitalize)?.join(" ") || ""
 }

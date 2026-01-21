@@ -57,7 +57,7 @@ async function searchStandardEmojis(
   try {
     await initEmojiData()
     const results = await SearchIndex.search(searchTerm)
-    
+
     // Return the first result's ID (shortcode) for backward compatibility
     // Old app stores "green_apple", not "🍏"
     if (results && results.length > 0) {
@@ -66,7 +66,7 @@ async function searchStandardEmojis(
   } catch (error) {
     console.error("Error searching standard emojis:", error)
   }
-  
+
   return null
 }
 
@@ -75,9 +75,7 @@ async function searchStandardEmojis(
  * Returns emoji ID for both custom ("custom-broccoli") and standard ("green_apple") emojis
  * This matches the old app's storage format for backward compatibility
  */
-export async function searchEmoji(
-  searchTerm: string
-): Promise<string | null> {
+export async function searchEmoji(searchTerm: string): Promise<string | null> {
   if (!searchTerm.trim()) return null
 
   // Try custom emojis first (priority)
@@ -105,7 +103,7 @@ export function getCustomEmojiUrl(emojiId: string): string | null {
   if (!isCustomEmoji(emojiId)) return null
 
   for (const category of customEmojis) {
-    const emoji = category.emojis.find((e) => e.id === emojiId)
+    const emoji = category.emojis.find(e => e.id === emojiId)
     if (emoji) {
       return emoji.skins[0].src
     }
@@ -118,12 +116,14 @@ export function getCustomEmojiUrl(emojiId: string): string | null {
  * Convert an emoji-mart shortcode ID to native emoji character
  * Used for backward compatibility with data from the old app
  */
-export async function shortcodeToNative(shortcode: string): Promise<string | null> {
+export async function shortcodeToNative(
+  shortcode: string
+): Promise<string | null> {
   try {
     await initEmojiData()
     // Search by the exact shortcode
     const results = await SearchIndex.search(shortcode)
-    
+
     // Look for an exact ID match first
     if (results && results.length > 0) {
       for (const result of results) {
@@ -137,6 +137,6 @@ export async function shortcodeToNative(shortcode: string): Promise<string | nul
   } catch (error) {
     console.error("Error converting shortcode to native:", error)
   }
-  
+
   return null
 }

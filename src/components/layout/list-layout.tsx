@@ -16,7 +16,7 @@ import { AboutDialog } from "@/components/dialogs/about-dialog"
 function ListLayoutContent() {
   const location = useLocation()
   const { listId } = useParams<{ listId: string }>()
-  
+
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [addDialogOpen, setAddDialogOpen] = useState(false)
   const [addPlanToListDialogOpen, setAddPlanToListDialogOpen] = useState(false)
@@ -44,14 +44,14 @@ function ListLayoutContent() {
   return (
     <div className="fixed inset-0 flex flex-col bg-background">
       <AppBar onMenuClick={() => setDrawerOpen(true)} />
-      <main 
+      <main
         className="flex-1 overflow-y-auto pb-24"
-        style={{ WebkitOverflowScrolling: 'touch' }}
+        style={{ WebkitOverflowScrolling: "touch" }}
       >
         <Outlet context={{ setAddDialogOpen }} />
       </main>
       <BottomNav />
-      
+
       {/* FAB - Floating Action Button - Centered between tabs, aligned with top of nav bar */}
       <Button
         size="icon"
@@ -64,7 +64,9 @@ function ListLayoutContent() {
         ) : (
           <Plus className="h-6 w-6" />
         )}
-        <span className="sr-only">{isPlannerView ? "Add plan to list" : "Add item"}</span>
+        <span className="sr-only">
+          {isPlannerView ? "Add plan to list" : "Add item"}
+        </span>
       </Button>
 
       {/* App Drawer */}
@@ -77,30 +79,18 @@ function ListLayoutContent() {
       />
 
       {/* Dialogs */}
-      <AddItemDialog
-        open={addDialogOpen}
-        onOpenChange={setAddDialogOpen}
-      />
-      
+      <AddItemDialog open={addDialogOpen} onOpenChange={setAddDialogOpen} />
+
       <AddPlanToListDialog
         open={addPlanToListDialogOpen}
         onOpenChange={setAddPlanToListDialogOpen}
       />
 
-      <ShareDialog
-        open={shareDialogOpen}
-        onOpenChange={setShareDialogOpen}
-      />
+      <ShareDialog open={shareDialogOpen} onOpenChange={setShareDialogOpen} />
 
-      <OpenDialog
-        open={openDialogOpen}
-        onOpenChange={setOpenDialogOpen}
-      />
+      <OpenDialog open={openDialogOpen} onOpenChange={setOpenDialogOpen} />
 
-      <AboutDialog
-        open={aboutDialogOpen}
-        onOpenChange={setAboutDialogOpen}
-      />
+      <AboutDialog open={aboutDialogOpen} onOpenChange={setAboutDialogOpen} />
     </div>
   )
 }

@@ -24,8 +24,8 @@ export function AboutDialog({ open, onOpenChange }: AboutDialogProps) {
 
         <div className="space-y-4 px-4 pb-4">
           <p className="text-sm text-muted-foreground">
-            A simple, collaborative shopping list and meal planning app. 
-            Share your list with family members and shop together in real-time.
+            A simple, collaborative shopping list and meal planning app. Share
+            your list with family members and shop together in real-time.
           </p>
 
           <div className="space-y-2">
@@ -49,18 +49,18 @@ export function AboutDialog({ open, onOpenChange }: AboutDialogProps) {
           <div className="pt-2 text-xs text-muted-foreground">
             <p>
               Custom emoji icons by{" "}
-              <a 
-                href="https://openmoji.org/" 
-                target="_blank" 
+              <a
+                href="https://openmoji.org/"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="underline hover:text-foreground"
               >
                 OpenMoji
-              </a>
-              {" "}– the open-source emoji and icon project. License:{" "}
-              <a 
-                href="https://creativecommons.org/licenses/by-sa/4.0/" 
-                target="_blank" 
+              </a>{" "}
+              – the open-source emoji and icon project. License:{" "}
+              <a
+                href="https://creativecommons.org/licenses/by-sa/4.0/"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="underline hover:text-foreground"
               >

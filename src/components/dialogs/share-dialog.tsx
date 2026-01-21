@@ -61,7 +61,8 @@ export function ShareDialog({ open, onOpenChange }: ShareDialogProps) {
             Share List
           </DrawerTitle>
           <DrawerDescription>
-            Share this link with others to let them view and edit this shopping list in real-time.
+            Share this link with others to let them view and edit this shopping
+            list in real-time.
           </DrawerDescription>
         </DrawerHeader>
 

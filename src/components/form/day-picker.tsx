@@ -20,7 +20,7 @@ interface DayPickerProps {
 export function DayPicker({ value, onChange, className }: DayPickerProps) {
   return (
     <div className={cn("flex gap-1", className)}>
-      {DAYS.map((day) => (
+      {DAYS.map(day => (
         <button
           key={day.value}
           type="button"

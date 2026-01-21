@@ -1,4 +1,11 @@
-import { useState, useMemo, useEffect, forwardRef, useImperativeHandle, useRef } from "react"
+import {
+  useState,
+  useMemo,
+  useEffect,
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+} from "react"
 import { Label } from "@/components/ui/label"
 import { Autocomplete } from "@/components/form/autocomplete"
 import { NumberPicker } from "@/components/form/number-picker"
@@ -87,7 +94,7 @@ export const ItemForm = forwardRef<ItemFormHandle, ItemFormProps>(
       if (mode !== "add") return []
       return Object.entries(catalogue).map(([slug, entry]) => ({
         value: slug,
-        label: slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+        label: slug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()),
         emoji: entry.emoji,
       }))
     }, [catalogue, mode])
@@ -95,17 +102,20 @@ export const ItemForm = forwardRef<ItemFormHandle, ItemFormProps>(
     const sectionOptions = useMemo(() => {
       const sections = new Set(
         Object.values(catalogue)
-          .map((entry) => entry.section)
+          .map(entry => entry.section)
           .filter(Boolean)
       )
-      return Array.from(sections).map((s) => ({
+      return Array.from(sections).map(s => ({
         value: s,
         label: s,
       }))
     }, [catalogue])
 
     // Handle item selection from autocomplete (add mode only)
-    const handleItemSelect = (option: { value: string; emoji?: string | null }) => {
+    const handleItemSelect = (option: {
+      value: string
+      emoji?: string | null
+    }) => {
       if (mode !== "add") return
       const catalogueEntry = catalogue[option.value]
       if (catalogueEntry) {
@@ -117,13 +127,13 @@ export const ItemForm = forwardRef<ItemFormHandle, ItemFormProps>(
     // Determine button state for add mode
     const addModeButtonState = useMemo(() => {
       const trimmedName = itemName.trim()
-      
+
       if (!trimmedName) {
         return { label: "Add", disabled: true, action: "none" }
       }
 
       const slug = slugify(trimmedName)
-      const existingItem = items.find((item) => slugify(item.name) === slug)
+      const existingItem = items.find(item => slugify(item.name) === slug)
       const catalogueEntry = catalogue[slug] as CatalogueEntry | undefined
 
       if (!existingItem) {
@@ -157,7 +167,7 @@ export const ItemForm = forwardRef<ItemFormHandle, ItemFormProps>(
       }
 
       const trimmedName = itemName.trim()
-      
+
       if (!trimmedName) {
         return { label: "Save", disabled: true }
       }
@@ -165,21 +175,20 @@ export const ItemForm = forwardRef<ItemFormHandle, ItemFormProps>(
       // Check for name conflicts
       const newSlug = slugify(trimmedName)
       const oldSlug = initialItem.slug
-      
+
       if (newSlug !== oldSlug) {
-        const nameConflict = items.some((i) => slugify(i.name) === newSlug)
+        const nameConflict = items.some(i => slugify(i.name) === newSlug)
         if (nameConflict) {
           return { label: "Already exists!", disabled: true }
         }
       }
 
       // Check if there are changes
-      const hasChanges = (
+      const hasChanges =
         trimmedName !== initialItem.name ||
         section !== initialItem.section ||
         quantity !== initialItem.quantity ||
         emoji !== initialItem.emoji
-      )
 
       if (!hasChanges) {
         return { label: "Save", disabled: true }
@@ -188,7 +197,8 @@ export const ItemForm = forwardRef<ItemFormHandle, ItemFormProps>(
       return { label: "Save", disabled: false }
     }, [initialItem, itemName, section, quantity, emoji, items])
 
-    const buttonState = mode === "add" ? addModeButtonState : editModeButtonState
+    const buttonState =
+      mode === "add" ? addModeButtonState : editModeButtonState
 
     // Expose methods to parent component
     useImperativeHandle(ref, () => ({
@@ -214,8 +224,8 @@ export const ItemForm = forwardRef<ItemFormHandle, ItemFormProps>(
             options={itemOptions}
             placeholder="Enter item name..."
             startAdornment={
-              <EmojiPicker 
-                value={emoji} 
+              <EmojiPicker
+                value={emoji}
                 onChange={handleEmojiChange}
                 variant="inline"
               />

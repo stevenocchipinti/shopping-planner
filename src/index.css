@@ -4,7 +4,13 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -13,7 +19,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
-  
+
   --radius: 0.625rem;
   --background: oklch(0.985 0 0);
   --foreground: oklch(0.145 0 0);
@@ -86,11 +92,11 @@
   * {
     @apply border-border;
   }
-  
+
   html {
     @apply antialiased;
   }
-  
+
   body {
     @apply bg-background text-foreground;
     margin: 0;
@@ -98,7 +104,7 @@
     /* Prevent pull-to-refresh on mobile */
     overscroll-behavior: none;
   }
-  
+
   #root {
     min-height: 100dvh;
   }
@@ -110,14 +116,16 @@
 }
 
 /* Prevent text selection on interactive elements for mobile */
-button, [role="button"] {
+button,
+[role="button"] {
   -webkit-user-select: none;
   user-select: none;
 }
 
 /* Better touch handling */
 @media (hover: none) {
-  button:active, [role="button"]:active {
+  button:active,
+  [role="button"]:active {
     opacity: 0.8;
   }
 }

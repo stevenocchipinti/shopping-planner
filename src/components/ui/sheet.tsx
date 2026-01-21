@@ -25,28 +25,33 @@ interface SheetProps {
 
 function Sheet({ open = false, onOpenChange, children }: SheetProps) {
   return (
-    <SheetContext.Provider value={{ open, onOpenChange: onOpenChange ?? (() => {}) }}>
+    <SheetContext.Provider
+      value={{ open, onOpenChange: onOpenChange ?? (() => {}) }}
+    >
       {children}
     </SheetContext.Provider>
   )
 }
 
-function SheetTrigger({ 
-  children, 
+function SheetTrigger({
+  children,
   asChild,
-  ...props 
-}: { 
+  ...props
+}: {
   children: React.ReactNode
-  asChild?: boolean 
+  asChild?: boolean
 } & React.ButtonHTMLAttributes<HTMLButtonElement>) {
   const { onOpenChange } = useSheetContext()
-  
+
   if (asChild && React.isValidElement(children)) {
-    return React.cloneElement(children as React.ReactElement<{ onClick?: () => void }>, {
-      onClick: () => onOpenChange(true),
-    })
+    return React.cloneElement(
+      children as React.ReactElement<{ onClick?: () => void }>,
+      {
+        onClick: () => onOpenChange(true),
+      }
+    )
   }
-  
+
   return (
     <button onClick={() => onOpenChange(true)} {...props}>
       {children}
@@ -54,9 +59,12 @@ function SheetTrigger({
   )
 }
 
-function SheetOverlay({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+function SheetOverlay({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
   const { open, onOpenChange } = useSheetContext()
-  
+
   return (
     <div
       className={cn(
@@ -79,12 +87,12 @@ const SheetContent = React.forwardRef<HTMLDivElement, SheetContentProps>(
     const { open, onOpenChange } = useSheetContext()
     const [shouldRender, setShouldRender] = React.useState(false)
     const [isAnimating, setIsAnimating] = React.useState(false)
-    
+
     // Handle mounting and unmounting with animation
     React.useEffect(() => {
       let openTimer: ReturnType<typeof setTimeout>
       let closeTimer: ReturnType<typeof setTimeout>
-      
+
       if (open) {
         setShouldRender(true)
         // Use setTimeout to ensure DOM has painted the initial state
@@ -98,46 +106,46 @@ const SheetContent = React.forwardRef<HTMLDivElement, SheetContentProps>(
           setShouldRender(false)
         }, 300)
       }
-      
+
       return () => {
         clearTimeout(openTimer)
         clearTimeout(closeTimer)
       }
     }, [open])
-    
+
     // Handle escape key and body scroll
     React.useEffect(() => {
       const handleEscape = (e: KeyboardEvent) => {
         if (e.key === "Escape") onOpenChange(false)
       }
-      
+
       if (open) {
         document.addEventListener("keydown", handleEscape)
         document.body.style.overflow = "hidden"
       }
-      
+
       return () => {
         document.removeEventListener("keydown", handleEscape)
         document.body.style.overflow = ""
       }
     }, [open, onOpenChange])
-    
+
     if (!shouldRender) return null
-    
+
     const sideStyles = {
       left: "inset-y-0 left-0 h-full w-3/4 max-w-xs border-r",
       right: "inset-y-0 right-0 h-full w-3/4 max-w-xs border-l",
       top: "inset-x-0 top-0 w-full border-b",
       bottom: "inset-x-0 bottom-0 w-full border-t",
     }
-    
+
     const transformClasses = {
       left: isAnimating ? "translate-x-0" : "-translate-x-full",
       right: isAnimating ? "translate-x-0" : "translate-x-full",
       top: isAnimating ? "translate-y-0" : "-translate-y-full",
       bottom: isAnimating ? "translate-y-0" : "translate-y-full",
     }
-    
+
     return (
       <>
         <div
@@ -155,7 +163,7 @@ const SheetContent = React.forwardRef<HTMLDivElement, SheetContentProps>(
             transformClasses[side],
             className
           )}
-          onClick={(e) => e.stopPropagation()}
+          onClick={e => e.stopPropagation()}
           {...props}
         >
           {children}

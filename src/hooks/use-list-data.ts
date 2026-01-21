@@ -9,23 +9,23 @@ export function useListData(listId: string) {
   const [recipes, setRecipes] = useState<Record<string, Recipe>>({})
   const [loading, setLoading] = useState(true)
   const backendRef = useRef<FirestoreBackend | null>(null)
-  
+
   useEffect(() => {
     // Create new backend for the current listId
     const backend = new FirestoreBackend(listId)
     backendRef.current = backend
-    
+
     // Reset loading state when listId changes
     setLoading(true)
-    
+
     const unsubItems = backend.subscribeToItems(setItems)
     const unsubCatalogue = backend.subscribeToCatalogue(setCatalogue)
     const unsubPlanner = backend.subscribeToPlanner(setPlanner)
     const unsubRecipes = backend.subscribeToRecipes(setRecipes)
-    
+
     // Mark as loaded after initial snapshots
     const timer = setTimeout(() => setLoading(false), 500)
-    
+
     return () => {
       unsubItems()
       unsubCatalogue()
@@ -35,6 +35,13 @@ export function useListData(listId: string) {
       clearTimeout(timer)
     }
   }, [listId])
-  
-  return { items, catalogue, planner, recipes, loading, backend: backendRef.current! }
+
+  return {
+    items,
+    catalogue,
+    planner,
+    recipes,
+    loading,
+    backend: backendRef.current!,
+  }
 }

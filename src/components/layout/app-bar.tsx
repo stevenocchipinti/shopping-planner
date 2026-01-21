@@ -11,12 +11,14 @@ export function AppBar({ onMenuClick }: AppBarProps) {
   const { items, planner, backend } = useFirebaseContext()
   const location = useLocation()
   const { listId } = useParams<{ listId: string }>()
-  
+
   const isListView = location.pathname === `/list/${listId}`
   const isPlannerView = location.pathname === `/list/${listId}/planner`
-  
-  const hasDoneItems = items.some((item) => item.done)
-  const hasPlannerItems = Object.values(planner).some(day => day.items?.length > 0)
+
+  const hasDoneItems = items.some(item => item.done)
+  const hasPlannerItems = Object.values(planner).some(
+    day => day.items?.length > 0
+  )
 
   const handleSweep = async () => {
     if (isListView && hasDoneItems) {
@@ -30,7 +32,8 @@ export function AppBar({ onMenuClick }: AppBarProps) {
     }
   }
 
-  const showSweepButton = (isListView && hasDoneItems) || (isPlannerView && hasPlannerItems)
+  const showSweepButton =
+    (isListView && hasDoneItems) || (isPlannerView && hasPlannerItems)
   const sweepTitle = isPlannerView ? "Clear planner" : "Remove checked items"
 
   return (
@@ -48,7 +51,7 @@ export function AppBar({ onMenuClick }: AppBarProps) {
           </Button>
           <h1 className="text-lg font-semibold">Shopping Planner</h1>
         </div>
-        
+
         <div className="flex items-center gap-2">
           {showSweepButton && (
             <Button

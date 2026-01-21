@@ -18,20 +18,30 @@ interface EditItemDialogProps {
   item: ItemWithMetadata | null
 }
 
-export function EditItemDialog({ open, onOpenChange, item }: EditItemDialogProps) {
+export function EditItemDialog({
+  open,
+  onOpenChange,
+  item,
+}: EditItemDialogProps) {
   const { backend } = useFirebaseContext()
   const formRef = useRef<ItemFormHandle>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!item || !formRef.current) return
 
     const buttonState = formRef.current.getButtonState()
     if (buttonState.disabled) return
 
     const data = formRef.current.getData()
-    await backend.editItem(item.name, data.name, data.section, data.quantity, data.emoji)
+    await backend.editItem(
+      item.name,
+      data.name,
+      data.section,
+      data.quantity,
+      data.emoji
+    )
     onOpenChange(false)
   }
 
@@ -43,7 +53,10 @@ export function EditItemDialog({ open, onOpenChange, item }: EditItemDialogProps
 
   if (!item) return null
 
-  const buttonState = formRef.current?.getButtonState() || { label: "Save", disabled: true }
+  const buttonState = formRef.current?.getButtonState() || {
+    label: "Save",
+    disabled: true,
+  }
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
@@ -64,7 +77,12 @@ export function EditItemDialog({ open, onOpenChange, item }: EditItemDialogProps
           </div>
         </DrawerHeader>
         <form onSubmit={handleSubmit} className="space-y-4 px-4">
-          <ItemForm key={item.name} ref={formRef} initialItem={item} mode="edit" />
+          <ItemForm
+            key={item.name}
+            ref={formRef}
+            initialItem={item}
+            mode="edit"
+          />
 
           <DrawerFooter className="flex-row gap-2">
             <Button
@@ -75,7 +93,11 @@ export function EditItemDialog({ open, onOpenChange, item }: EditItemDialogProps
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={buttonState.disabled} className="flex-1">
+            <Button
+              type="submit"
+              disabled={buttonState.disabled}
+              className="flex-1"
+            >
               {buttonState.label}
             </Button>
           </DrawerFooter>

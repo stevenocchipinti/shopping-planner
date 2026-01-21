@@ -13,7 +13,11 @@ interface EmojiPickerProps {
   variant?: "default" | "inline"
 }
 
-export function EmojiPicker({ value, onChange, variant = "default" }: EmojiPickerProps) {
+export function EmojiPicker({
+  value,
+  onChange,
+  variant = "default",
+}: EmojiPickerProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [pickerPosition, setPickerPosition] = useState({ top: 0, left: 0 })
   const buttonRef = useRef<HTMLButtonElement>(null)
@@ -26,20 +30,20 @@ export function EmojiPicker({ value, onChange, variant = "default" }: EmojiPicke
       const rect = buttonRef.current.getBoundingClientRect()
       const viewportHeight = window.innerHeight
       const pickerHeight = 435 // approximate height of emoji picker
-      
+
       // Position below button, but flip up if not enough space
       let top = rect.bottom + 8
       if (top + pickerHeight > viewportHeight - 20) {
         top = Math.max(20, rect.top - pickerHeight - 8)
       }
-      
+
       // Keep left aligned with button, but ensure it doesn't overflow viewport
       let left = rect.left
       const pickerWidth = 352 // approximate width of emoji picker
       if (left + pickerWidth > window.innerWidth - 20) {
         left = window.innerWidth - pickerWidth - 20
       }
-      
+
       setPickerPosition({ top, left: Math.max(20, left) })
     }
   }, [isOpen])
@@ -50,10 +54,13 @@ export function EmojiPicker({ value, onChange, variant = "default" }: EmojiPicke
 
     const isClickInsidePicker = (event: MouseEvent | PointerEvent) => {
       // Check if click is on the button
-      if (buttonRef.current && buttonRef.current.contains(event.target as Node)) {
+      if (
+        buttonRef.current &&
+        buttonRef.current.contains(event.target as Node)
+      ) {
         return true
       }
-      
+
       // Check if click is inside the picker container using bounding rect
       // This handles Shadow DOM elements that don't report containment properly
       if (pickerRef.current) {
@@ -67,7 +74,7 @@ export function EmojiPicker({ value, onChange, variant = "default" }: EmojiPicke
           return true
         }
       }
-      
+
       return false
     }
 
@@ -81,7 +88,7 @@ export function EmojiPicker({ value, onChange, variant = "default" }: EmojiPicke
     const timeoutId = setTimeout(() => {
       document.addEventListener("mousedown", handleClickOutside)
     }, 0)
-    
+
     return () => {
       clearTimeout(timeoutId)
       document.removeEventListener("mousedown", handleClickOutside)
@@ -96,43 +103,45 @@ export function EmojiPicker({ value, onChange, variant = "default" }: EmojiPicke
     setIsOpen(false)
   }
 
-  const pickerElement = isOpen ? createPortal(
-    <div
-      ref={pickerRef}
-      className="fixed z-[200] rounded-lg border bg-popover shadow-lg pointer-events-auto"
-      style={{
-        top: pickerPosition.top,
-        left: pickerPosition.left,
-      }}
-      // Stop ALL events from propagating to prevent drawer/overlay from closing
-      // This is critical because emoji-mart uses Shadow DOM and clicks inside it
-      // are seen as "outside" clicks by parent components
-      onMouseDown={(e) => e.stopPropagation()}
-      onPointerDown={(e) => e.stopPropagation()}
-      onClick={(e) => e.stopPropagation()}
-      onTouchStart={(e) => e.stopPropagation()}
-      onTouchMove={(e) => e.stopPropagation()}
-      onTouchEnd={(e) => e.stopPropagation()}
-    >
-      <Picker
-        data={async () => {
-          const response = await fetch(
-            "https://cdn.jsdelivr.net/npm/@emoji-mart/data"
-          )
-          return response.json()
-        }}
-        onEmojiSelect={handleEmojiSelect}
-        theme={effectiveTheme}
-        previewPosition="none"
-        skinTonePosition="search"
-        custom={customEmojis}
-        perLine={8}
-        maxFrequentRows={2}
-        dynamicWidth={false}
-      />
-    </div>,
-    document.body
-  ) : null
+  const pickerElement = isOpen
+    ? createPortal(
+        <div
+          ref={pickerRef}
+          className="fixed z-[200] rounded-lg border bg-popover shadow-lg pointer-events-auto"
+          style={{
+            top: pickerPosition.top,
+            left: pickerPosition.left,
+          }}
+          // Stop ALL events from propagating to prevent drawer/overlay from closing
+          // This is critical because emoji-mart uses Shadow DOM and clicks inside it
+          // are seen as "outside" clicks by parent components
+          onMouseDown={e => e.stopPropagation()}
+          onPointerDown={e => e.stopPropagation()}
+          onClick={e => e.stopPropagation()}
+          onTouchStart={e => e.stopPropagation()}
+          onTouchMove={e => e.stopPropagation()}
+          onTouchEnd={e => e.stopPropagation()}
+        >
+          <Picker
+            data={async () => {
+              const response = await fetch(
+                "https://cdn.jsdelivr.net/npm/@emoji-mart/data"
+              )
+              return response.json()
+            }}
+            onEmojiSelect={handleEmojiSelect}
+            theme={effectiveTheme}
+            previewPosition="none"
+            skinTonePosition="search"
+            custom={customEmojis}
+            perLine={8}
+            maxFrequentRows={2}
+            dynamicWidth={false}
+          />
+        </div>,
+        document.body
+      )
+    : null
 
   if (variant === "inline") {
     return (

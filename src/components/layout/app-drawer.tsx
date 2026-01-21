@@ -1,11 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom"
-import { 
-  Share2, 
-  FolderOpen, 
-  History, 
-  Info,
-  ChevronRight,
-} from "lucide-react"
+import { Share2, FolderOpen, History, Info, ChevronRight } from "lucide-react"
 import {
   Sheet,
   SheetContent,
@@ -77,9 +71,9 @@ export function AppDrawer({
         <SheetHeader>
           <SheetTitle>Shopping Planner</SheetTitle>
         </SheetHeader>
-        
+
         <nav className="mt-6 flex flex-col gap-1">
-          {menuItems.map((item) => (
+          {menuItems.map(item => (
             <button
               key={item.label}
               onClick={item.onClick}
@@ -91,7 +85,9 @@ export function AppDrawer({
               <item.icon className="h-5 w-5 text-muted-foreground" />
               <div className="flex-1">
                 <div className="font-medium">{item.label}</div>
-                <div className="text-xs text-muted-foreground">{item.description}</div>
+                <div className="text-xs text-muted-foreground">
+                  {item.description}
+                </div>
               </div>
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </button>

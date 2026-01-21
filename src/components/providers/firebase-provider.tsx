@@ -14,28 +14,26 @@ interface FirebaseContextValue {
 
 export const FirebaseContext = createContext<FirebaseContextValue | null>(null)
 
-export function FirebaseProvider({ 
-  listId, 
-  children 
-}: { 
+export function FirebaseProvider({
+  listId,
+  children,
+}: {
   listId: string
-  children: ReactNode 
+  children: ReactNode
 }) {
   const data = useListData(listId)
-  
+
   return (
-    <FirebaseContext.Provider value={data}>
-      {children}
-    </FirebaseContext.Provider>
+    <FirebaseContext.Provider value={data}>{children}</FirebaseContext.Provider>
   )
 }
 
 export function useFirebaseContext() {
   const context = useContext(FirebaseContext)
-  
+
   if (!context) {
     throw new Error("useFirebaseContext must be used within FirebaseProvider")
   }
-  
+
   return context
 }

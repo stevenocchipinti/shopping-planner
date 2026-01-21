@@ -9,9 +9,11 @@ This document provides detailed specifications for all features in the Shopping 
 ## 1. Home Page
 
 ### Purpose
+
 Landing page that redirects users to their last-used list or creates a new list.
 
 ### Behavior
+
 1. Check `localStorage` for `listName` key
 2. If exists: redirect to `/list/{listName}`
 3. If not exists:
@@ -20,10 +22,12 @@ Landing page that redirects users to their last-used list or creates a new list.
    - Redirect to `/list/{newId}`
 
 ### Original Implementation
+
 - **File:** `src/components/Home.js`
 - **Key Logic:** Lines 10-20
 
 ### New Implementation Notes
+
 ```typescript
 // src/pages/home.tsx
 import { useEffect } from "react"
@@ -32,10 +36,10 @@ import { generateListId } from "@/lib/firestore"
 
 export function HomePage() {
   const navigate = useNavigate()
-  
+
   useEffect(() => {
     const listName = localStorage.getItem("listName")
-    
+
     if (listName) {
       navigate(`/list/${listName}`)
     } else {
@@ -44,7 +48,7 @@ export function HomePage() {
       navigate(`/list/${newListId}`)
     }
   }, [navigate])
-  
+
   return <div>Loading...</div>
 }
 ```
@@ -54,6 +58,7 @@ export function HomePage() {
 ## 2. Shopping List View
 
 ### Layout
+
 - **Route:** `/list/:listId`
 - **Components:** AppBar (top) + List content + Bottom navigation + FAB (add button)
 - **Sections:** Items grouped by section in cards
@@ -62,16 +67,19 @@ export function HomePage() {
 ### Item Display (Chip Component)
 
 **Visual Elements:**
+
 - Emoji (if set and enabled)
 - Item name
 - Quantity badge (only if > 1, displayed as "x2", "x3", etc.)
 - Done state: strikethrough + muted color
 
 **Interactions:**
+
 - **Tap/Click:** Toggle done state
 - **Long press (300ms):** Open edit dialog
 
 **Original Implementation:**
+
 - **File:** `src/components/Chip/index.js`
 - **Key Features:** Lines 38-95
 - **Long press hook:** `src/components/Chip/useLongPress.js`
@@ -79,11 +87,13 @@ export function HomePage() {
 ### Section Display
 
 **Section Card:**
+
 - Section name as header (or "Unsorted" if empty)
 - All items in that section
 - Visual indicator if all items done (muted card)
 
 **Original Implementation:**
+
 - **File:** `src/components/ShoppingLists/index.js`
 - **Grouping logic:** Lines 70-80
 - **Section sorting:** Lines 82-89
@@ -92,10 +102,12 @@ export function HomePage() {
 ### Sorting Rules
 
 **Section Order:**
+
 1. Sections with any unchecked items (alphabetically)
 2. Sections with all items done (alphabetically)
 
 **Item Order Within Section:**
+
 1. Unchecked items (alphabetically by name)
 2. Checked items (alphabetically by name)
 
@@ -104,11 +116,13 @@ export function HomePage() {
 **When:** No items in list
 
 **Display:**
+
 - Cute food image (random selection if setting enabled)
 - Friendly message ("Empty list", "Have a great day", etc.)
 - Click to randomize image/message
 
 **Original Implementation:**
+
 - **File:** `src/components/ShoppingLists/Placeholder/index.js`
 - **Images:** Lines 9-22
 - **Messages:** Lines 24-32
@@ -116,23 +130,28 @@ export function HomePage() {
 ### App Bar Actions
 
 **Left side:**
+
 - Menu icon (opens drawer)
 
 **Right side:**
+
 - Sweep icon (trash) - removes all done items
 - Conditional: only shows if there are done items
 
 **Original Implementation:**
+
 - **File:** `src/components/App.js`
 - **Sweep logic:** Lines 96-103
 
 ### Bottom Navigation
 
 **Two tabs:**
+
 - List (shopping cart icon) - `/list/:listId`
 - Planner (calendar icon) - `/list/:listId/planner`
 
 **Original Implementation:**
+
 - **File:** `src/components/App.js`
 - **Tabs setup:** Lines 65-73
 
@@ -143,6 +162,7 @@ export function HomePage() {
 **Icon:** Plus/Add icon
 
 **Original Implementation:**
+
 - **File:** `src/components/App.js`
 - **FAB setup:** Lines 114-127
 
@@ -152,27 +172,28 @@ export function HomePage() {
 
 ### Fields
 
-| Field | Type | Required | Autocomplete | Notes |
-|-------|------|----------|--------------|-------|
-| **Item** | Text input | Yes | From catalogue | Focus on open |
-| **Section** | Text input | No | From catalogue | Auto-fills from catalogue if item exists |
-| **Quantity** | Number picker | Yes | N/A | Default: 1, min: 1 |
-| **Emoji** | Emoji picker | No | N/A | Opens popover with emoji-mart |
+| Field        | Type          | Required | Autocomplete   | Notes                                    |
+| ------------ | ------------- | -------- | -------------- | ---------------------------------------- |
+| **Item**     | Text input    | Yes      | From catalogue | Focus on open                            |
+| **Section**  | Text input    | No       | From catalogue | Auto-fills from catalogue if item exists |
+| **Quantity** | Number picker | Yes      | N/A            | Default: 1, min: 1                       |
+| **Emoji**    | Emoji picker  | No       | N/A            | Opens popover with emoji-mart            |
 
 ### Smart Button Label
 
 The submit button label changes based on the state:
 
-| Condition | Button Label | Enabled |
-|-----------|-------------|---------|
-| Item is empty | "Add" | ❌ Disabled |
-| New item (not in list) | "Add" | ✅ Enabled |
+| Condition                                | Button Label      | Enabled     |
+| ---------------------------------------- | ----------------- | ----------- |
+| Item is empty                            | "Add"             | ❌ Disabled |
+| New item (not in list)                   | "Add"             | ✅ Enabled  |
 | Item exists, same section, same quantity | "Already exists!" | ❌ Disabled |
-| Item exists, same section, done=true | "Uncheck" | ✅ Enabled |
-| Item exists, different section | "Move" | ✅ Enabled |
-| Item exists, different quantity | "Update" | ✅ Enabled |
+| Item exists, same section, done=true     | "Uncheck"         | ✅ Enabled  |
+| Item exists, different section           | "Move"            | ✅ Enabled  |
+| Item exists, different quantity          | "Update"          | ✅ Enabled  |
 
 **Original Implementation:**
+
 - **File:** `src/components/Dialogs/AddItemDialog/useDialogState.js`
 - **State reducer:** Lines 18-89
 - **Smart label logic:** Lines 33-51
@@ -180,16 +201,19 @@ The submit button label changes based on the state:
 ### Autocomplete Behavior
 
 **Item Autocomplete:**
+
 - Shows items from catalogue
 - Fuzzy search
 - When item selected: auto-fill section and emoji from catalogue
 - Display format: "Item Name" with emoji
 
 **Section Autocomplete:**
+
 - Shows unique sections from catalogue
 - Exact match or create new
 
 **Original Implementation:**
+
 - **File:** `src/components/Autocomplete/index.js`
 - **Item autocomplete:** Lines 10-41
 - **Section autocomplete:** Lines 43-59
@@ -200,18 +224,21 @@ The submit button label changes based on the state:
 **Trigger:** Click emoji button
 **Library:** emoji-mart
 **Features:**
+
 - Search emojis
 - Categories
 - Recently used
 - Custom emojis (food-related)
 
 **Original Implementation:**
+
 - **File:** `src/components/Emoji/EmojiPicker.js`
 - **Custom emojis:** `src/components/Emoji/customEmojis/index.js`
 
 ### Submit Action
 
 **Behavior:**
+
 1. Slugify item name
 2. Check action type (add/move/update/uncheck)
 3. Write to Firestore:
@@ -221,6 +248,7 @@ The submit button label changes based on the state:
 5. Reset form state
 
 **Original Implementation:**
+
 - **File:** `src/components/Dialogs/AddItemDialog/index.js`
 - **Submit handler:** Lines 43-52
 
@@ -229,36 +257,43 @@ The submit button label changes based on the state:
 ## 4. Edit Item Dialog
 
 ### Trigger
+
 Long press (300ms) on item chip
 
 ### Initial State
+
 Pre-populated with current item values:
+
 - Item name
 - Section (from catalogue)
 - Quantity
 - Emoji (from catalogue)
 
 ### Fields
+
 Same as Add Item Dialog
 
 ### Smart Button Label
 
-| Condition | Button Label | Enabled |
-|-----------|-------------|---------|
-| No changes made | "Save" | ❌ Disabled |
+| Condition                | Button Label      | Enabled     |
+| ------------------------ | ----------------- | ----------- |
+| No changes made          | "Save"            | ❌ Disabled |
 | Renamed to existing item | "Already exists!" | ❌ Disabled |
-| Changes made | "Save" | ✅ Enabled |
+| Changes made             | "Save"            | ✅ Enabled  |
 
 **Original Implementation:**
+
 - **File:** `src/components/Dialogs/EditItemDialog/useDialogState.js`
 - **State reducer:** Lines 18-109
 
 ### Delete Button
+
 - Located in dialog footer
 - Opens confirmation (or deletes immediately)
 - Removes from items collection only (catalogue persists)
 
 **Original Implementation:**
+
 - **File:** `src/components/Dialogs/EditItemDialog/index.js`
 - **Delete handler:** Lines 37-41
 
@@ -267,6 +302,7 @@ Same as Add Item Dialog
 ## 5. Planner View
 
 ### Layout
+
 - **Route:** `/list/:listId/planner`
 - **Display:** 7-column grid (Monday-Sunday)
 - **Mobile:** Horizontal scroll or stacked view
@@ -274,17 +310,20 @@ Same as Add Item Dialog
 ### Day Column
 
 **Header:** Day name
-**Content:** 
+**Content:**
+
 - List of planned items/recipes
 - Each item shows emoji + name
 - Click item: edit
 - Empty state: "No plans"
 
 **Add Button:**
+
 - Plus icon at bottom of each day
 - Opens Add Planner Item Dialog with day pre-selected
 
 **Original Implementation:**
+
 - **File:** `src/components/Planner.js`
 - **Grid layout:** Lines 49-57
 - **Day display:** Lines 58-110
@@ -292,10 +331,12 @@ Same as Add Item Dialog
 ### App Bar Actions (Planner View)
 
 **Right side:**
+
 - Clear icon (sweep) - removes all planner items
 - Only shows if planner has items
 
 **Original Implementation:**
+
 - **File:** `src/components/App.js`
 - **Clear planner:** Lines 137-144
 
@@ -306,6 +347,7 @@ Same as Add Item Dialog
 **Dialog:** Opens Add Plan to List Dialog
 
 **Original Implementation:**
+
 - **File:** `src/components/App.js`
 - **FAB logic:** Lines 152-167
 
@@ -315,12 +357,12 @@ Same as Add Item Dialog
 
 ### Fields
 
-| Field | Type | Required | Notes |
-|-------|------|----------|-------|
-| **Item/Recipe** | Text input | Yes | Autocomplete from items OR recipes |
-| **Day** | Toggle buttons | Yes | Mon-Sun selection |
-| **Ingredients** | Multi-select | No | Only if creating recipe |
-| **Emoji** | Emoji picker | No | Visual identifier |
+| Field           | Type           | Required | Notes                              |
+| --------------- | -------------- | -------- | ---------------------------------- |
+| **Item/Recipe** | Text input     | Yes      | Autocomplete from items OR recipes |
+| **Day**         | Toggle buttons | Yes      | Mon-Sun selection                  |
+| **Ingredients** | Multi-select   | No       | Only if creating recipe            |
+| **Emoji**       | Emoji picker   | No       | Visual identifier                  |
 
 ### Item Type Detection
 
@@ -328,23 +370,25 @@ Same as Add Item Dialog
 **Recipe:** Ingredients specified
 
 **Firestore Structure:**
+
 ```typescript
 // Simple item
 plannerRef.doc("monday").set({
-  items: [{ type: "item", name: "pizza" }]
+  items: [{ type: "item", name: "pizza" }],
 })
 
 // Recipe
 plannerRef.doc("monday").set({
-  items: [{ type: "recipe", name: "tacos" }]
+  items: [{ type: "recipe", name: "tacos" }],
 })
 recipesRef.doc("tacos").set({
   ingredients: [{ slug: "ground-beef" }, { slug: "cheese" }],
-  emoji: "taco"
+  emoji: "taco",
 })
 ```
 
 **Original Implementation:**
+
 - **File:** `src/components/Dialogs/AddPlannerItemDialog/index.js`
 - **Submit handler:** Lines 38-58
 
@@ -355,6 +399,7 @@ recipesRef.doc("tacos").set({
 **Styling:** Selected day highlighted
 
 **Original Implementation:**
+
 - **File:** `src/components/Dialogs/DayPicker.js`
 
 ### Ingredients Multi-Select
@@ -364,6 +409,7 @@ recipesRef.doc("tacos").set({
 **Remove:** Click X on chip
 
 **Original Implementation:**
+
 - **File:** `src/components/Autocomplete/index.js`
 - **Ingredient autocomplete:** Lines 76-116
 
@@ -372,16 +418,20 @@ recipesRef.doc("tacos").set({
 ## 7. Edit Planner Item Dialog
 
 ### Trigger
+
 Click on planner item chip
 
 ### Fields
+
 Same as Add Planner Item Dialog, pre-populated
 
 ### Delete Button
+
 Removes item from planner day
 If recipe type: recipe document persists (catalogue item)
 
 **Original Implementation:**
+
 - **File:** `src/components/Dialogs/EditPlannerItemDialog/index.js`
 - **Delete handler:** Lines 36-41
 
@@ -390,6 +440,7 @@ If recipe type: recipe document persists (catalogue item)
 ## 8. Add Plan to List Dialog
 
 ### Trigger
+
 FAB on planner view
 
 ### Behavior
@@ -408,6 +459,7 @@ FAB on planner view
    - Use catalogue for section/emoji
 
 **Original Implementation:**
+
 - **File:** `src/components/Dialogs/AddPlanToListDialog/index.js`
 - **Ingredient extraction:** Lines 32-65
 - **Submit logic:** Lines 67-75
@@ -417,22 +469,27 @@ FAB on planner view
 ## 9. Catalogue/History View
 
 ### Layout
+
 - **Route:** `/list/:listId/catalogue`
 - **Display:** Table or list of all items ever added
 
 ### Columns/Fields
+
 - Item name (with emoji)
 - Section
 - Delete button
 
 ### Sorting
+
 Alphabetical by item name
 
 ### Delete Action
+
 Removes item from catalogue only
 Does NOT remove from current shopping list if present
 
 **Original Implementation:**
+
 - **File:** `src/components/Catalogue.js`
 - **Table layout:** Lines 41-93
 - **Delete handler:** Lines 68-71
@@ -442,19 +499,21 @@ Does NOT remove from current shopping list if present
 ## 10. Settings Page
 
 ### Layout
+
 - **Route:** `/settings`
 - **Display:** Simple list of toggle switches
 
 ### Settings
 
-| Setting | Key | Default | Options |
-|---------|-----|---------|---------|
-| **Emoji Support** | `emojiSupport` | `"auto"` | auto/on/off |
+| Setting               | Key                | Default  | Options     |
+| --------------------- | ------------------ | -------- | ----------- |
+| **Emoji Support**     | `emojiSupport`     | `"auto"` | auto/on/off |
 | **Cute Placeholders** | `cutePlaceholders` | `"auto"` | auto/on/off |
 
 **Auto behavior:** Defaults to "on" (true)
 
 **Original Implementation:**
+
 - **File:** `src/components/Settings.js`
 - **Toggle setup:** Lines 29-56
 
@@ -465,6 +524,7 @@ Does NOT remove from current shopping list if present
 **Storage:** localStorage
 
 **Original Implementation:**
+
 - **File:** `src/useSetting.js`
 
 ---
@@ -473,13 +533,14 @@ Does NOT remove from current shopping list if present
 
 ### Modes
 
-| Mode | Behavior |
-|------|----------|
-| **Light** | Always light theme |
-| **Dark** | Always dark theme |
-| **Auto** | Follow system preference via `prefers-color-scheme` |
+| Mode      | Behavior                                            |
+| --------- | --------------------------------------------------- |
+| **Light** | Always light theme                                  |
+| **Dark**  | Always dark theme                                   |
+| **Auto**  | Follow system preference via `prefers-color-scheme` |
 
 ### Storage
+
 - **Key:** `brightnessPreference`
 - **Location:** localStorage
 - **Default:** `"auto"`
@@ -487,13 +548,15 @@ Does NOT remove from current shopping list if present
 ### Theme Toggle Component
 
 **Display:** Three-button toggle group
+
 - Sun icon = Light
-- Moon icon = Dark  
+- Moon icon = Dark
 - Auto icon = Auto
 
 **Location:** App drawer menu
 
 **Original Implementation:**
+
 - **File:** `src/components/ThemeProvider.js`
 - **Toggle component:** Lines 25-48
 - **Theme provider:** Lines 50-112
@@ -501,11 +564,13 @@ Does NOT remove from current shopping list if present
 ### CSS Implementation
 
 Use Tailwind's dark mode with class strategy:
+
 ```html
-<html class="dark">
+<html class="dark"></html>
 ```
 
 **System preference detection:**
+
 ```typescript
 const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches
 ```
@@ -515,20 +580,22 @@ const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches
 ## 12. App Drawer / Menu
 
 ### Trigger
+
 Click menu icon in app bar
 
 ### Menu Items
 
-| Item | Action |
-|------|--------|
-| **Share Live List** | Opens share dialog |
-| **Change list** | Opens open/switch list dialog |
-| **History** | Navigate to `/list/:listId/catalogue` |
-| **Settings** | Navigate to `/settings` |
-| **About** | Opens about dialog |
-| **Theme Toggle** | Inline toggle component |
+| Item                | Action                                |
+| ------------------- | ------------------------------------- |
+| **Share Live List** | Opens share dialog                    |
+| **Change list**     | Opens open/switch list dialog         |
+| **History**         | Navigate to `/list/:listId/catalogue` |
+| **Settings**        | Navigate to `/settings`               |
+| **About**           | Opens about dialog                    |
+| **Theme Toggle**    | Inline toggle component               |
 
 **Original Implementation:**
+
 - **File:** `src/components/AppBar/Menu.js`
 - **Menu items:** Lines 48-118
 
@@ -537,19 +604,23 @@ Click menu icon in app bar
 ## 13. Share Dialog
 
 ### Purpose
+
 Share current list URL with others
 
 ### Methods
 
 **Web Share API (if supported):**
+
 - Opens native share sheet
 - URL: `https://shoppingplanner.web.app/list/{listId}`
 
 **Fallback:**
+
 - Display URL
 - Copy to clipboard button
 
 **Original Implementation:**
+
 - **File:** `src/components/AppBar/ShareDialog.js`
 - **Share logic:** Lines 16-31
 
@@ -558,6 +629,7 @@ Share current list URL with others
 ## 14. Open/Switch List Dialog
 
 ### Purpose
+
 - Open existing list by ID/URL
 - View list history (MRU)
 - Create new list
@@ -565,21 +637,25 @@ Share current list URL with others
 ### Features
 
 **Input field:**
+
 - Paste full URL: extract listId
 - Paste listId directly
 - Autocomplete from MRU
 
 **List MRU:**
+
 - Display recently used list IDs
 - Click to open
 - Stored in `localStorage.listMRU` as JSON array
 
 **Create new button:**
+
 - Generate new Firebase doc ID
 - Navigate to new list
 - Add to MRU
 
 **Original Implementation:**
+
 - **File:** `src/components/AppBar/OpenDialog.js`
 - **MRU logic:** Lines 40-55
 - **Submit handler:** Lines 58-77
@@ -589,12 +665,14 @@ Share current list URL with others
 ## 15. About Dialog
 
 ### Content
+
 - App name and version
 - Creator/attribution
 - Link to source code (if applicable)
 - Credits
 
 **Original Implementation:**
+
 - **File:** `src/components/AppBar/AboutDialog.js`
 
 ---
@@ -602,20 +680,24 @@ Share current list URL with others
 ## 16. Number Picker
 
 ### Purpose
+
 Select item quantity in dialogs
 
 ### UI
+
 - Text input (center)
 - Minus button (left)
 - Plus button (right)
 
 ### Behavior
+
 - Min: 1
 - Buttons wrap around text input
 - Click buttons: increment/decrement
 - Type directly: validate >= 1
 
 **Original Implementation:**
+
 - **File:** `src/components/Dialogs/NumberPicker.js`
 
 ---
@@ -627,32 +709,38 @@ Select item quantity in dialogs
 **Component:** `<Emoji emoji="milk_glass" />`
 
 **Types:**
+
 - Standard Unicode emoji
 - Custom emoji (from custom-emojis.ts)
 
 **Original Implementation:**
+
 - **File:** `src/components/Emoji/Emoji.js`
 - **Custom emojis:** `src/components/Emoji/customEmojis/index.js`
 
 ### Emoji Search
 
 **Features:**
+
 - Search standard emojis via emoji-mart
 - Search custom emojis by name/keywords
 - Strip plurals when searching (milk → milk, milks)
 
 **Original Implementation:**
+
 - **File:** `src/components/Emoji/emojiSearch.js`
 
 ### Auto-Emoji Suggestion
 
 When typing item name in autocomplete:
+
 - If item exists in catalogue: use catalogue emoji
 - If new item: suggest emoji based on item name
   - Example: "milk" → 🥛 (milk_glass)
   - Example: "bread" → 🍞 (bread)
 
 **Original Implementation:**
+
 - **File:** `src/components/Autocomplete/index.js`
 - **Auto-suggest logic:** Lines 21-26
 
@@ -661,6 +749,7 @@ When typing item name in autocomplete:
 ## 18. Offline Support
 
 ### Features
+
 - **Firestore persistence:** IndexedDB caching enabled
 - **Service worker:** Cache app shell and assets
 - **Online/offline notifications:** Toast when connection changes
@@ -668,14 +757,17 @@ When typing item name in autocomplete:
 ### Notifications
 
 **Online:**
+
 - Message: "You are now online!"
 - Duration: 3 seconds
 
 **Offline:**
+
 - Message: "You have been disconnected"
 - Duration: 5 seconds (or persistent)
 
 **Original Implementation:**
+
 - **File:** `src/index.js`
 - **Event listeners:** Lines 46-53
 
@@ -692,8 +784,16 @@ When typing item name in autocomplete:
   "background_color": "#ffffff",
   "theme_color": "#009688",
   "icons": [
-    { "src": "/icons/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/icons/android-chrome-512x512.png", "sizes": "512x512", "type": "image/png" }
+    {
+      "src": "/icons/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
   ]
 }
 ```
@@ -703,10 +803,12 @@ When typing item name in autocomplete:
 ## 19. Loading States
 
 ### Initial Load
+
 - Show loading spinner while Firebase data loads
 - Use `loading` boolean from useListData hook
 
 ### Optimistic Updates
+
 - Item actions (add, edit, delete, mark) should feel instant
 - Firestore handles conflict resolution
 
@@ -717,20 +819,24 @@ When typing item name in autocomplete:
 ### Breakpoints
 
 **Mobile (< 768px):**
+
 - Single column layout
 - Bottom navigation
 - Full-screen dialogs
 
 **Tablet (768px - 1024px):**
+
 - Two-column layout for list
 - Slide-up dialogs
 
 **Desktop (> 1024px):**
+
 - Max-width container
 - Modal dialogs
 - Keyboard shortcuts (optional)
 
 **Original Implementation:**
+
 - **File:** `src/components/Dialogs/Dialog.js`
 - **Responsive check:** Lines 11-12 (useMediaQuery)
 
@@ -738,18 +844,19 @@ When typing item name in autocomplete:
 
 ## Implementation Priority
 
-| Priority | Feature |
-|----------|---------|
+| Priority     | Feature                                                                   |
+| ------------ | ------------------------------------------------------------------------- |
 | **Critical** | Shopping list view, add/edit items, section memory, Firestore integration |
-| **High** | Planner, catalogue, sorting logic, offline support |
-| **Medium** | Theme switching, settings, sharing, list switching |
-| **Low** | About dialog, cute placeholders, emoji search enhancements |
+| **High**     | Planner, catalogue, sorting logic, offline support                        |
+| **Medium**   | Theme switching, settings, sharing, list switching                        |
+| **Low**      | About dialog, cute placeholders, emoji search enhancements                |
 
 ---
 
 ## Testing Checklist
 
 ### Core Features
+
 - [ ] Add item to list
 - [ ] Item appears in correct section
 - [ ] Add same item again → section auto-fills
@@ -761,6 +868,7 @@ When typing item name in autocomplete:
 - [ ] Items sort correctly (unchecked first)
 
 ### Planner
+
 - [ ] Add item to planner day
 - [ ] Add recipe with ingredients to planner
 - [ ] Edit planner item
@@ -770,11 +878,13 @@ When typing item name in autocomplete:
 - [ ] Deselect items in add-to-list dialog
 
 ### Catalogue
+
 - [ ] View all items in history
 - [ ] Delete item from catalogue
 - [ ] Deleted item no longer suggests section
 
 ### Settings & Theme
+
 - [ ] Toggle emoji support on/off
 - [ ] Toggle cute placeholders on/off
 - [ ] Switch theme light/dark/auto
@@ -782,6 +892,7 @@ When typing item name in autocomplete:
 - [ ] Auto theme follows system preference
 
 ### Sharing & Lists
+
 - [ ] Share list URL via Web Share API
 - [ ] Copy list URL to clipboard
 - [ ] Open list by URL
@@ -791,6 +902,7 @@ When typing item name in autocomplete:
 - [ ] List MRU persists
 
 ### Offline & PWA
+
 - [ ] App works offline
 - [ ] Online/offline notifications show
 - [ ] PWA installs on mobile
@@ -798,6 +910,7 @@ When typing item name in autocomplete:
 - [ ] Firestore persistence works
 
 ### Compatibility
+
 - [ ] Open existing production list URL
 - [ ] Data from old app displays correctly
 - [ ] Add item in new app → appears in old app

@@ -59,24 +59,24 @@ export function OpenDialog({ open, onOpenChange }: OpenDialogProps) {
 
   const extractListId = (input: string): string | null => {
     const trimmed = input.trim()
-    
+
     // If it looks like a URL, try to extract the list ID
     if (trimmed.includes("/list/")) {
       const match = trimmed.match(/\/list\/([^/\s]+)/)
       return match ? match[1] : null
     }
-    
+
     // Otherwise, assume it's a raw list ID (alphanumeric)
     if (/^[a-zA-Z0-9]+$/.test(trimmed)) {
       return trimmed
     }
-    
+
     return null
   }
 
   const handleOpenList = () => {
     const listId = extractListId(inputValue)
-    
+
     if (!listId) {
       setError("Please enter a valid list ID or URL")
       return
@@ -107,7 +107,8 @@ export function OpenDialog({ open, onOpenChange }: OpenDialogProps) {
   }
 
   // Check if the input is different from current list ID
-  const isInputChanged = inputValue.trim() !== "" && extractListId(inputValue) !== currentListId
+  const isInputChanged =
+    inputValue.trim() !== "" && extractListId(inputValue) !== currentListId
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
@@ -130,7 +131,7 @@ export function OpenDialog({ open, onOpenChange }: OpenDialogProps) {
               <Input
                 id="list-input"
                 value={inputValue}
-                onChange={(e) => {
+                onChange={e => {
                   setInputValue(e.target.value)
                   setError("")
                 }}
@@ -138,13 +139,15 @@ export function OpenDialog({ open, onOpenChange }: OpenDialogProps) {
                 placeholder="Paste URL or enter list ID..."
                 className={cn(error && "border-destructive")}
               />
-              <Button onClick={handleOpenList} disabled={!isInputChanged} className="h-12">
+              <Button
+                onClick={handleOpenList}
+                disabled={!isInputChanged}
+                className="h-12"
+              >
                 Open
               </Button>
             </div>
-            {error && (
-              <p className="text-xs text-destructive">{error}</p>
-            )}
+            {error && <p className="text-xs text-destructive">{error}</p>}
           </div>
 
           {/* Recently used lists */}
@@ -152,7 +155,7 @@ export function OpenDialog({ open, onOpenChange }: OpenDialogProps) {
             <div className="space-y-2">
               <Label>Recent Lists</Label>
               <div className="border rounded-md divide-y max-h-48 overflow-y-auto">
-                {listMru.map((listId) => (
+                {listMru.map(listId => (
                   <button
                     key={listId}
                     onClick={() => handleSelectMru(listId)}
@@ -167,13 +170,15 @@ export function OpenDialog({ open, onOpenChange }: OpenDialogProps) {
                       {listId}
                     </span>
                     {listId === currentListId && (
-                      <span className="text-xs text-muted-foreground">(current)</span>
+                      <span className="text-xs text-muted-foreground">
+                        (current)
+                      </span>
                     )}
                     <Button
                       variant="ghost"
                       size="icon"
                       className="h-6 w-6 flex-shrink-0"
-                      onClick={(e) => removeFromMru(listId, e)}
+                      onClick={e => removeFromMru(listId, e)}
                     >
                       <Trash2 className="h-3 w-3" />
                     </Button>

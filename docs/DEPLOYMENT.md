@@ -11,10 +11,12 @@ This guide explains how to set up a staging Firebase hosting site for testing th
 **Project:** `shopping-list-app-de905`
 
 **Hosting Sites:**
+
 - **Production:** `shoppingplanner` → https://shoppingplanner.web.app
 - **Staging:** `shoppingplanner-beta` → https://shoppingplanner-beta.web.app (to be created)
 
 **Firestore Database:**
+
 - Shared between both sites (same data)
 - Allows testing new app with production data
 - Changes made in staging affect production data (use with caution)
@@ -44,12 +46,8 @@ The `.firebaserc` file needs to be updated to include the staging target:
   "targets": {
     "shopping-list-app-de905": {
       "hosting": {
-        "shoppingplanner": [
-          "shoppingplanner"
-        ],
-        "shoppingplanner-beta": [
-          "shoppingplanner-beta"
-        ]
+        "shoppingplanner": ["shoppingplanner"],
+        "shoppingplanner-beta": ["shoppingplanner-beta"]
       }
     }
   }
@@ -62,7 +60,7 @@ Run these commands to set up targets:
 # Set production target
 firebase target:apply hosting shoppingplanner shoppingplanner
 
-# Set staging target  
+# Set staging target
 firebase target:apply hosting shoppingplanner-beta shoppingplanner-beta
 ```
 
@@ -76,11 +74,7 @@ Update `firebase.json` to support multiple hosting targets:
     {
       "target": "shoppingplanner",
       "public": "dist",
-      "ignore": [
-        "firebase.json",
-        "**/.*",
-        "**/node_modules/**"
-      ],
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "rewrites": [
         {
           "source": "**",
@@ -91,11 +85,7 @@ Update `firebase.json` to support multiple hosting targets:
     {
       "target": "shoppingplanner-beta",
       "public": "dist",
-      "ignore": [
-        "firebase.json",
-        "**/.*",
-        "**/node_modules/**"
-      ],
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "rewrites": [
         {
           "source": "**",
@@ -163,9 +153,10 @@ Add these convenience scripts to `package.json`:
 ```
 
 **Usage:**
+
 ```bash
 yarn deploy:staging   # Deploy to beta site
-yarn deploy:prod      # Deploy to production site  
+yarn deploy:prod      # Deploy to production site
 yarn deploy:both      # Deploy to both sites
 ```
 
@@ -240,13 +231,16 @@ https://shoppingplanner-beta.web.app/settings
 ### Deployment Steps
 
 1. **Final staging test:**
+
    ```bash
    yarn build
    yarn deploy:staging
    ```
+
    Verify everything works one last time
 
 2. **Deploy to production:**
+
    ```bash
    yarn build
    yarn deploy:prod
@@ -273,11 +267,13 @@ https://shoppingplanner-beta.web.app/settings
 If issues are discovered:
 
 **Option 1: Quick fix**
+
 1. Fix the bug
 2. Rebuild: `yarn build`
 3. Redeploy: `yarn deploy:prod`
 
 **Option 2: Rollback to old app**
+
 1. Checkout old codebase from git history:
    ```bash
    git checkout <commit-before-rewrite>
@@ -286,6 +282,7 @@ If issues are discovered:
 3. Deploy: `firebase deploy --only hosting:shoppingplanner`
 
 **Option 3: Use Firebase Console**
+
 1. Go to Firebase Console → Hosting
 2. Select `shoppingplanner` site
 3. Click "Release history"
@@ -299,16 +296,19 @@ If issues are discovered:
 ### Monitoring
 
 **Firebase Hosting Metrics:**
+
 - Page views
 - Bandwidth usage
 - Geographic distribution
 
 **Firebase Firestore Metrics:**
+
 - Document reads/writes
 - Storage usage
 - Error rates
 
 **Web Vitals (via Lighthouse CI or RUM):**
+
 - Largest Contentful Paint (LCP)
 - First Input Delay (FID)
 - Cumulative Layout Shift (CLS)
@@ -318,6 +318,7 @@ If issues are discovered:
 After stable production period (e.g., 1 week):
 
 1. **Archive old codebase:**
+
    ```bash
    git tag old-app-archive
    git push origin old-app-archive
@@ -366,6 +367,7 @@ This ensures it works correctly on both staging and production URLs.
 Since both apps share the same Firestore database, security rules are critical:
 
 **Current Rules (from old app):**
+
 ```javascript
 // Firestore Security Rules
 service cloud.firestore {
@@ -379,12 +381,14 @@ service cloud.firestore {
 ```
 
 **Security Model:**
+
 - No authentication required
 - Anyone with list ID can read/write
 - "Security through obscurity" (list IDs are random UUIDs)
 - This is intentional for easy sharing
 
 **Recommendations:**
+
 - Keep current open rules (matches old app behavior)
 - List IDs are effectively private URLs
 - No need for authentication for this use case
@@ -396,6 +400,7 @@ service cloud.firestore {
 ### Issue: Staging site not found
 
 **Solution:**
+
 ```bash
 # Verify targets are set correctly
 firebase target:clear hosting shoppingplanner-beta
@@ -408,6 +413,7 @@ yarn deploy:staging
 ### Issue: Old deployment still showing
 
 **Solution:**
+
 ```bash
 # Clear browser cache
 # Or use incognito/private window
@@ -417,6 +423,7 @@ yarn deploy:staging
 ### Issue: Firebase config not found
 
 **Solution:**
+
 ```bash
 # Ensure .env.local exists with Firebase config
 # Verify VITE_ prefix on all variables
@@ -426,6 +433,7 @@ yarn deploy:staging
 ### Issue: Routes not working (404 on refresh)
 
 **Solution:**
+
 ```bash
 # Verify firebase.json has rewrites configured:
 "rewrites": [
@@ -439,6 +447,7 @@ yarn deploy:staging
 ### Issue: PWA not updating
 
 **Solution:**
+
 ```bash
 # Force service worker update
 # In browser DevTools:
@@ -453,22 +462,26 @@ yarn deploy:staging
 Firebase hosting is generally free for small apps:
 
 **Hosting Free Tier:**
+
 - Storage: 10 GB
 - Transfer: 360 MB/day (~10 GB/month)
 - Custom domains: Free
 
 **Firestore Free Tier:**
+
 - Stored data: 1 GB
 - Document reads: 50,000/day
 - Document writes: 20,000/day
 - Document deletes: 20,000/day
 
 **Expected Usage:**
+
 - Hosting: Minimal (simple SPA, small bundle)
 - Firestore: Low (few users, small documents)
 - Should stay within free tier
 
 **Monitor usage:**
+
 - Firebase Console → Usage and billing
 
 ---
