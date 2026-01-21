@@ -1,5 +1,6 @@
 // Day of the week
-export type DayOfWeek = "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday"
+// CRITICAL: Must use capitalized day names for backward compatibility with old app
+export type DayOfWeek = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday"
 
 // Item in the planner
 export interface PlannerItem {

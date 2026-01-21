@@ -9,7 +9,7 @@ import {
   type Unsubscribe
 } from "firebase/firestore"
 import { db } from "./firebase"
-import { slugify } from "./slugify"
+import { slugify, prettify } from "./slugify"
 import type { Item, CatalogueEntry, PlannerDay, PlannerItem, Recipe } from "@/types"
 
 export class FirestoreBackend {
@@ -85,10 +85,9 @@ export class FirestoreBackend {
         const planner = snapshot.docs.reduce((acc, doc) => {
           const data = doc.data()
           
-          // Normalize day name to lowercase for consistency
-          // Old app uses capitalized "Monday", new app uses lowercase "monday"
-          const dayKey = doc.id.toLowerCase()
-          console.log(`Planner doc ${doc.id} -> ${dayKey}:`, data)
+          // Keep day name as stored in Firebase (capitalized like the old app)
+          const dayKey = doc.id
+          console.log(`Planner doc ${doc.id}:`, data)
           
           // Handle backward compatibility with old app format
           // Old app might store items differently
@@ -117,13 +116,10 @@ export class FirestoreBackend {
             })
           }
           
-          // Merge items if we already have this day (handles case where both
-          // "Monday" and "monday" exist in Firestore)
-          const existingItems = acc[dayKey]?.items || []
-          
+          // Don't merge items for different case variants (old app uses capitalized)
           return {
             ...acc,
-            [dayKey]: { items: [...existingItems, ...items] } as PlannerDay
+            [dayKey]: { items } as PlannerDay
           }
         }, {} as Record<string, PlannerDay>)
         console.log('Processed planner:', planner)
@@ -158,17 +154,19 @@ export class FirestoreBackend {
   
   // Item operations
   async addItem(item: string, section: string, quantity = 1, emoji: string | null = null): Promise<void> {
-    const slug = slugify(item)
+    const prettyItem = prettify(item)
+    const prettySection = prettify(section)
+    const slug = slugify(prettyItem)
     const batch = writeBatch(db)
     
     batch.set(doc(this.itemsRef, slug), {
-      name: item,
+      name: prettyItem,
       quantity,
       done: false,
     })
     
     batch.set(doc(this.catalogueRef, slug), {
-      section,
+      section: prettySection,
       emoji,
     })
     
@@ -182,8 +180,10 @@ export class FirestoreBackend {
     quantity: number, 
     emoji: string | null
   ): Promise<void> {
+    const prettyNewItem = prettify(newItem)
+    const prettySection = prettify(section)
     const oldSlug = slugify(oldItem)
-    const newSlug = slugify(newItem)
+    const newSlug = slugify(prettyNewItem)
     const batch = writeBatch(db)
     
     if (oldSlug !== newSlug) {
@@ -191,13 +191,13 @@ export class FirestoreBackend {
     }
     
     batch.set(doc(this.itemsRef, newSlug), {
-      name: newItem,
+      name: prettyNewItem,
       quantity,
       done: false,
     })
     
     batch.set(doc(this.catalogueRef, newSlug), {
-      section,
+      section: prettySection,
       emoji,
     })
     

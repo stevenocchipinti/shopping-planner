@@ -28,7 +28,7 @@ export function AddItemDialog({ open, onOpenChange }: AddItemDialogProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!formRef.current) return
 
     const buttonState = formRef.current.getButtonState()
@@ -36,13 +36,18 @@ export function AddItemDialog({ open, onOpenChange }: AddItemDialogProps) {
 
     const data = formRef.current.getData()
     const slug = slugify(data.name)
-    const existingItem = items.find((item) => slugify(item.name) === slug)
+    const existingItem = items.find(item => slugify(item.name) === slug)
 
     switch (buttonState.action) {
       case "add":
       case "move":
       case "update":
-        await backend.addItem(data.name, data.section, data.quantity, data.emoji)
+        await backend.addItem(
+          data.name,
+          data.section,
+          data.quantity,
+          data.emoji
+        )
         break
       case "uncheck":
         if (existingItem) {
@@ -54,7 +59,10 @@ export function AddItemDialog({ open, onOpenChange }: AddItemDialogProps) {
     onOpenChange(false)
   }
 
-  const buttonState = formRef.current?.getButtonState() || { label: "Add", disabled: true }
+  const buttonState = formRef.current?.getButtonState() || {
+    label: "Add",
+    disabled: false,
+  }
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
@@ -74,7 +82,11 @@ export function AddItemDialog({ open, onOpenChange }: AddItemDialogProps) {
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={buttonState.disabled} className="flex-1">
+            <Button
+              type="submit"
+              disabled={buttonState.disabled}
+              className="flex-1"
+            >
               {buttonState.label}
             </Button>
           </DrawerFooter>

@@ -21,12 +21,39 @@ export function slugify(s: string | undefined | null): string {
  * Convert a slug back to a readable string
  * Example: "whole-milk" -> "Whole Milk"
  */
-export function prettify(s: string | undefined | null): string {
+export function unslugify(s: string | undefined | null): string {
   return (
     s
       ?.split("-")
       ?.filter(Boolean)
       ?.map((word) => word[0]?.toUpperCase() + word.slice(1))
+      ?.join(" ") || ""
+  )
+}
+
+/**
+ * Capitalize the first letter of a string
+ * Example: "milk" -> "Milk"
+ */
+function capitalize(s: string): string {
+  return `${s[0]?.toUpperCase() || ""}${s?.slice(1)}`
+}
+
+/**
+ * CRITICAL: This must match the old implementation exactly for backward compatibility
+ * Old implementation: src/helpers.js lines 3-4
+ * 
+ * Prettify user input by trimming, normalizing whitespace, and capitalizing each word.
+ * This is applied when storing item names and sections to the database.
+ * 
+ * Example: "  whole   milk  " -> "Whole Milk"
+ */
+export function prettify(s: string | undefined | null): string {
+  return (
+    s
+      ?.trim()
+      ?.split(/\s+/)
+      ?.map(capitalize)
       ?.join(" ") || ""
   )
 }

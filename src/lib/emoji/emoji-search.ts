@@ -49,7 +49,7 @@ function searchCustomEmojis(searchTerm: string): string | null {
 
 /**
  * Search for standard emojis using emoji-mart
- * Returns native emoji character or null
+ * Returns emoji ID (shortcode) for backward compatibility with old app
  */
 async function searchStandardEmojis(
   searchTerm: string
@@ -58,9 +58,10 @@ async function searchStandardEmojis(
     await initEmojiData()
     const results = await SearchIndex.search(searchTerm)
     
-    // Return the first result's native character
+    // Return the first result's ID (shortcode) for backward compatibility
+    // Old app stores "green_apple", not "🍏"
     if (results && results.length > 0) {
-      return results[0].skins[0].native
+      return results[0].id
     }
   } catch (error) {
     console.error("Error searching standard emojis:", error)
@@ -71,7 +72,8 @@ async function searchStandardEmojis(
 
 /**
  * Search for emojis with custom emojis prioritized
- * Returns emoji ID (custom-* for custom emojis) or native emoji character for standard emojis
+ * Returns emoji ID for both custom ("custom-broccoli") and standard ("green_apple") emojis
+ * This matches the old app's storage format for backward compatibility
  */
 export async function searchEmoji(
   searchTerm: string

@@ -2,13 +2,13 @@ import { cn } from "@/lib/utils"
 import type { DayOfWeek } from "@/types"
 
 const DAYS: { value: DayOfWeek; label: string; short: string }[] = [
-  { value: "monday", label: "Monday", short: "M" },
-  { value: "tuesday", label: "Tuesday", short: "T" },
-  { value: "wednesday", label: "Wednesday", short: "W" },
-  { value: "thursday", label: "Thursday", short: "Th" },
-  { value: "friday", label: "Friday", short: "F" },
-  { value: "saturday", label: "Saturday", short: "Sa" },
-  { value: "sunday", label: "Sunday", short: "Su" },
+  { value: "Monday", label: "Monday", short: "M" },
+  { value: "Tuesday", label: "Tuesday", short: "T" },
+  { value: "Wednesday", label: "Wednesday", short: "W" },
+  { value: "Thursday", label: "Thursday", short: "Th" },
+  { value: "Friday", label: "Friday", short: "F" },
+  { value: "Saturday", label: "Saturday", short: "Sa" },
+  { value: "Sunday", label: "Sunday", short: "Su" },
 ]
 
 interface DayPickerProps {

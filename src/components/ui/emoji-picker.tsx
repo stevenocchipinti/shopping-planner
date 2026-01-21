@@ -89,10 +89,10 @@ export function EmojiPicker({ value, onChange, variant = "default" }: EmojiPicke
   }, [isOpen])
 
   const handleEmojiSelect = (emoji: { id: string; native: string }) => {
-    // For standard emojis, store the native emoji character
-    // For custom emojis, store the custom emoji ID
-    const emojiValue = emoji.id.startsWith("custom-") ? emoji.id : emoji.native
-    onChange(emojiValue)
+    // CRITICAL: For backward compatibility with old app, store emoji IDs (shortcodes)
+    // for both standard and custom emojis
+    // Old app: stores "green_apple" for standard, "custom-broccoli" for custom
+    onChange(emoji.id)
     setIsOpen(false)
   }
 

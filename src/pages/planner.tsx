@@ -10,7 +10,7 @@ export function PlannerPage() {
   const { planner, catalogue, recipes, loading } = useFirebaseContext()
   
   const [addDialogOpen, setAddDialogOpen] = useState(false)
-  const [addDialogDay, setAddDialogDay] = useState<DayOfWeek>("monday")
+  const [addDialogDay, setAddDialogDay] = useState<DayOfWeek>("Monday")
   
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [editItem, setEditItem] = useState<{ day: DayOfWeek; item: PlannerItem } | null>(null)
