@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useRef, useState, useEffect } from "react"
 import {
   Drawer,
   DrawerContent,
@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
 import { ItemForm, type ItemFormHandle } from "@/components/form/item-form"
-import { useFirebaseContext } from "@/components/providers/firebase-provider"
+import { useFirebaseContext } from "@/contexts/firebase-context"
 import { slugify } from "@/lib/slugify"
 
 interface AddItemDialogProps {
@@ -19,26 +19,45 @@ interface AddItemDialogProps {
 export function AddItemDialog({ open, onOpenChange }: AddItemDialogProps) {
   const { items, backend } = useFirebaseContext()
   const formRef = useRef<ItemFormHandle>(null)
-  const formKey = useRef(0)
+  const [formKey, setFormKey] = useState(0)
+  const [buttonState, setButtonState] = useState({
+    label: "Add",
+    disabled: false,
+  })
 
-  // Force form to remount when dialog opens to reset state
-  if (open && formRef.current === null) {
-    formKey.current += 1
-  }
+  // Reset form when dialog opens
+   
+  useEffect(() => {
+    if (open) {
+      setFormKey(prev => prev + 1)
+    }
+  }, [open])
+
+  // Update button state from form
+  // This effect intentionally runs on every render to keep button state in sync with form validation.
+  // We need exhaustive-deps disabled because adding dependencies would cause the effect to only run
+  // when those specific values change, but we need it to run on every render to catch all form changes.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (formRef.current) {
+      const newState = formRef.current.getButtonState()
+      setButtonState(newState)
+    }
+  })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!formRef.current) return
 
-    const buttonState = formRef.current.getButtonState()
-    if (buttonState.disabled) return
+    const currentButtonState = formRef.current.getButtonState()
+    if (currentButtonState.disabled) return
 
     const data = formRef.current.getData()
     const slug = slugify(data.name)
     const existingItem = items.find(item => slugify(item.name) === slug)
 
-    switch (buttonState.action) {
+    switch (currentButtonState.action) {
       case "add":
       case "move":
       case "update":
@@ -59,11 +78,6 @@ export function AddItemDialog({ open, onOpenChange }: AddItemDialogProps) {
     onOpenChange(false)
   }
 
-  const buttonState = formRef.current?.getButtonState() || {
-    label: "Add",
-    disabled: false,
-  }
-
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="sm:max-w-md mx-auto">
@@ -71,7 +85,7 @@ export function AddItemDialog({ open, onOpenChange }: AddItemDialogProps) {
           <DrawerTitle>Add Item</DrawerTitle>
         </DrawerHeader>
         <form onSubmit={handleSubmit} className="space-y-4 px-4">
-          <ItemForm key={formKey.current} ref={formRef} mode="add" />
+          <ItemForm key={formKey} ref={formRef} mode="add" />
 
           <DrawerFooter className="flex-row gap-2">
             <Button

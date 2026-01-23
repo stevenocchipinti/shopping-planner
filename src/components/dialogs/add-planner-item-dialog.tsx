@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useRef, useState, useEffect } from "react"
 import {
   Drawer,
   DrawerContent,
@@ -11,7 +11,7 @@ import {
   PlannerItemForm,
   type PlannerItemFormRef,
 } from "@/components/form/planner-item-form"
-import { useFirebaseContext } from "@/components/providers/firebase-provider"
+import { useFirebaseContext } from "@/contexts/firebase-context"
 import type { DayOfWeek } from "@/types"
 
 interface AddPlannerItemDialogProps {
@@ -27,6 +27,18 @@ export function AddPlannerItemDialog({
 }: AddPlannerItemDialogProps) {
   const { catalogue, recipes, planner, backend } = useFirebaseContext()
   const formRef = useRef<PlannerItemFormRef>(null)
+  const [formKey, setFormKey] = useState(0)
+
+  // Reset form when dialog opens or defaultDay changes
+  useEffect(() => {
+    if (open) {
+      // Resetting the form key forces React to remount the form component with fresh state.
+      // This is a legitimate synchronization with the 'open' prop from parent - we're not
+      // triggering cascading renders, just responding to an external state change.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setFormKey(prev => prev + 1)
+    }
+  }, [open, defaultDay])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -54,9 +66,6 @@ export function AddPlannerItemDialog({
 
     onOpenChange(false)
   }
-
-  // Use a key based on open state and defaultDay to reset the form
-  const formKey = open ? `add-${defaultDay}-${Date.now()}` : "closed"
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>

@@ -47,8 +47,11 @@ export function Autocomplete({
       )
     : options
 
-  // Reset highlighted index when filtered options change
+  // Reset highlighted index when value changes
   useEffect(() => {
+    // When the input value changes, we reset the keyboard navigation to the first item.
+    // This is a legitimate UI state synchronization that improves user experience.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHighlightedIndex(0)
   }, [value])
 

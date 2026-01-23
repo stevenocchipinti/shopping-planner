@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useRef, useState, useEffect } from "react"
 import { Trash2 } from "lucide-react"
 import {
   Drawer,
@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
 import { ItemForm, type ItemFormHandle } from "@/components/form/item-form"
-import { useFirebaseContext } from "@/components/providers/firebase-provider"
+import { useFirebaseContext } from "@/contexts/firebase-context"
 import type { ItemWithMetadata } from "@/types"
 
 interface EditItemDialogProps {
@@ -25,14 +25,30 @@ export function EditItemDialog({
 }: EditItemDialogProps) {
   const { backend } = useFirebaseContext()
   const formRef = useRef<ItemFormHandle>(null)
+  const [buttonState, setButtonState] = useState({
+    label: "Save",
+    disabled: true,
+  })
+
+  // Update button state from form
+  // This effect intentionally runs on every render to keep button state in sync with form validation.
+  // We need exhaustive-deps disabled because adding dependencies would cause the effect to only run
+  // when those specific values change, but we need it to run on every render to catch all form changes.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (formRef.current) {
+      const newState = formRef.current.getButtonState()
+      setButtonState(newState)
+    }
+  })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!item || !formRef.current) return
 
-    const buttonState = formRef.current.getButtonState()
-    if (buttonState.disabled) return
+    const currentButtonState = formRef.current.getButtonState()
+    if (currentButtonState.disabled) return
 
     const data = formRef.current.getData()
     await backend.editItem(
@@ -52,11 +68,6 @@ export function EditItemDialog({
   }
 
   if (!item) return null
-
-  const buttonState = formRef.current?.getButtonState() || {
-    label: "Save",
-    disabled: true,
-  }
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>

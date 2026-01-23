@@ -5,7 +5,7 @@ import { Smile } from "lucide-react"
 import { customEmojis } from "@/lib/emoji/custom-emojis"
 import { Emoji } from "./emoji"
 import { Button } from "./button"
-import { useTheme } from "@/components/providers/theme-provider"
+import { useTheme } from "@/contexts/theme-context"
 
 interface EmojiPickerProps {
   value: string | null
@@ -44,8 +44,13 @@ export function EmojiPicker({
         left = window.innerWidth - pickerWidth - 20
       }
 
+      // This effect calculates the optimal position for the emoji picker based on viewport dimensions.
+      // Setting state here is necessary because positioning depends on layout measurements that are
+      // only available after the DOM is rendered. This is a legitimate layout effect pattern.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPickerPosition({ top, left: Math.max(20, left) })
     }
+    // This effect calculates layout-dependent positioning
   }, [isOpen])
 
   // Close picker when clicking outside

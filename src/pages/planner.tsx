@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useFirebaseContext } from "@/components/providers/firebase-provider"
+import { useFirebaseContext } from "@/contexts/firebase-context"
 import { PlannerDayColumn } from "@/components/planner/planner-day-column"
 import { AddPlannerItemDialog } from "@/components/dialogs/add-planner-item-dialog"
 import { EditPlannerItemDialog } from "@/components/dialogs/edit-planner-item-dialog"

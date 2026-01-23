@@ -12,7 +12,7 @@ import {
   type PlannerItemFormRef,
   type PlannerItemFormData,
 } from "@/components/form/planner-item-form"
-import { useFirebaseContext } from "@/components/providers/firebase-provider"
+import { useFirebaseContext } from "@/contexts/firebase-context"
 import { Trash2 } from "lucide-react"
 import type { DayOfWeek, PlannerItem } from "@/types"
 

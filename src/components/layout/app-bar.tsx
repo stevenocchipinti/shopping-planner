@@ -1,7 +1,7 @@
 import { useLocation, useParams } from "react-router-dom"
 import { Menu, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useFirebaseContext } from "@/components/providers/firebase-provider"
+import { useFirebaseContext } from "@/contexts/firebase-context"
 
 interface AppBarProps {
   onMenuClick?: () => void

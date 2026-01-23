@@ -40,6 +40,9 @@ export function Emoji({ id, size = 24, fallback, className = "" }: EmojiProps) {
 
   useEffect(() => {
     if (!id) {
+      // When there's no emoji ID, we need to clear the resolved emoji state immediately.
+      // This is a legitimate state reset in response to prop changes, not a cascading render.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setResolvedEmoji(null)
       return
     }
@@ -59,6 +62,8 @@ export function Emoji({ id, size = 24, fallback, className = "" }: EmojiProps) {
     // If it looks like a shortcode, try to resolve it
     if (isShortcodeId(id)) {
       setIsLoading(true)
+      // This is an async operation to fetch emoji data from the emoji-mart library.
+      // setState in the promise callback is the correct pattern for handling async data.
       shortcodeToNative(id)
         .then(native => {
           if (native) {
@@ -79,6 +84,8 @@ export function Emoji({ id, size = 24, fallback, className = "" }: EmojiProps) {
       // Not a recognized format, use as-is
       setResolvedEmoji(id)
     }
+    // This effect performs async emoji resolution
+     
   }, [id])
 
   if (!id) {

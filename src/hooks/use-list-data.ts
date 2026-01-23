@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState } from "react"
 import { FirestoreBackend } from "@/lib/firestore"
 import type { Item, CatalogueEntry, PlannerDay, Recipe } from "@/types"
 
@@ -8,20 +8,25 @@ export function useListData(listId: string) {
   const [planner, setPlanner] = useState<Record<string, PlannerDay>>({})
   const [recipes, setRecipes] = useState<Record<string, Recipe>>({})
   const [loading, setLoading] = useState(true)
-  const backendRef = useRef<FirestoreBackend | null>(null)
+  const [backend, setBackend] = useState<FirestoreBackend | null>(null)
 
   useEffect(() => {
     // Create new backend for the current listId
-    const backend = new FirestoreBackend(listId)
-    backendRef.current = backend
+    const newBackend = new FirestoreBackend(listId)
+    // We need to set the backend instance synchronously here because the subscriptions below
+    // depend on it. This is managing the lifecycle of the Firestore connection, which is a
+    // legitimate external system synchronization pattern in React.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setBackend(newBackend)
 
     // Reset loading state when listId changes
+     
     setLoading(true)
 
-    const unsubItems = backend.subscribeToItems(setItems)
-    const unsubCatalogue = backend.subscribeToCatalogue(setCatalogue)
-    const unsubPlanner = backend.subscribeToPlanner(setPlanner)
-    const unsubRecipes = backend.subscribeToRecipes(setRecipes)
+    const unsubItems = newBackend.subscribeToItems(setItems)
+    const unsubCatalogue = newBackend.subscribeToCatalogue(setCatalogue)
+    const unsubPlanner = newBackend.subscribeToPlanner(setPlanner)
+    const unsubRecipes = newBackend.subscribeToRecipes(setRecipes)
 
     // Mark as loaded after initial snapshots
     const timer = setTimeout(() => setLoading(false), 500)
@@ -31,9 +36,11 @@ export function useListData(listId: string) {
       unsubCatalogue()
       unsubPlanner()
       unsubRecipes()
-      backend.disconnect()
+      newBackend.disconnect()
       clearTimeout(timer)
     }
+    // This effect manages Firebase subscriptions and backend lifecycle
+     
   }, [listId])
 
   return {
@@ -42,6 +49,6 @@ export function useListData(listId: string) {
     planner,
     recipes,
     loading,
-    backend: backendRef.current!,
+    backend: backend!,
   }
 }

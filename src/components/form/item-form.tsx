@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Autocomplete } from "@/components/form/autocomplete"
 import { NumberPicker } from "@/components/form/number-picker"
 import { EmojiPicker } from "@/components/ui/emoji-picker"
-import { useFirebaseContext } from "@/components/providers/firebase-provider"
+import { useFirebaseContext } from "@/contexts/firebase-context"
 import { slugify } from "@/lib/slugify"
 import { searchEmoji } from "@/lib/emoji/emoji-search"
 import type { ItemWithMetadata, CatalogueEntry } from "@/types"
@@ -38,28 +38,11 @@ export const ItemForm = forwardRef<ItemFormHandle, ItemFormProps>(
     const { items, catalogue } = useFirebaseContext()
     const inputRef = useRef<HTMLInputElement>(null)
 
-    const [itemName, setItemName] = useState("")
-    const [section, setSection] = useState("")
-    const [quantity, setQuantity] = useState(1)
-    const [emoji, setEmoji] = useState<string | null>(null)
+    const [itemName, setItemName] = useState(initialItem?.name || "")
+    const [section, setSection] = useState(initialItem?.section || "")
+    const [quantity, setQuantity] = useState(initialItem?.quantity || 1)
+    const [emoji, setEmoji] = useState<string | null>(initialItem?.emoji || null)
     const [userSelectedEmoji, setUserSelectedEmoji] = useState(false)
-
-    // Initialize form with item data (for edit mode)
-    useEffect(() => {
-      if (initialItem) {
-        setItemName(initialItem.name)
-        setSection(initialItem.section)
-        setQuantity(initialItem.quantity)
-        setEmoji(initialItem.emoji)
-        setUserSelectedEmoji(false)
-      } else {
-        setItemName("")
-        setSection("")
-        setQuantity(1)
-        setEmoji(null)
-        setUserSelectedEmoji(false)
-      }
-    }, [initialItem])
 
     // Auto-focus input after mount
     useEffect(() => {

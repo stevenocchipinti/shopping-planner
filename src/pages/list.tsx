@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react"
-import { useFirebaseContext } from "@/components/providers/firebase-provider"
+import { useFirebaseContext } from "@/contexts/firebase-context"
 import { ItemSection } from "@/components/items/item-section"
 import { EmptyState } from "@/components/items/empty-state"
 import { EditItemDialog } from "@/components/dialogs/edit-item-dialog"

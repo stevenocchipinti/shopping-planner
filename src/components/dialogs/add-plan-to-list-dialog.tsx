@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
 import { Emoji } from "@/components/ui/emoji"
-import { useFirebaseContext } from "@/components/providers/firebase-provider"
+import { useFirebaseContext } from "@/contexts/firebase-context"
 import { Check, ShoppingCart } from "lucide-react"
 import { cn } from "@/lib/utils"
 

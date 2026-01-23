@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Trash2, Search } from "lucide-react"
-import { useFirebaseContext } from "@/components/providers/firebase-provider"
+import { useFirebaseContext } from "@/contexts/firebase-context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Emoji } from "@/components/ui/emoji"

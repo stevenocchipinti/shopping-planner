@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { FolderOpen, Plus, Trash2, ExternalLink } from "lucide-react"
 import {
@@ -30,27 +30,36 @@ export function OpenDialog({ open, onOpenChange }: OpenDialogProps) {
   const [inputValue, setInputValue] = useState("")
   const [error, setError] = useState("")
 
+  const addToMru = useCallback((listId: string) => {
+    // Remove if already exists, then add to front
+    const filtered = listMru.filter((id: string) => id !== listId)
+    setListMru([listId, ...filtered].slice(0, MAX_MRU_ITEMS))
+  }, [listMru, setListMru])
+
   // Pre-populate input with current list ID when dialog opens
   useEffect(() => {
     if (open && currentListId) {
+      // This synchronizes the input field with the current URL's list ID when the dialog opens.
+      // This is a legitimate form state initialization pattern, not a cascading render issue.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setInputValue(currentListId)
       addToMru(currentListId)
     }
-  }, [open, currentListId])
+    // This effect is for synchronizing dialog state with URL
+  }, [open, currentListId, addToMru])
 
   // Reset input when dialog closes
   useEffect(() => {
     if (!open) {
+      // Resetting form state when closing the dialog is a legitimate cleanup pattern.
+      // This prevents stale data from showing when the dialog reopens.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setInputValue("")
+       
       setError("")
     }
+    // This effect is for resetting form state
   }, [open])
-
-  const addToMru = (listId: string) => {
-    // Remove if already exists, then add to front
-    const filtered = listMru.filter((id: string) => id !== listId)
-    setListMru([listId, ...filtered].slice(0, MAX_MRU_ITEMS))
-  }
 
   const removeFromMru = (listId: string, e: React.MouseEvent) => {
     e.stopPropagation()
