@@ -25,14 +25,22 @@ function isNativeEmoji(str: string): boolean {
 }
 
 // Check if a string looks like an emoji shortcode (e.g., "apple", "red_apple")
+// This is for legacy support in case old data stored shortcodes
 function isShortcodeId(str: string): boolean {
   // Shortcodes are typically lowercase ASCII with underscores, no special characters
   return /^[a-z0-9_+-]+$/.test(str) && !str.startsWith("custom-")
 }
 
 /**
- * Unified emoji renderer that handles both custom and standard emojis
- * Also handles legacy emoji-mart shortcode IDs for backward compatibility
+ * Unified emoji renderer that handles:
+ * 1. Custom emojis (custom-broccoli) - displays as PNG image
+ * 2. Standard emojis (🍎) - displays as Unicode character
+ * 3. Legacy emoji-mart shortcode IDs (apple) - converts to Unicode
+ *
+ * Emoji ID format:
+ * - Custom: "custom-broccoli" - stored and displayed as image
+ * - Standard: "🍎" - the Unicode character itself
+ * - Legacy: "apple" - old shortcode format, converts to Unicode
  */
 export function Emoji({ id, size = 24, fallback, className = "" }: EmojiProps) {
   const [resolvedEmoji, setResolvedEmoji] = useState<string | null>(null)
@@ -40,14 +48,12 @@ export function Emoji({ id, size = 24, fallback, className = "" }: EmojiProps) {
 
   useEffect(() => {
     if (!id) {
-      // When there's no emoji ID, we need to clear the resolved emoji state immediately.
-      // This is a legitimate state reset in response to prop changes, not a cascading render.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+      // No emoji ID - clear state
       setResolvedEmoji(null)
       return
     }
 
-    // If it's a custom emoji or native emoji, no need to resolve
+    // Custom emojis and native emoji characters don't need resolution
     if (isCustomEmoji(id) || isNativeEmoji(id)) {
       setResolvedEmoji(id)
       return
@@ -59,11 +65,9 @@ export function Emoji({ id, size = 24, fallback, className = "" }: EmojiProps) {
       return
     }
 
-    // If it looks like a shortcode, try to resolve it
+    // If it looks like a legacy shortcode, try to resolve it
     if (isShortcodeId(id)) {
       setIsLoading(true)
-      // This is an async operation to fetch emoji data from the emoji-mart library.
-      // setState in the promise callback is the correct pattern for handling async data.
       shortcodeToNative(id)
         .then(native => {
           if (native) {
@@ -84,8 +88,6 @@ export function Emoji({ id, size = 24, fallback, className = "" }: EmojiProps) {
       // Not a recognized format, use as-is
       setResolvedEmoji(id)
     }
-    // This effect performs async emoji resolution
-     
   }, [id])
 
   if (!id) {

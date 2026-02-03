@@ -5,7 +5,25 @@
  *  - https://icons8.com/icon/pack/food/color
  */
 
-export const customEmojis = [
+/**
+ * Type for custom emoji as used by emoji-picker-react
+ */
+interface CustomEmojiForPicker {
+  id: string
+  names: string[]
+  imgUrl: string
+}
+
+/**
+ * Type for custom emoji metadata (for display)
+ */
+interface CustomEmojiMetadata {
+  name: string
+  imgUrl: string
+}
+
+// Original emoji-mart format (kept for backward compatibility with legacy code)
+const customEmojisRaw = [
   {
     id: "custom-foods",
     name: "Custom Foods",
@@ -679,3 +697,64 @@ export const customEmojis = [
     ],
   },
 ]
+
+/**
+ * Transform custom emojis to emoji-picker-react format
+ * Creates a flat array with id, names (name + keywords), and imgUrl
+ */
+function createEmojisForPicker(): CustomEmojiForPicker[] {
+  const result: CustomEmojiForPicker[] = []
+
+  for (const category of customEmojisRaw) {
+    for (const emoji of category.emojis) {
+      // Combine name and keywords into names array for better searchability
+      const names = [emoji.name, ...emoji.keywords]
+
+      result.push({
+        id: emoji.id,
+        names,
+        imgUrl: emoji.skins[0].src,
+      })
+    }
+  }
+
+  return result
+}
+
+/**
+ * Transform custom emojis to a lookup map for quick display access
+ * Maps emoji ID to its metadata (name, imgUrl)
+ */
+function createEmojiMap(): Record<string, CustomEmojiMetadata> {
+  const map: Record<string, CustomEmojiMetadata> = {}
+
+  for (const category of customEmojisRaw) {
+    for (const emoji of category.emojis) {
+      map[emoji.id] = {
+        name: emoji.name,
+        imgUrl: emoji.skins[0].src,
+      }
+    }
+  }
+
+  return map
+}
+
+/**
+ * Flat array of custom emojis for emoji-picker-react
+ * Format: { id, names, imgUrl }
+ */
+export const customEmojis: CustomEmojiForPicker[] = createEmojisForPicker()
+
+/**
+ * Map of custom emoji IDs to metadata for quick lookup during display
+ * Format: { id -> { name, imgUrl } }
+ */
+export const customEmojiMap: Record<string, CustomEmojiMetadata> =
+  createEmojiMap()
+
+/**
+ * Original emoji-mart format structure (for backward compatibility with legacy code)
+ * Not used by emoji-picker-react, but kept in case other code references it
+ */
+export const customEmojisLegacy = customEmojisRaw
