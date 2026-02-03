@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react"
+import { useRef, useState } from "react"
 import { Trash2 } from "lucide-react"
 import {
   Drawer,
@@ -30,17 +30,12 @@ export function EditItemDialog({
     disabled: true,
   })
 
-  // Update button state from form
-  // This effect intentionally runs on every render to keep button state in sync with form validation.
-  // We need exhaustive-deps disabled because adding dependencies would cause the effect to only run
-  // when those specific values change, but we need it to run on every render to catch all form changes.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
+  // Callback for when form state changes
+  const handleFormStateChange = () => {
     if (formRef.current) {
-      const newState = formRef.current.getButtonState()
-      setButtonState(newState)
+      setButtonState(formRef.current.getButtonState())
     }
-  })
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -93,6 +88,7 @@ export function EditItemDialog({
             ref={formRef}
             initialItem={item}
             mode="edit"
+            onStateChange={handleFormStateChange}
           />
 
           <DrawerFooter className="flex-row gap-2">

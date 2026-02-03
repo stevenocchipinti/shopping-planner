@@ -18,6 +18,7 @@ import type { ItemWithMetadata, CatalogueEntry } from "@/types"
 interface ItemFormProps {
   initialItem?: ItemWithMetadata | null
   mode: "add" | "edit"
+  onStateChange?: () => void
 }
 
 export interface ItemFormData {
@@ -34,14 +35,19 @@ export interface ItemFormHandle {
 }
 
 export const ItemForm = forwardRef<ItemFormHandle, ItemFormProps>(
-  ({ initialItem, mode }, ref) => {
+  ({ initialItem, mode, onStateChange }, ref) => {
     const { items, catalogue } = useFirebaseContext()
     const inputRef = useRef<HTMLInputElement>(null)
 
     const [itemName, setItemName] = useState(initialItem?.name || "")
     const [section, setSection] = useState(initialItem?.section || "")
     const [quantity, setQuantity] = useState(initialItem?.quantity || 1)
-    const [emoji, setEmoji] = useState<string | null>(initialItem?.emoji || null)
+    // Normalize emoji: treat empty string as null for consistent comparison
+    const normalizeEmoji = (e: string | null | undefined): string | null =>
+      e === "" || e === undefined ? null : e
+    const [emoji, setEmoji] = useState<string | null>(
+      normalizeEmoji(initialItem?.emoji)
+    )
     const [userSelectedEmoji, setUserSelectedEmoji] = useState(false)
 
     // Auto-focus input after mount
@@ -166,12 +172,12 @@ export const ItemForm = forwardRef<ItemFormHandle, ItemFormProps>(
         }
       }
 
-      // Check if there are changes
+      // Check if there are changes (normalize emoji for comparison)
       const hasChanges =
         trimmedName !== initialItem.name ||
-        section !== initialItem.section ||
+        section !== (initialItem.section || "") ||
         quantity !== initialItem.quantity ||
-        emoji !== initialItem.emoji
+        emoji !== normalizeEmoji(initialItem.emoji)
 
       if (!hasChanges) {
         return { label: "Save", disabled: true }
@@ -184,16 +190,25 @@ export const ItemForm = forwardRef<ItemFormHandle, ItemFormProps>(
       mode === "add" ? addModeButtonState : editModeButtonState
 
     // Expose methods to parent component
-    useImperativeHandle(ref, () => ({
-      getData: () => ({
-        name: itemName.trim(),
-        section,
-        quantity,
-        emoji,
+    useImperativeHandle(
+      ref,
+      () => ({
+        getData: () => ({
+          name: itemName.trim(),
+          section,
+          quantity,
+          emoji,
+        }),
+        isValid: () => !buttonState.disabled,
+        getButtonState: () => buttonState,
       }),
-      isValid: () => !buttonState.disabled,
-      getButtonState: () => buttonState,
-    }))
+      [itemName, section, quantity, emoji, buttonState]
+    )
+    
+    // Notify parent when button state changes
+    useEffect(() => {
+      onStateChange?.()
+    }, [buttonState, onStateChange])
 
     return (
       <div className="space-y-4">

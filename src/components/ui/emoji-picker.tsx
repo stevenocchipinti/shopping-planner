@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { createPortal } from "react-dom"
 import Picker from "@emoji-mart/react"
+import data from "@emoji-mart/data"
 import { Smile } from "lucide-react"
 import { customEmojis } from "@/lib/emoji/custom-emojis"
 import { Emoji } from "./emoji"
@@ -19,143 +20,101 @@ export function EmojiPicker({
   variant = "default",
 }: EmojiPickerProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const [pickerPosition, setPickerPosition] = useState({ top: 0, left: 0 })
-  const buttonRef = useRef<HTMLButtonElement>(null)
-  const pickerRef = useRef<HTMLDivElement>(null)
   const { effectiveTheme } = useTheme()
 
-  // Update picker position when opened
-  useEffect(() => {
-    if (isOpen && buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect()
-      const viewportHeight = window.innerHeight
-      const pickerHeight = 435 // approximate height of emoji picker
-
-      // Position below button, but flip up if not enough space
-      let top = rect.bottom + 8
-      if (top + pickerHeight > viewportHeight - 20) {
-        top = Math.max(20, rect.top - pickerHeight - 8)
-      }
-
-      // Keep left aligned with button, but ensure it doesn't overflow viewport
-      let left = rect.left
-      const pickerWidth = 352 // approximate width of emoji picker
-      if (left + pickerWidth > window.innerWidth - 20) {
-        left = window.innerWidth - pickerWidth - 20
-      }
-
-      // This effect calculates the optimal position for the emoji picker based on viewport dimensions.
-      // Setting state here is necessary because positioning depends on layout measurements that are
-      // only available after the DOM is rendered. This is a legitimate layout effect pattern.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setPickerPosition({ top, left: Math.max(20, left) })
+  const handleEmojiSelect = useCallback((emoji: any) => {
+    console.log('[EmojiPicker] handleEmojiSelect called with:', emoji)
+    // CRITICAL: For backward compatibility with old app, store emoji IDs (shortcodes)
+    // for both standard and custom emojis
+    // Old app: stores "green_apple" for standard, "custom-broccoli" for custom
+    if (emoji && emoji.id) {
+      console.log('[EmojiPicker] Calling onChange with:', emoji.id)
+      onChange(emoji.id)
+      setIsOpen(false)
+    } else {
+      console.error('[EmojiPicker] Invalid emoji object:', emoji)
     }
-    // This effect calculates layout-dependent positioning
-  }, [isOpen])
+  }, [onChange])
 
-  // Close picker when clicking outside
+  const handleClear = () => {
+    onChange("")
+    setIsOpen(false)
+  }
+
+  // Close on escape key
   useEffect(() => {
     if (!isOpen) return
 
-    const isClickInsidePicker = (event: MouseEvent | PointerEvent) => {
-      // Check if click is on the button
-      if (
-        buttonRef.current &&
-        buttonRef.current.contains(event.target as Node)
-      ) {
-        return true
-      }
-
-      // Check if click is inside the picker container using bounding rect
-      // This handles Shadow DOM elements that don't report containment properly
-      if (pickerRef.current) {
-        const rect = pickerRef.current.getBoundingClientRect()
-        if (
-          event.clientX >= rect.left &&
-          event.clientX <= rect.right &&
-          event.clientY >= rect.top &&
-          event.clientY <= rect.bottom
-        ) {
-          return true
-        }
-      }
-
-      return false
-    }
-
-    const handleClickOutside = (event: MouseEvent) => {
-      if (!isClickInsidePicker(event)) {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
         setIsOpen(false)
       }
     }
 
-    // Use a slight delay to avoid the click that opened the picker from closing it
-    const timeoutId = setTimeout(() => {
-      document.addEventListener("mousedown", handleClickOutside)
-    }, 0)
-
-    return () => {
-      clearTimeout(timeoutId)
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
+    document.addEventListener("keydown", handleEscape)
+    return () => document.removeEventListener("keydown", handleEscape)
   }, [isOpen])
 
-  const handleEmojiSelect = (emoji: { id: string; native: string }) => {
-    // CRITICAL: For backward compatibility with old app, store emoji IDs (shortcodes)
-    // for both standard and custom emojis
-    // Old app: stores "green_apple" for standard, "custom-broccoli" for custom
-    onChange(emoji.id)
-    setIsOpen(false)
-  }
-
-  const pickerElement = isOpen
+  // Render the picker overlay using a portal to escape parent positioning constraints
+  const pickerOverlay = isOpen
     ? createPortal(
-        <div
-          ref={pickerRef}
-          className="fixed z-[200] rounded-lg border bg-popover shadow-lg pointer-events-auto"
-          style={{
-            top: pickerPosition.top,
-            left: pickerPosition.left,
-          }}
-          // Stop ALL events from propagating to prevent drawer/overlay from closing
-          // This is critical because emoji-mart uses Shadow DOM and clicks inside it
-          // are seen as "outside" clicks by parent components
-          onMouseDown={e => e.stopPropagation()}
-          onPointerDown={e => e.stopPropagation()}
-          onClick={e => e.stopPropagation()}
-          onTouchStart={e => e.stopPropagation()}
-          onTouchMove={e => e.stopPropagation()}
-          onTouchEnd={e => e.stopPropagation()}
-        >
-          <Picker
-            data={async () => {
-              const response = await fetch(
-                "https://cdn.jsdelivr.net/npm/@emoji-mart/data"
-              )
-              return response.json()
-            }}
-            onEmojiSelect={handleEmojiSelect}
-            theme={effectiveTheme}
-            previewPosition="none"
-            skinTonePosition="search"
-            custom={customEmojis}
-            perLine={8}
-            maxFrequentRows={2}
-            dynamicWidth={false}
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 z-[200] bg-black/80 animate-in fade-in-0"
+            onClick={() => setIsOpen(false)}
           />
-        </div>,
+          {/* Content - positioned at bottom of screen */}
+          <div className="fixed inset-x-0 bottom-0 z-[200] flex flex-col rounded-t-[10px] border bg-background animate-in slide-in-from-bottom-2 max-h-[80vh] pointer-events-auto">
+            <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted flex-shrink-0" />
+            <div className="flex flex-col items-center p-4 overflow-auto">
+              <h2 className="sr-only">Pick an emoji</h2>
+              {/* Use @emoji-mart/react Picker component */}
+              <Picker
+                data={data}
+                onEmojiSelect={handleEmojiSelect}
+                theme={effectiveTheme}
+                previewPosition="none"
+                skinTonePosition="search"
+                custom={customEmojis}
+                perLine={8}
+                maxFrequentRows={2}
+                autoFocus
+              />
+              <div className="flex gap-2 mt-4 w-full max-w-[352px] flex-shrink-0">
+                {value && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleClear}
+                    className="flex-1"
+                  >
+                    Clear
+                  </Button>
+                )}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setIsOpen(false)}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </div>
+        </>,
         document.body
       )
     : null
 
   if (variant === "inline") {
     return (
-      <div className="relative">
+      <>
         <button
-          ref={buttonRef}
           type="button"
           className="flex h-8 w-8 items-center justify-center rounded hover:bg-accent transition-colors"
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => setIsOpen(true)}
           title="Pick emoji"
         >
           {value ? (
@@ -164,35 +123,21 @@ export function EmojiPicker({
             <Smile className="h-4 w-4 text-muted-foreground" />
           )}
         </button>
-        {pickerElement}
-      </div>
+        {pickerOverlay}
+      </>
     )
   }
 
   return (
-    <div className="relative">
+    <>
       <button
-        ref={buttonRef}
         type="button"
         className="flex h-10 w-10 items-center justify-center rounded-md border text-xl hover:bg-accent"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => setIsOpen(true)}
       >
         {value ? <Emoji id={value} size={24} fallback="😀" /> : "😀"}
       </button>
-
-      {pickerElement}
-
-      {value && (
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={() => onChange("")}
-          className="mt-2"
-        >
-          Clear
-        </Button>
-      )}
-    </div>
+      {pickerOverlay}
+    </>
   )
 }
