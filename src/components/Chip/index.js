@@ -26,8 +26,10 @@ const Chip = styled.span`
     background-color: ${greys("400", "700")};
   }
 
-  .emoji-mart-emoji {
+  img,
+  em-emoji {
     height: 16px;
+    width: 16px;
     margin: 4px 4px 4px 0;
     filter: ${({ done }) => (done ? "grayscale(1) opacity(0.4)" : "none")};
   }

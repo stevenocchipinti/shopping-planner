@@ -1,11 +1,12 @@
 import React from "react"
 import styled from "styled-components"
-import { Link as RouterLink, useLocation } from "react-router-dom"
+import { Link as RouterLink } from "react-router-dom"
 import ReactMasonry from "react-masonry-css"
-import { Typography, Paper } from "@material-ui/core"
+import { Paper, Typography } from "@mui/material"
+
 import { useAppState } from "../Backend"
 import { Emoji } from "../Emoji"
-import { ReactComponent as PlaceholderImg } from "./fork_knife.svg"
+import placeholderImg from "./fork_knife.svg"
 
 const gutter = "1rem"
 
@@ -57,22 +58,21 @@ const PlaceholderTile = styled(Paper)`
   align-items: center;
 `
 
-const PlaceholderImage = styled(PlaceholderImg)`
+const PlaceholderImage = styled.img`
   height: 60px;
-  fill: #bbb;
 `
 
 const PlaceholderRecipe = ({ emoji }) => (
   <PlaceholderTile>
-    {emoji ? <Emoji size={50} emoji={emoji} /> : <PlaceholderImage />}
+    {emoji ? <Emoji size={50} emoji={emoji} /> : <PlaceholderImage src={placeholderImg} alt="" />}
   </PlaceholderTile>
 )
 
-const Tile = ({ image, title, href, emoji }) => (
-  <Link to={href}>
+const Tile = ({ image, title, to, emoji }) => (
+  <Link to={to}>
     <Figure>
-      {image ? <Image src={image} /> : <PlaceholderRecipe emoji={emoji} />}
-      <Typography color="textSecondary" component="figcaption">
+      {image ? <Image src={image} alt="" /> : <PlaceholderRecipe emoji={emoji} />}
+      <Typography color="text.secondary" component="figcaption">
         {title}
       </Typography>
     </Figure>
@@ -80,7 +80,6 @@ const Tile = ({ image, title, href, emoji }) => (
 )
 
 const Recipes = () => {
-  const { pathname } = useLocation()
   const { recipes } = useAppState()
 
   if (Object.keys(recipes).length === 0)
@@ -100,7 +99,7 @@ const Recipes = () => {
         return (
           <Tile
             key={slug}
-            href={`${pathname}/${slug}`}
+            to={slug}
             title={title}
             image={image}
             emoji={emoji}

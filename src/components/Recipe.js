@@ -1,17 +1,17 @@
 import React from "react"
 import styled from "styled-components"
-import { Link as RouterLink, useHistory } from "react-router-dom"
+import { Link as RouterLink, useNavigate, useParams } from "react-router-dom"
 import {
   Typography,
   Link as MuiLink,
   Paper as MuiPaper,
   IconButton,
-} from "@material-ui/core"
+} from "@mui/material"
 import {
   Instagram as InstagramIcon,
   ArrowBack as BackIcon,
   Delete as DeleteIcon,
-} from "@material-ui/icons"
+} from "@mui/icons-material"
 
 import { Emoji } from "./Emoji"
 import { useAppState, useBackend } from "./Backend"
@@ -45,7 +45,7 @@ const BackButton = styled(IconButton).attrs({
   }
 `
 
-const Title = styled(Typography).attrs({ variant: "h4", color: "textPrimary" })`
+const Title = styled(Typography).attrs({ variant: "h4" })`
   && {
     margin-left: 1rem;
   }
@@ -70,10 +70,11 @@ const Description = styled.div`
   margin: 1rem 0;
 `
 
-export default ({ recipeId, listId }) => {
+const Recipe = () => {
+  const navigate = useNavigate()
+  const { recipeId, listId } = useParams()
   const { recipes } = useAppState()
   const { handleRecipeDelete } = useBackend()
-  const history = useHistory()
   const recipe = recipes?.[recipeId]
   if (!recipe) return null
 
@@ -97,7 +98,7 @@ export default ({ recipeId, listId }) => {
             <IconButton
               onClick={() => {
                 handleRecipeDelete(recipeId)
-                history.replace(`/list/${listId}/recipes`)
+                navigate(`/list/${listId}/recipes`, { replace: true })
               }}
               aria-label="delete"
               color="inherit"
@@ -133,3 +134,5 @@ export default ({ recipeId, listId }) => {
     </>
   )
 }
+
+export default Recipe

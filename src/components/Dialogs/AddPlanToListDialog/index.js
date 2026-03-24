@@ -5,7 +5,7 @@ import {
   DialogContentText,
   DialogTitle,
   Button,
-} from "@material-ui/core"
+} from "@mui/material"
 
 import Dialog from "../Dialog"
 import ShoppingLists from "../../ShoppingLists"

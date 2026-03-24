@@ -1,12 +1,15 @@
 import React, { useState, useRef, useCallback, forwardRef } from "react"
 import styled from "styled-components"
 
-import { Autocomplete as MuiAutocomplete } from "@material-ui/lab"
-import { TextField, IconButton } from "@material-ui/core"
+import {
+  Autocomplete as MuiAutocomplete,
+  IconButton,
+  TextField,
+} from "@mui/material"
 import {
   Delete as DeleteIcon,
   InsertEmoticon as InsertEmoticonIcon,
-} from "@material-ui/icons"
+} from "@mui/icons-material"
 
 import { EmojiPicker, Emoji } from "../Emoji"
 import useSetting from "../../useSetting"
@@ -15,13 +18,16 @@ const StyledAutocomplete = styled(MuiAutocomplete)`
   margin-bottom: 2rem;
 `
 
+const stripSpecialCharacters = value =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, "")
+
 const caseInsensitiveCompare = (option, value) =>
   option.toLowerCase() === value.toLowerCase()
 
 const fuzzy = (options, { inputValue }) => {
+  const normalizedInput = stripSpecialCharacters(inputValue || "")
   const r = new RegExp(
-    `.*${inputValue
-      .replace(/[()+*{}[]]*/gi, "")
+    `.*${normalizedInput
       .split("")
       .join(".*")}.*`,
     "i"
@@ -78,7 +84,11 @@ const Autocomplete = forwardRef(
         : {}
 
     const memoOption = useCallback(
-      option => <Option option={option} onDelete={onDelete} />,
+      (renderProps, option) => (
+        <li {...renderProps}>
+          <Option option={option} onDelete={onDelete} />
+        </li>
+      ),
       [onDelete]
     )
 
@@ -94,7 +104,7 @@ const Autocomplete = forwardRef(
         )}
         <StyledAutocomplete
           freeSolo
-          getOptionSelected={caseInsensitiveCompare}
+          isOptionEqualToValue={caseInsensitiveCompare}
           filterOptions={fuzzy}
           renderOption={onDelete ? memoOption : undefined}
           renderInput={params => (

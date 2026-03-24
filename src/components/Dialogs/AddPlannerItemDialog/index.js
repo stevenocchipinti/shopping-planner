@@ -4,7 +4,7 @@ import {
   DialogContent,
   DialogTitle,
   Button,
-} from "@material-ui/core"
+} from "@mui/material"
 import Alert from "../../Alert"
 import DayPicker from "../DayPicker"
 import Dialog from "../Dialog"

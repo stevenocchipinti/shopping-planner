@@ -3,24 +3,24 @@ import styled from "styled-components"
 import { Link, useParams } from "react-router-dom"
 
 import {
-  // MenuBookTwoTone as RecipesIcon,
   Share as ShareIcon,
   SwapHoriz as SwitchIcon,
   ChevronLeft as ChevronLeftIcon,
   History as HistoryIcon,
   InfoOutlined as AboutIcon,
   Tune as SettingsIcon,
-} from "@material-ui/icons"
+} from "@mui/icons-material"
 
 import {
-  IconButton,
-  SwipeableDrawer as Drawer,
   Divider as MuiDivider,
+  IconButton,
   List as MuiList,
-  ListItem as MuiListItem,
+  ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
-} from "@material-ui/core"
+  SwipeableDrawer as Drawer,
+} from "@mui/material"
 
 import OpenDialog from "./OpenDialog"
 import ShareDialog from "./ShareDialog"
@@ -39,7 +39,7 @@ const List = styled(MuiList)`
   }
 `
 
-const ListItem = styled(MuiListItem)`
+const MenuItem = styled(ListItemButton)`
   && {
     padding-right: 3rem;
   }
@@ -97,67 +97,68 @@ const AppBar = ({ open, onOpen, onClose }) => {
             <ListItemText>Recipes</ListItemText>
           </ListItem> */}
 
-          <ListItem
-            button
-            onClick={() => {
-              onClose()
-              setShareDialogOpen(true)
-            }}
-          >
-            <ListItemIcon>
-              <ShareIcon />
-            </ListItemIcon>
-            <ListItemText>Share Live List</ListItemText>
+          <ListItem disablePadding>
+            <MenuItem
+              onClick={() => {
+                onClose()
+                setShareDialogOpen(true)
+              }}
+            >
+              <ListItemIcon>
+                <ShareIcon />
+              </ListItemIcon>
+              <ListItemText primary="Share Live List" />
+            </MenuItem>
           </ListItem>
 
-          <ListItem
-            button
-            onClick={() => {
-              onClose()
-              setOpenDialogOpen(true)
-            }}
-          >
-            <ListItemIcon>
-              <SwitchIcon />
-            </ListItemIcon>
-            <ListItemText>Change list</ListItemText>
+          <ListItem disablePadding>
+            <MenuItem
+              onClick={() => {
+                onClose()
+                setOpenDialogOpen(true)
+              }}
+            >
+              <ListItemIcon>
+                <SwitchIcon />
+              </ListItemIcon>
+              <ListItemText primary="Change list" />
+            </MenuItem>
           </ListItem>
 
-          <ListItem
-            button
-            component={Link}
-            to={`/list/${listId}/catalogue`}
-            onClick={() => onClose()}
-          >
-            <ListItemIcon>
-              <HistoryIcon />
-            </ListItemIcon>
-            <ListItemText>History</ListItemText>
+          <ListItem disablePadding>
+            <MenuItem
+              component={Link}
+              to={`/list/${listId}/catalogue`}
+              onClick={() => onClose()}
+            >
+              <ListItemIcon>
+                <HistoryIcon />
+              </ListItemIcon>
+              <ListItemText primary="History" />
+            </MenuItem>
           </ListItem>
 
-          <ListItem
-            button
-            component={Link}
-            to="/settings"
-            onClick={() => onClose()}
-          >
-            <ListItemIcon>
-              <SettingsIcon />
-            </ListItemIcon>
-            <ListItemText>Settings</ListItemText>
+          <ListItem disablePadding>
+            <MenuItem component={Link} to="/settings" onClick={() => onClose()}>
+              <ListItemIcon>
+                <SettingsIcon />
+              </ListItemIcon>
+              <ListItemText primary="Settings" />
+            </MenuItem>
           </ListItem>
 
-          <ListItem
-            button
-            onClick={() => {
-              onClose()
-              setAboutDialogOpen(true)
-            }}
-          >
-            <ListItemIcon>
-              <AboutIcon />
-            </ListItemIcon>
-            <ListItemText>About</ListItemText>
+          <ListItem disablePadding>
+            <MenuItem
+              onClick={() => {
+                onClose()
+                setAboutDialogOpen(true)
+              }}
+            >
+              <ListItemIcon>
+                <AboutIcon />
+              </ListItemIcon>
+              <ListItemText primary="About" />
+            </MenuItem>
           </ListItem>
         </List>
         <DarkModeToggle />

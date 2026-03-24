@@ -1,10 +1,10 @@
 import React from "react"
 import styled from "styled-components"
-import { IconButton, TextField } from "@material-ui/core"
+import { IconButton, TextField } from "@mui/material"
 import {
   RemoveCircleOutline as RemoveCircleOutlineIcon,
   AddCircleOutline as AddCircleOutlineIcon,
-} from "@material-ui/icons"
+} from "@mui/icons-material"
 
 const Container = styled.div`
   display: flex;
@@ -26,7 +26,7 @@ const NumberPicker = ({ onChange, value, ...props }) => {
 
   return (
     <Container>
-      <IconButton onClick={dec} tabIndex="-1" aria-label="Decrement quantity">
+      <IconButton onClick={dec} tabIndex={-1} aria-label="Decrement quantity">
         <RemoveCircleOutlineIcon />
       </IconButton>
       <Qty
@@ -41,7 +41,7 @@ const NumberPicker = ({ onChange, value, ...props }) => {
         value={value}
         {...props}
       />
-      <IconButton onClick={inc} tabIndex="-1" aria-label="Increment quantity">
+      <IconButton onClick={inc} tabIndex={-1} aria-label="Increment quantity">
         <AddCircleOutlineIcon />
       </IconButton>
     </Container>

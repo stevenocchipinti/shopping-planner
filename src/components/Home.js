@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react"
 import styled from "styled-components"
-import { Redirect } from "react-router-dom"
+import { Navigate } from "react-router-dom"
+import { CircularProgress } from "@mui/material"
+
 import { generateListName } from "./Backend"
-import { CircularProgress } from "@material-ui/core"
 
 const Container = styled.div`
   display: flex;
@@ -27,8 +28,8 @@ const Home = props => {
   const previousList = `/list/${listName}`
 
   if (listName === undefined) return <LoadingScreen />
-  else if (listName === null) return <Redirect to={newList} />
-  else return <Redirect to={previousList} />
+  else if (listName === null) return <Navigate to={newList} replace />
+  else return <Navigate to={previousList} replace />
 }
 
 export default Home

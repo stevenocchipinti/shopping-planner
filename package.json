@@ -3,44 +3,36 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": ">=14.0"
+    "node": ">=18.0"
   },
   "dependencies": {
-    "@material-ui/core": "^4.9.12",
-    "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "^4.0.0-alpha.51",
-    "emoji-mart": "^3.0.0",
-    "firebase": "^7.14.2",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "react-masonry-css": "^1.0.14",
-    "react-router-dom": "^5.1.2",
-    "react-scripts": "^3.4.1",
-    "styled-components": "^5.1.0"
+    "@emoji-mart/data": "^1.2.1",
+    "@emoji-mart/react": "^1.1.1",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.2",
+    "@mui/material": "^7.3.2",
+    "emoji-mart": "^5.6.0",
+    "firebase": "^10.14.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-masonry-css": "^1.0.16",
+    "react-router-dom": "^6.30.1",
+    "styled-components": "^5.3.11"
   },
   "devDependencies": {
-    "firebase-tools": "^8.2.0"
+    "@vitejs/plugin-react": "^4.4.1",
+    "firebase-tools": "^13.35.1",
+    "jsdom": "^25.0.1",
+    "vite": "^6.3.6",
+    "vitest": "^4.1.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "deploy": "yarn build && firebase deploy --only hosting:shoppingplanner"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "dev": "vite",
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "deploy": "npm run build && firebase deploy --only hosting:shoppingplanner"
   }
 }

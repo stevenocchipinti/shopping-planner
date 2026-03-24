@@ -1,6 +1,13 @@
 import React, { useState } from "react"
 import styled from "styled-components"
-import { Switch, Link, Route, useLocation, useHistory } from "react-router-dom"
+import {
+  Link,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom"
 
 import {
   IconButton,
@@ -8,7 +15,7 @@ import {
   BottomNavigation as MuiBottomNavigation,
   BottomNavigationAction,
   Zoom,
-} from "@material-ui/core"
+} from "@mui/material"
 
 import {
   ShoppingCart as ListIcon,
@@ -16,7 +23,7 @@ import {
   AddShoppingCart as AddShoppingCartIcon,
   Event as PlannerIcon,
   DeleteSweep as SweepIcon,
-} from "@material-ui/icons"
+} from "@mui/icons-material"
 
 import { useAppState, useBackend } from "./Backend"
 import AppBar from "./AppBar"
@@ -53,10 +60,10 @@ const FAB = styled(FloatingActionButton)`
   }
 `
 
-const App = ({ match }) => {
+const App = () => {
   const { pathname } = useLocation()
-  const history = useHistory()
-  const { listId } = match.params
+  const navigate = useNavigate()
+  const { listId } = useParams()
   const tabUrls = [`/list/${listId}`, `/list/${listId}/planner`]
 
   const { items, planner, loading } = useAppState()
@@ -70,124 +77,143 @@ const App = ({ match }) => {
     day => day?.items?.length > 0
   )
 
-  return (
-    <Switch>
-      <Route path={`${match.path}/catalogue`}>
-        <AppBar loading={loading} title="History" />
-        <Catalogue onDelete={item => backend.handleCatalogueDelete(item)} />
-      </Route>
+  const bottomNavigation = (
+    <BottomNavigation
+      value={tabUrls.findIndex(url => pathname === url)}
+      showLabels
+    >
+      <BottomNavigationAction
+        label="List"
+        icon={<ListIcon />}
+        component={Link}
+        to={tabUrls[0]}
+        replace
+      />
+      <BottomNavigationAction
+        label="Planner"
+        icon={<PlannerIcon />}
+        component={Link}
+        to={tabUrls[1]}
+        replace
+      />
+    </BottomNavigation>
+  )
 
+  return (
+    <Routes>
       <Route
-        path={`${match.path}/recipes/:recipeId`}
-        render={({ match }) => <Recipe {...match.params} />}
+        path="catalogue"
+        element={
+          <>
+            <AppBar loading={loading} title="History" />
+            <Catalogue onDelete={item => backend.handleCatalogueDelete(item)} />
+          </>
+        }
       />
 
-      <Route path={`${match.path}/recipes`}>
-        <AppBar loading={loading} title="Recipes" />
-        <Recipes />
-      </Route>
+      <Route path="recipes/:recipeId" element={<Recipe />} />
 
-      <Route path={match.path}>
-        <Route exact path={match.path}>
-          <AppBar
-            variant="main"
-            actions={
-              <Zoom in={hasSomeTickedItems}>
-                <IconButton
-                  onClick={() => backend.handleSweep()}
-                  color="inherit"
-                  edge="end"
-                  aria-label="Sweep"
-                >
-                  <SweepIcon />
-                </IconButton>
-              </Zoom>
-            }
-            loading={loading}
-          />
-          <ShoppingLists
-            items={items}
-            onMark={item => backend.handleMark(item)}
-            onEdit={entry => backend.handleEdit(entry)}
-            onDelete={entry => backend.handleDelete(entry)}
-          />
-          <FAB
-            disabled={loading}
-            onClick={() => setAddDialogOpen(true)}
-            color="primary"
-            tabIndex={1}
-          >
-            <ContentAddIcon />
-          </FAB>
-          <AddItemDialog
-            open={addDialogOpen}
-            onSubmit={entry => backend.handleAdd(entry)}
-            onClose={() => setAddDialogOpen(false)}
-          />
-        </Route>
+      <Route
+        path="recipes"
+        element={
+          <>
+            <AppBar loading={loading} title="Recipes" />
+            <Recipes />
+          </>
+        }
+      />
 
-        <Route path={`${match.path}/planner`}>
-          <AppBar
-            title="Weekly planner"
-            variant="main"
-            loading={loading}
-            actions={
-              hasSomePlannedItems && (
-                <IconButton
-                  onClick={() => backend.handleClearPlanner()}
-                  color="inherit"
-                  edge="end"
-                  aria-label="Clear"
-                >
-                  <SweepIcon />
-                </IconButton>
-              )
-            }
-          />
-          <Planner
-            onAdd={entry => backend.handleAddToPlanner(entry)}
-            onEdit={entry => backend.handleEditPlannerItem(entry)}
-            onDelete={entry => backend.handleDeleteFromPlanner(entry)}
-          />
-          <FAB
-            disabled={loading || !hasSomePlannedItems}
-            onClick={() => setAddPlanToListDialogOpen(true)}
-            color="primary"
-            tabIndex={1}
-          >
-            <AddShoppingCartIcon />
-          </FAB>
-          <AddPlanToListDialog
-            open={addPlanToListDialogOpen}
-            onSubmit={entry => {
-              backend.handleAddPlanToList(entry)
-              history.replace(tabUrls[0])
-            }}
-            onClose={() => setAddPlanToListDialogOpen(false)}
-          />
-        </Route>
+      <Route
+        path="planner"
+        element={
+          <>
+            <AppBar
+              title="Weekly planner"
+              variant="main"
+              loading={loading}
+              actions={
+                hasSomePlannedItems && (
+                  <IconButton
+                    onClick={() => backend.handleClearPlanner()}
+                    color="inherit"
+                    edge="end"
+                    aria-label="Clear"
+                  >
+                    <SweepIcon />
+                  </IconButton>
+                )
+              }
+            />
+            <Planner
+              onAdd={entry => backend.handleAddToPlanner(entry)}
+              onEdit={entry => backend.handleEditPlannerItem(entry)}
+              onDelete={entry => backend.handleDeleteFromPlanner(entry)}
+            />
+            <FAB
+              disabled={loading || !hasSomePlannedItems}
+              onClick={() => setAddPlanToListDialogOpen(true)}
+              color="primary"
+              tabIndex={1}
+            >
+              <AddShoppingCartIcon />
+            </FAB>
+            <AddPlanToListDialog
+              open={addPlanToListDialogOpen}
+              onSubmit={entry => {
+                backend.handleAddPlanToList(entry)
+                navigate(tabUrls[0], { replace: true })
+              }}
+              onClose={() => setAddPlanToListDialogOpen(false)}
+            />
+            {bottomNavigation}
+          </>
+        }
+      />
 
-        <BottomNavigation
-          value={tabUrls.findIndex(url => pathname === url)}
-          showLabels
-        >
-          <BottomNavigationAction
-            label="List"
-            icon={<ListIcon />}
-            component={Link}
-            to={tabUrls[0]}
-            replace
-          />
-          <BottomNavigationAction
-            label="Planner"
-            icon={<PlannerIcon />}
-            component={Link}
-            to={tabUrls[1]}
-            replace
-          />
-        </BottomNavigation>
-      </Route>
-    </Switch>
+      <Route
+        index
+        element={
+          <>
+            <AppBar
+              variant="main"
+              actions={
+                <Zoom in={hasSomeTickedItems}>
+                  <IconButton
+                    onClick={() => backend.handleSweep()}
+                    color="inherit"
+                    edge="end"
+                    aria-label="Sweep"
+                  >
+                    <SweepIcon />
+                  </IconButton>
+                </Zoom>
+              }
+              loading={loading}
+            />
+            <ShoppingLists
+              items={items}
+              onMark={item => backend.handleMark(item)}
+              onEdit={entry => backend.handleEdit(entry)}
+              onDelete={entry => backend.handleDelete(entry)}
+            />
+            <FAB
+              disabled={loading}
+              onClick={() => setAddDialogOpen(true)}
+              color="primary"
+              tabIndex={1}
+            >
+              <ContentAddIcon />
+            </FAB>
+            <AddItemDialog
+              open={addDialogOpen}
+              onSubmit={entry => backend.handleAdd(entry)}
+              onClose={() => setAddDialogOpen(false)}
+            />
+            {bottomNavigation}
+          </>
+        }
+      />
+    </Routes>
   )
 }
 

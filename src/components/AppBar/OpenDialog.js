@@ -10,10 +10,10 @@ import {
   TextField as MuiTextField,
   Button,
   Typography,
-} from "@material-ui/core"
+} from "@mui/material"
 import AutoComplete from "../Autocomplete"
 
-import { Link, useLocation, useHistory } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import useLocalStorage from "../../useLocalStorage"
 import { generateListName } from "../../components/Backend"
 
@@ -42,12 +42,11 @@ const TextField = styled(MuiTextField)`
   }
 `
 
-const ShareDialog = ({ open, onClose }) => {
+const OpenDialog = ({ open, onClose }) => {
   const [listMRU, setListMRU] = useLocalStorage("listMRU", [])
   const [newList, setNewList] = useState("")
-  const { pathname } = useLocation()
-  const history = useHistory()
-  const id = pathname.match(/\/list\/([^/]+)/)[1]
+  const navigate = useNavigate()
+  const { listId: id } = useParams()
 
   const addToListMRU = list => setListMRU([...new Set([...listMRU, list])])
   const removeFromListMRU = list => setListMRU(listMRU.filter(l => l !== list))
@@ -59,9 +58,9 @@ const ShareDialog = ({ open, onClose }) => {
     try {
       const url = new URL(newList)
       list = url.pathname.match(/\/list\/([^/]+)/)[1]
-    } catch (Exception) {}
+    } catch (error) {}
     addToListMRU(list)
-    history.push(`/list/${list}`)
+    navigate(`/list/${list}`)
     onClose()
   }
 
@@ -124,4 +123,4 @@ const ShareDialog = ({ open, onClose }) => {
   )
 }
 
-export default ShareDialog
+export default OpenDialog

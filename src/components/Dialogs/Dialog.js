@@ -1,7 +1,7 @@
 import React, { forwardRef } from "react"
 import styled from "styled-components"
-import { Dialog as MuiDialog, Slide, useMediaQuery } from "@material-ui/core"
-import { useTheme } from "@material-ui/core/styles"
+import { Dialog as MuiDialog, Slide, useMediaQuery } from "@mui/material"
+import { useTheme } from "@mui/material/styles"
 
 const StyledDialog = styled(MuiDialog)`
   user-select: none;

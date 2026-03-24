@@ -3,12 +3,11 @@ import styled from "styled-components"
 import {
   DialogActions,
   DialogContent,
-  DialogTitle as MuiDialogTitle,
   Button,
   IconButton,
   Typography,
-} from "@material-ui/core"
-import { Delete as DeleteIcon } from "@material-ui/icons"
+} from "@mui/material"
+import { Delete as DeleteIcon } from "@mui/icons-material"
 
 import Dialog from "../Dialog"
 import { ItemAutocomplete, SectionAutocomplete } from "../../Autocomplete"
@@ -17,13 +16,11 @@ import { prettify } from "../../../helpers"
 import { useDialogState } from "./useDialogState"
 import { useAppState } from "../../Backend"
 
-const DialogTitle = styled(MuiDialogTitle)`
-  && {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 12px 8px 24px;
-  }
+const DialogHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px 8px 24px;
 `
 
 const EditItemDialog = ({ item, open, onSubmit, onDelete, onClose }) => {
@@ -68,7 +65,7 @@ const EditItemDialog = ({ item, open, onSubmit, onDelete, onClose }) => {
       onClose={onClose}
       onSubmit={handleSubmit}
     >
-      <DialogTitle disableTypography>
+      <DialogHeader>
         <Typography component="h2" variant="h6">
           Edit item
         </Typography>
@@ -80,7 +77,7 @@ const EditItemDialog = ({ item, open, onSubmit, onDelete, onClose }) => {
         >
           <DeleteIcon />
         </IconButton>
-      </DialogTitle>
+      </DialogHeader>
       <DialogContent>
         <ItemAutocomplete
           value={dialogState.item}

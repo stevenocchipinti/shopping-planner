@@ -1,41 +1,49 @@
 import React, { useState, useEffect } from "react"
-import ReactDOM from "react-dom"
+import { createRoot } from "react-dom/client"
 import { createGlobalStyle } from "styled-components"
-import { BrowserRouter as Router, Route } from "react-router-dom"
-import * as Firebase from "firebase/app"
-import "firebase/firestore"
-import * as serviceWorker from "./serviceWorker"
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  useParams,
+} from "react-router-dom"
+import { Snackbar } from "@mui/material"
 
 import { AppProvider } from "./components/Backend"
 import App from "./components/App"
 import Home from "./components/Home"
 import Settings from "./components/Settings"
 import { ThemeProvider } from "./components/ThemeProvider"
-
-import { Snackbar } from "@material-ui/core"
-
-Firebase.initializeApp({
-  apiKey: "AIzaSyCtgligqZSkUwWkWIAcMOW0nIW2mfgVdcw",
-  authDomain: "shopping-list-app-de905.firebaseapp.com",
-  databaseURL: "https://shopping-list-app-de905.firebaseio.com",
-  projectId: "shopping-list-app-de905",
-  storageBucket: "",
-  messagingSenderId: "975596815491",
-})
-Firebase.firestore().enablePersistence()
+import "./firebase"
 
 const GlobalStyle = createGlobalStyle`
   body {
     margin: 0;
     padding: 0;
     background-color: ${({ theme }) => theme.palette.background.default};
-    height: 100vh;
+    color: ${({ theme }) => theme.palette.text.primary};
+    min-height: 100vh;
   }
+
+  #root {
+    min-height: 100vh;
+  }
+
   * {
     font-family: Roboto, sans-serif;
     box-sizing: border-box;
   }
 `
+
+const ListRoute = () => {
+  const { listId } = useParams()
+
+  return (
+    <AppProvider listId={listId}>
+      <App />
+    </AppProvider>
+  )
+}
 
 const Root = () => {
   const [notification, setNotification] = useState({
@@ -44,12 +52,20 @@ const Root = () => {
   })
 
   useEffect(() => {
-    window.addEventListener("online", () => {
+    const handleOnline = () => {
       setNotification({ message: "You are now online!", visible: true })
-    })
-    window.addEventListener("offline", () => {
+    }
+    const handleOffline = () => {
       setNotification({ message: "You have been disconnected", visible: true })
-    })
+    }
+
+    window.addEventListener("online", handleOnline)
+    window.addEventListener("offline", handleOffline)
+
+    return () => {
+      window.removeEventListener("online", handleOnline)
+      window.removeEventListener("offline", handleOffline)
+    }
   }, [])
 
   return (
@@ -57,16 +73,11 @@ const Root = () => {
       <Router>
         <>
           <GlobalStyle />
-          <Route path="/" exact={true} render={() => <Home />} />
-          <Route path="/settings" exact={true} render={() => <Settings />} />
-          <Route
-            path="/list/:listId"
-            render={({ match }) => (
-              <AppProvider listId={match.params.listId}>
-                <App match={match} />
-              </AppProvider>
-            )}
-          />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/list/:listId/*" element={<ListRoute />} />
+          </Routes>
         </>
       </Router>
 
@@ -80,5 +91,4 @@ const Root = () => {
   )
 }
 
-ReactDOM.render(<Root />, document.getElementById("root"))
-serviceWorker.unregister()
+createRoot(document.getElementById("root")).render(<Root />)

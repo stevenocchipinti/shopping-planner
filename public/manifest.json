@@ -1,7 +1,8 @@
 {
   "name": "Shopping Planner",
   "short_name": "Shopping Planner",
-  "start_url": "https://shoppingplanner.web.app",
+  "start_url": "/",
+  "scope": "/",
   "theme_color": "#009688",
   "background_color": "#ffffff",
   "display": "standalone",

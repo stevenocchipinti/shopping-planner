@@ -1,6 +1,6 @@
 import React from "react"
 import styled from "styled-components"
-import { Paper, Zoom } from "@material-ui/core"
+import { Paper, Zoom } from "@mui/material"
 
 import bread from "./bread.png"
 import coffee from "./coffee.png"

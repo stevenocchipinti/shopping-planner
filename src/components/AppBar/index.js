@@ -7,8 +7,8 @@ import {
   Toolbar,
   Typography,
   IconButton,
-} from "@material-ui/core"
-import { Menu as MenuIcon, ArrowBack as BackIcon } from "@material-ui/icons"
+} from "@mui/material"
+import { Menu as MenuIcon, ArrowBack as BackIcon } from "@mui/icons-material"
 
 import Menu from "./Menu"
 
@@ -26,7 +26,7 @@ const AppBar = ({
   // This keeps the height consistent instead of jumping by 4 pixels
   const loadingIndicator = () =>
     loading ? (
-      <LinearProgress mode="indeterminate" />
+      <LinearProgress variant="indeterminate" />
     ) : (
       <div style={{ height: "4px" }} />
     )

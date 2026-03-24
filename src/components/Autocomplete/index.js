@@ -5,7 +5,7 @@ import Autocomplete from "./Autocomplete"
 import { useAppState } from "../Backend"
 import { unslugify, slugify } from "../../helpers"
 import { emojiSearch } from "../Emoji"
-import { TextField } from "@material-ui/core"
+import { TextField } from "@mui/material"
 
 const ItemAutocomplete = forwardRef(({ onChange, value, ...props }, ref) => {
   const [emojiSupport] = useSetting("emojiSupport")

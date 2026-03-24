@@ -1,11 +1,25 @@
 import React from "react"
-import { Emoji } from "emoji-mart"
-import customEmojis from "./customEmojis"
 
-export default ({ emoji: userEmoji, ...props }) => {
+import customEmojis from "./customEmojis"
+import "./emojiData"
+
+export default ({ emoji: userEmoji, size = 24, style, ...props }) => {
   const emoji = customEmojis.find(customEmoji =>
     customEmoji.short_names.some(name => name === userEmoji)
   )
 
-  return <Emoji emoji={emoji || userEmoji} set="apple" size={24} {...props} />
+  if (emoji) {
+    return (
+      <img
+        src={emoji.imageUrl}
+        alt={emoji.name}
+        width={size}
+        height={size}
+        style={{ display: "inline-block", ...style }}
+        {...props}
+      />
+    )
+  }
+
+  return <em-emoji id={userEmoji} set="apple" size={`${size}px`} style={style} {...props} />
 }

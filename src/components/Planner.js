@@ -9,8 +9,8 @@ import {
   TableRow,
   Paper,
   IconButton,
-} from "@material-ui/core"
-import { Add as AddIcon } from "@material-ui/icons"
+} from "@mui/material"
+import { Add as AddIcon } from "@mui/icons-material"
 
 import { useAppState } from "./Backend"
 import { AddPlannerItemDialog, EditPlannerItemDialog } from "./Dialogs"

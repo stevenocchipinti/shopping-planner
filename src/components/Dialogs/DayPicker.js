@@ -3,7 +3,7 @@ import styled from "styled-components"
 import {
   ToggleButtonGroup as MuiToggleButtonGroup,
   ToggleButton as MuiToggleButton,
-} from "@material-ui/lab"
+} from "@mui/material"
 
 const ToggleButtonGroup = styled(MuiToggleButtonGroup)`
   width: 100%;

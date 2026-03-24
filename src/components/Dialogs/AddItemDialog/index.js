@@ -5,7 +5,7 @@ import {
   DialogContent,
   DialogTitle,
   Button,
-} from "@material-ui/core"
+} from "@mui/material"
 import Alert from "../../Alert"
 import Dialog from "../Dialog"
 import { ItemAutocomplete, SectionAutocomplete } from "../../Autocomplete"

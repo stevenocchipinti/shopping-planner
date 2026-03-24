@@ -1,7 +1,7 @@
 {
   "hosting": {
     "site": "shoppingplanner",
-    "public": "build",
+    "public": "dist",
     "rewrites": [
       {
         "source": "**",

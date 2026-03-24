@@ -9,7 +9,7 @@ import {
   DialogActions,
   Button,
   Link as MuiLink,
-} from "@material-ui/core"
+} from "@mui/material"
 
 const Link = styled(MuiLink).attrs({
   target: "_blank",

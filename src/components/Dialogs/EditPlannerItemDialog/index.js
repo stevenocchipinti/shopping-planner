@@ -2,13 +2,12 @@ import React, { useRef, useEffect, useState } from "react"
 import {
   DialogActions,
   DialogContent,
-  DialogTitle as MuiDialogTitle,
   Button,
   IconButton,
   Typography,
-} from "@material-ui/core"
+} from "@mui/material"
 
-import { Delete as DeleteIcon } from "@material-ui/icons"
+import { Delete as DeleteIcon } from "@mui/icons-material"
 
 import { useAppState } from "../../Backend"
 import DayPicker from "../DayPicker"
@@ -20,13 +19,11 @@ import {
 import { unslugify, slugify } from "../../../helpers"
 import styled from "styled-components"
 
-const DialogTitle = styled(MuiDialogTitle)`
-  && {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 12px 8px 24px;
-  }
+const DialogHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px 8px 24px;
 `
 
 const EditPlannerItemDialog = ({
@@ -86,7 +83,7 @@ const EditPlannerItemDialog = ({
       onClose={onClose}
       onSubmit={handleSubmit}
     >
-      <DialogTitle disableTypography>
+      <DialogHeader>
         <Typography component="h2" variant="h6">
           Edit item
         </Typography>
@@ -98,7 +95,7 @@ const EditPlannerItemDialog = ({
         >
           <DeleteIcon />
         </IconButton>
-      </DialogTitle>
+      </DialogHeader>
       <DialogContent>
         <DayPicker days={days} value={day} onChange={setDay} />
         <ItemOrRecipeAutocomplete

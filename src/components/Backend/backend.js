@@ -1,9 +1,18 @@
-import * as Firebase from "firebase/app"
-import "firebase/firestore"
+import {
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  setDoc,
+  updateDoc,
+  writeBatch,
+} from "firebase/firestore"
+
 import { slugify } from "../../helpers"
+import { db } from "../../firebase"
 
 export function generateListName() {
-  return Firebase.firestore().collection("lists").doc().id
+  return doc(collection(db, "lists")).id
 }
 
 export class Backend {
@@ -22,16 +31,17 @@ export class Backend {
     this.planner = {}
     this.recipes = {}
 
-    this.listRef = Firebase.firestore().collection("lists").doc(listName)
-    this.itemsRef = this.listRef.collection("items")
-    this.catalogueRef = this.listRef.collection("catalogue")
-    this.plannerRef = this.listRef.collection("planner")
-    this.recipesRef = this.listRef.collection("recipes")
+    this.listRef = doc(db, "lists", listName)
+    this.itemsRef = collection(this.listRef, "items")
+    this.catalogueRef = collection(this.listRef, "catalogue")
+    this.plannerRef = collection(this.listRef, "planner")
+    this.recipesRef = collection(this.listRef, "recipes")
 
     this.setLoading()
 
     this.unsubFunctions.push(
-      this.catalogueRef.onSnapshot(
+      onSnapshot(
+        this.catalogueRef,
         { includeMetadataChanges: true },
         querySnapshot => {
           this.catalogue = querySnapshot.docs.reduce(
@@ -45,7 +55,8 @@ export class Backend {
     )
 
     this.unsubFunctions.push(
-      this.itemsRef.onSnapshot(
+      onSnapshot(
+        this.itemsRef,
         { includeMetadataChanges: true },
         querySnapshot => {
           this.items = querySnapshot.docs.map(d => d.data())
@@ -56,7 +67,8 @@ export class Backend {
     )
 
     this.unsubFunctions.push(
-      this.plannerRef.onSnapshot(
+      onSnapshot(
+        this.plannerRef,
         { includeMetadataChanges: true },
         querySnapshot => {
           this.planner = querySnapshot.docs.reduce(
@@ -70,7 +82,8 @@ export class Backend {
     )
 
     this.unsubFunctions.push(
-      this.recipesRef.onSnapshot(
+      onSnapshot(
+        this.recipesRef,
         { includeMetadataChanges: true },
         querySnapshot => {
           this.recipes = querySnapshot.docs.reduce(
@@ -101,13 +114,13 @@ export class Backend {
     return {
       handleAdd: ({ item, section, quantity = 1, emoji = null }) => {
         const slug = slugify(item)
-        const batch = Firebase.firestore().batch()
-        batch.set(this.itemsRef.doc(slug), {
+        const batch = writeBatch(db)
+        batch.set(doc(this.itemsRef, slug), {
           name: item,
           quantity,
           done: false,
         })
-        batch.set(this.catalogueRef.doc(slug), { section, emoji })
+        batch.set(doc(this.catalogueRef, slug), { section, emoji })
         batch.commit()
       },
 
@@ -120,16 +133,14 @@ export class Backend {
       }) => {
         const existingSlug = slugify(item.name)
         const newSlug = slugify(newItem)
-        const batch = Firebase.firestore().batch()
-        // Delete first
-        batch.delete(this.itemsRef.doc(existingSlug))
-        // Add item
-        batch.set(this.itemsRef.doc(newSlug), {
+        const batch = writeBatch(db)
+        batch.delete(doc(this.itemsRef, existingSlug))
+        batch.set(doc(this.itemsRef, newSlug), {
           name: newItem,
           quantity: newQuantity,
           done: false,
         })
-        batch.set(this.catalogueRef.doc(newSlug), {
+        batch.set(doc(this.catalogueRef, newSlug), {
           section: newSection,
           emoji: newEmoji,
         })
@@ -138,28 +149,28 @@ export class Backend {
 
       handleMark: item => {
         const slug = slugify(item.name)
-        this.itemsRef.doc(slug).update({ done: !item.done })
+        updateDoc(doc(this.itemsRef, slug), { done: !item.done })
       },
 
       handleDelete: ({ name }) => {
         const slug = slugify(name)
-        this.itemsRef.doc(slug).delete()
+        deleteDoc(doc(this.itemsRef, slug))
       },
 
       handleCatalogueDelete: item => {
-        this.catalogueRef.doc(item).delete()
+        deleteDoc(doc(this.catalogueRef, item))
       },
 
       handleRecipeDelete: item => {
-        this.recipesRef.doc(item).delete()
+        deleteDoc(doc(this.recipesRef, item))
       },
 
       handleSweep: () => {
-        const batch = Firebase.firestore().batch()
+        const batch = writeBatch(db)
         this.items
           .filter(item => item.done)
           .forEach(item => {
-            batch.delete(this.itemsRef.doc(slugify(item.name)))
+            batch.delete(doc(this.itemsRef, slugify(item.name)))
           })
         batch.commit()
       },
@@ -170,13 +181,13 @@ export class Backend {
         const newItem = { type, name: slug }
         const plannedItems = this.planner?.[day]?.items || []
 
-        const batch = Firebase.firestore().batch()
-        batch.set(this.plannerRef.doc(day), {
+        const batch = writeBatch(db)
+        batch.set(doc(this.plannerRef, day), {
           items: [...plannedItems, newItem],
         })
-        if (type === "item") batch.set(this.catalogueRef.doc(slug), { emoji })
+        if (type === "item") batch.set(doc(this.catalogueRef, slug), { emoji })
         if (type === "recipe")
-          batch.set(this.recipesRef.doc(slug), {
+          batch.set(doc(this.recipesRef, slug), {
             ingredients: ingredients.map(i => ({ slug: slugify(i) })),
             emoji,
           })
@@ -192,9 +203,9 @@ export class Backend {
         const existingDayNowEmpty = newItemsForExistingDay.length === 0
 
         if (existingDayNowEmpty) {
-          this.plannerRef.doc(day).delete()
+          deleteDoc(doc(this.plannerRef, day))
         } else {
-          this.plannerRef.doc(day).set({
+          setDoc(doc(this.plannerRef, day), {
             items: newItemsForExistingDay,
           })
         }
@@ -224,23 +235,21 @@ export class Backend {
           ? [...newItemsForExistingDay, { type, name: newSlug }]
           : [...existingItemsForNewDay, { type, name: newSlug }]
 
-        const batch = Firebase.firestore().batch()
-        // Delete first
+        const batch = writeBatch(db)
         if (existingDayNowEmpty) {
-          batch.delete(this.plannerRef.doc(item?.day))
+          batch.delete(doc(this.plannerRef, item?.day))
         } else {
-          batch.set(this.plannerRef.doc(item?.day), {
+          batch.set(doc(this.plannerRef, item?.day), {
             items: newItemsForExistingDay,
           })
         }
-        // Add item
-        batch.set(this.plannerRef.doc(newDay), {
+        batch.set(doc(this.plannerRef, newDay), {
           items: newItemsForNewDay,
         })
         if (type === "item")
-          batch.set(this.catalogueRef.doc(newSlug), { emoji: newEmoji })
+          batch.set(doc(this.catalogueRef, newSlug), { emoji: newEmoji })
         if (type === "recipe")
-          batch.set(this.recipesRef.doc(newSlug), {
+          batch.set(doc(this.recipesRef, newSlug), {
             ingredients: newIngredients.map(i => ({ slug: slugify(i) })),
             emoji: newEmoji,
           })
@@ -248,18 +257,18 @@ export class Backend {
       },
 
       handleClearPlanner: () => {
-        const batch = Firebase.firestore().batch()
+        const batch = writeBatch(db)
         Object.keys(this.planner).forEach(day => {
-          batch.delete(this.plannerRef.doc(day))
+          batch.delete(doc(this.plannerRef, day))
         })
         batch.commit()
       },
 
       handleAddPlanToList: items => {
-        const batch = Firebase.firestore().batch()
+        const batch = writeBatch(db)
         items.forEach(({ name, section, quantity }) => {
           const slug = slugify(name)
-          batch.set(this.itemsRef.doc(slug), { name, quantity, done: false })
+          batch.set(doc(this.itemsRef, slug), { name, quantity, done: false })
         })
         batch.commit()
       },

@@ -7,7 +7,7 @@ import { slugify } from "../../helpers"
 import { EditItemDialog } from "../Dialogs"
 import { useAppState } from "../Backend"
 
-import { Paper } from "@material-ui/core"
+import { Paper } from "@mui/material"
 
 const Container = styled.div`
   padding: ${({ variant }) =>

@@ -1,18 +1,22 @@
 import React, { useContext, createContext } from "react"
 import styled, { ThemeProvider as ScThemeProvider } from "styled-components"
 
-import { useMediaQuery } from "@material-ui/core"
+import {
+  CssBaseline,
+  ToggleButton,
+  ToggleButtonGroup as MuiToggleButtonGroup,
+  useMediaQuery,
+} from "@mui/material"
 import {
   ThemeProvider as MuiThemeProvider,
-  createMuiTheme,
-} from "@material-ui/core/styles"
-import teal from "@material-ui/core/colors/teal"
-
+  createTheme,
+} from "@mui/material/styles"
+import { teal } from "@mui/material/colors"
 import {
-  ToggleButtonGroup as MuiToggleButtonGroup,
-  ToggleButton,
-} from "@material-ui/lab"
-import { Brightness3, BrightnessHigh, BrightnessAuto } from "@material-ui/icons"
+  Brightness3,
+  Brightness5,
+  BrightnessAuto,
+} from "@mui/icons-material"
 
 import useLocalStorage from "../useLocalStorage"
 
@@ -35,7 +39,7 @@ const DarkModeToggle = () => {
       aria-label="Brightness preference"
     >
       <ToggleButton value="light" aria-label="left aligned">
-        <BrightnessHigh />
+        <Brightness5 />
       </ToggleButton>
       <ToggleButton value="dark" aria-label="centered">
         <Brightness3 />
@@ -60,9 +64,9 @@ const AppThemeProvider = ({ children }) => {
       dark: "dark",
       auto: autoDarkMode ? "dark" : "light",
     }
-    return createMuiTheme({
+    return createTheme({
       palette: {
-        type: effectiveModes[brightnessPreference],
+        mode: effectiveModes[brightnessPreference],
         primary: teal,
       },
     })
@@ -72,21 +76,16 @@ const AppThemeProvider = ({ children }) => {
     <DarkModeContext.Provider
       value={{ brightnessPreference, setBrightnessPreference }}
     >
-      {children(theme)}
+      <ScThemeProvider theme={theme}>
+        <MuiThemeProvider theme={theme}>
+          <CssBaseline />
+          {children}
+        </MuiThemeProvider>
+      </ScThemeProvider>
     </DarkModeContext.Provider>
   )
 }
 
-const ThemeProvider = ({ children }) => {
-  return (
-    <AppThemeProvider>
-      {theme => (
-        <ScThemeProvider theme={theme}>
-          <MuiThemeProvider theme={theme}>{children}</MuiThemeProvider>
-        </ScThemeProvider>
-      )}
-    </AppThemeProvider>
-  )
-}
+const ThemeProvider = ({ children }) => <AppThemeProvider>{children}</AppThemeProvider>
 
 export { ThemeProvider, DarkModeToggle }

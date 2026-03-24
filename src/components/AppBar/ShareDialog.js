@@ -8,7 +8,7 @@ import {
   DialogActions,
   TextField,
   Button,
-} from "@material-ui/core"
+} from "@mui/material"
 
 const ShareDialog = ({ open, onClose }) => {
   const share = e => {

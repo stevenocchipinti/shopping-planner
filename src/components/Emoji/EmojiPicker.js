@@ -1,10 +1,9 @@
 import React from "react"
+import Picker from "@emoji-mart/react"
 import { useTheme } from "styled-components"
-import { Popover, Button } from "@material-ui/core"
-import { Picker } from "emoji-mart"
+import { Button, Popover } from "@mui/material"
 
-import customEmojis from "./customEmojis"
-import "emoji-mart/css/emoji-mart.css"
+import { data, customCategories } from "./emojiData"
 
 export default ({ open, anchorEl, onClose, onSelect }) => {
   const { palette } = useTheme()
@@ -16,7 +15,7 @@ export default ({ open, anchorEl, onClose, onSelect }) => {
           display: "flex",
           flexDirection: "column",
           alignItems: "flex-end",
-          backgroundColor: palette.type === "dark" ? "#222" : "white",
+          backgroundColor: palette.mode === "dark" ? "#222" : "white",
         },
       }}
       open={open}
@@ -32,15 +31,16 @@ export default ({ open, anchorEl, onClose, onSelect }) => {
       }}
     >
       <Picker
+        data={data}
         color={palette.primary.main}
-        theme={palette.type}
+        theme={palette.mode}
         set="apple"
-        custom={customEmojis}
+        custom={customCategories}
         autoFocus
-        showPreview={false}
-        showSkinTones={false}
-        onSelect={e => {
-          onSelect(e.id)
+        previewPosition="none"
+        skinTonePosition="none"
+        onEmojiSelect={emoji => {
+          onSelect(emoji.id)
           onClose()
         }}
         perLine={7}

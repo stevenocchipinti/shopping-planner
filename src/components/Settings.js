@@ -1,7 +1,6 @@
 import React from "react"
 import styled from "styled-components"
-import { Switch, FormControlLabel } from "@material-ui/core"
-import { Typography } from "@material-ui/core"
+import { FormControlLabel, Switch, Typography } from "@mui/material"
 
 import useSetting from "../useSetting"
 import AppBar from "../components/AppBar"
@@ -18,7 +17,6 @@ const Label = styled(FormControlLabel)`
 
 const Toggle = ({ name, value, set, beta = false }) => (
   <Label
-    color="textSecondary"
     value="start"
     control={
       <Switch
@@ -45,7 +43,7 @@ const Settings = () => {
     <>
       <AppBar title="Settings" />
       <Typography
-        color="textSecondary"
+        color="text.secondary"
         style={{ margin: "1rem" }}
         variant="body1"
         component="p"
