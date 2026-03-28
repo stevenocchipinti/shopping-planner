@@ -18,9 +18,9 @@ import Chip from "./Chip"
 import { unslugify } from "../helpers"
 
 const Wrapper = styled.div`
-  max-width: 1000px;
+  max-width: 720px;
   margin: 0 auto;
-  padding: 0 12px 120px;
+  padding: 4px 16px 120px;
 `
 
 const ChipContainer = styled.div`
@@ -50,7 +50,7 @@ const AddButton = styled(IconButton).attrs({
 `
 
 const PlannerCard = styled(TableContainer)`
-  border-radius: 30px;
+  border-radius: 16px;
   overflow: hidden;
 `
 

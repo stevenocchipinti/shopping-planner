@@ -35,7 +35,7 @@ const GlobalStyle = createGlobalStyle`
   }
 
   * {
-    font-family: "DM Sans", sans-serif;
+    font-family: "Outfit", sans-serif;
     box-sizing: border-box;
   }
 

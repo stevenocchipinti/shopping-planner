@@ -43,9 +43,9 @@ const List = styled(MuiList)`
 
 const MenuItem = styled(ListItemButton)`
   && {
-    border-radius: 22px;
-    margin-bottom: 6px;
-    padding: 14px 18px;
+    border-radius: 12px;
+    margin-bottom: 4px;
+    padding: 12px 16px;
   }
 `
 
@@ -78,9 +78,11 @@ const HeroEyebrow = styled.p`
 
 const HeroTitle = styled.h2`
   margin: 0;
-  font-family: "Fraunces", serif;
-  font-size: 30px;
-  line-height: 1;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 28px;
+  line-height: 1.1;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 `
 
 const HeroCopy = styled.p`

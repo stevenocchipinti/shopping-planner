@@ -17,17 +17,21 @@ const Shell = styled.div`
   position: sticky;
   top: 0;
   z-index: 20;
-  padding: max(10px, env(safe-area-inset-top)) 12px 6px;
-  backdrop-filter: blur(18px);
+  padding: max(8px, env(safe-area-inset-top)) 16px 4px;
+  backdrop-filter: blur(12px);
+  background: ${({ theme }) =>
+    theme.palette.mode === "dark"
+      ? "rgba(23, 28, 25, 0.85)"
+      : "rgba(247, 243, 237, 0.85)"};
 `
 
 const Bar = styled(MuiAppBar)`
   && {
     position: relative;
-    border: 1px solid ${({ theme }) => theme.app.border};
-    border-radius: 28px;
-    background: ${({ theme }) => theme.app.shell};
-    box-shadow: ${({ theme }) => theme.app.shellShadow};
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
     overflow: hidden;
   }
 `
@@ -37,15 +41,18 @@ const Title = styled(Typography)`
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 44px;
-    padding: 0 6px;
+    min-height: 40px;
+    padding: 0;
     line-height: 1;
     text-align: center;
+    font-family: "Cormorant Garamond", serif;
+    font-weight: 600;
+    font-size: 1.35rem;
   }
 `
 
 const SideSlot = styled.div`
-  width: 48px;
+  width: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -54,21 +61,20 @@ const SideSlot = styled.div`
 const HeaderIconButton = styled(IconButton)`
   && {
     background-color: transparent;
+    opacity: 0.5;
   }
 
   &&:hover {
-    background-color: ${({ theme }) =>
-      theme.palette.mode === "dark"
-        ? "rgba(255, 255, 255, 0.08)"
-        : "rgba(33, 50, 43, 0.08)"};
+    opacity: 0.8;
+    background-color: transparent;
   }
 `
 
 const ProgressTrack = styled.div`
   position: absolute;
-  right: 18px;
-  bottom: 12px;
-  left: 18px;
+  right: 0;
+  bottom: 0;
+  left: 0;
   pointer-events: none;
 `
 
@@ -86,7 +92,7 @@ const AppBar = ({
   const loadingIndicator = () =>
     loading ? (
       <ProgressTrack>
-        <LinearProgress variant="indeterminate" sx={{ borderRadius: 999, height: 4 }} />
+        <LinearProgress variant="indeterminate" sx={{ height: 2 }} />
       </ProgressTrack>
     ) : null
 
@@ -96,12 +102,12 @@ const AppBar = ({
         <Bar position="static">
           <Toolbar
             sx={{
-              minHeight: 78,
-              px: 1,
+              minHeight: 56,
+              px: 0,
               display: "grid",
-              gridTemplateColumns: "48px minmax(0, 1fr) 48px",
+              gridTemplateColumns: "40px minmax(0, 1fr) 40px",
               alignItems: "center",
-              columnGap: 1,
+              columnGap: 0.5,
             }}
           >
             <SideSlot>
@@ -111,8 +117,9 @@ const AppBar = ({
                   color="inherit"
                   edge="start"
                   aria-label="menu"
+                  size="small"
                 >
-                  <MenuIcon />
+                  <MenuIcon fontSize="small" />
                 </HeaderIconButton>
               ) : (
                 <HeaderIconButton
@@ -121,8 +128,9 @@ const AppBar = ({
                   color="inherit"
                   edge="start"
                   aria-label="back"
+                  size="small"
                 >
-                  <BackIcon />
+                  <BackIcon fontSize="small" />
                 </HeaderIconButton>
               )}
             </SideSlot>

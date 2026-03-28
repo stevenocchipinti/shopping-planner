@@ -17,20 +17,20 @@ import { unslugify } from "../helpers"
 import { useAppState } from "./Backend"
 
 const Wrapper = styled.div`
-  max-width: 1000px;
+  max-width: 720px;
   margin: 0 auto;
-  padding: 0 12px 120px;
+  padding: 4px 16px 120px;
 `
 
 const HeaderCard = styled(Paper)`
-  padding: 18px 20px;
-  border-radius: 28px;
-  margin-bottom: 14px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  margin-bottom: 12px;
   background: ${({ theme }) => theme.app.accentGradient};
 `
 
 const TableCard = styled(TableContainer)`
-  border-radius: 28px;
+  border-radius: 14px;
   overflow: hidden;
 `
 

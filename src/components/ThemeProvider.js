@@ -12,7 +12,6 @@ import {
   ThemeProvider as MuiThemeProvider,
   createTheme,
 } from "@mui/material/styles"
-import { teal } from "@mui/material/colors"
 import {
   Brightness3,
   Brightness5,
@@ -29,107 +28,119 @@ const buildTheme = mode => {
   const palette = {
     mode,
     primary: {
-      ...teal,
-      main: isDark ? "#7dd6b6" : "#2d7560",
-      light: isDark ? "#a5e8cf" : "#5ba88e",
-      dark: isDark ? "#4ca284" : "#1f5848",
-      contrastText: isDark ? "#062017" : "#f8faf6",
+      main: isDark ? "#8fb89a" : "#5a8a68",
+      light: isDark ? "#aed0b6" : "#7ba587",
+      dark: isDark ? "#6d9b79" : "#3d6a4c",
+      contrastText: isDark ? "#0d1a10" : "#fbfcfb",
     },
     secondary: {
-      main: isDark ? "#ffb087" : "#f08358",
-      light: isDark ? "#ffc8ac" : "#ffb28d",
-      dark: isDark ? "#f28a5c" : "#cb6039",
-      contrastText: "#2a1309",
+      main: isDark ? "#c4a882" : "#a38560",
+      light: isDark ? "#d4be9f" : "#bfa180",
+      dark: isDark ? "#aa8e68" : "#876b46",
+      contrastText: "#1a1408",
     },
     background: {
-      default: isDark ? "#0f1614" : "#f6efe6",
-      paper: isDark ? "rgba(23, 32, 29, 0.88)" : "rgba(255, 252, 247, 0.88)",
+      default: isDark ? "#171c19" : "#f7f3ed",
+      paper: isDark ? "#1e241f" : "#fffcf7",
     },
     text: {
-      primary: isDark ? "#f4efe8" : "#21322b",
-      secondary: isDark ? "rgba(233, 225, 214, 0.72)" : "rgba(49, 69, 61, 0.68)",
+      primary: isDark ? "#e6e0d8" : "#2d3630",
+      secondary: isDark ? "rgba(230, 224, 216, 0.50)" : "rgba(45, 54, 48, 0.50)",
     },
-    divider: isDark ? "rgba(226, 216, 201, 0.1)" : "rgba(46, 71, 61, 0.12)",
+    divider: isDark ? "rgba(230, 224, 216, 0.08)" : "rgba(45, 54, 48, 0.08)",
   }
 
   const app = {
-    border: isDark ? "rgba(226, 216, 201, 0.1)" : "rgba(61, 89, 77, 0.12)",
-    chrome: isDark ? "rgba(20, 29, 26, 0.82)" : "rgba(255, 250, 244, 0.78)",
+    border: isDark ? "rgba(230, 224, 216, 0.06)" : "rgba(45, 54, 48, 0.06)",
+    chrome: isDark ? "#1e241f" : "#fffcf7",
     shell: isDark
-      ? "linear-gradient(180deg, rgba(22, 30, 27, 0.94), rgba(13, 20, 18, 0.98))"
-      : "linear-gradient(180deg, rgba(255, 251, 246, 0.92), rgba(250, 244, 235, 0.96))",
+      ? "rgba(30, 36, 31, 0.95)"
+      : "rgba(255, 252, 247, 0.95)",
     primaryGradient: isDark
-      ? "linear-gradient(135deg, #8de0c1 0%, #4aa385 100%)"
-      : "linear-gradient(135deg, #3c8f73 0%, #205444 100%)",
+      ? "linear-gradient(135deg, #8fb89a 0%, #6d9b79 100%)"
+      : "linear-gradient(135deg, #6d9b79 0%, #4a7e58 100%)",
     accentGradient: isDark
-      ? "linear-gradient(135deg, rgba(255, 176, 135, 0.26), rgba(125, 214, 182, 0.16))"
-      : "linear-gradient(135deg, rgba(255, 191, 154, 0.5), rgba(124, 203, 172, 0.22))",
+      ? "rgba(143, 184, 154, 0.06)"
+      : "rgba(90, 138, 104, 0.04)",
     chip: isDark
-      ? "linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(125, 214, 182, 0.16))"
-      : "linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(255, 238, 228, 0.88))",
+      ? "rgba(230, 224, 216, 0.04)"
+      : "rgba(45, 54, 48, 0.025)",
     chipDone: isDark
-      ? "linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.05))"
-      : "linear-gradient(135deg, rgba(255, 255, 255, 0.7), rgba(236, 232, 225, 0.86))",
+      ? "rgba(230, 224, 216, 0.015)"
+      : "rgba(45, 54, 48, 0.012)",
     floatShadow: isDark
-      ? "0 24px 48px rgba(0, 0, 0, 0.36)"
-      : "0 24px 48px rgba(120, 88, 50, 0.14)",
+      ? "0 8px 32px rgba(0, 0, 0, 0.25)"
+      : "0 8px 32px rgba(45, 54, 48, 0.08)",
     softShadow: isDark
-      ? "0 16px 40px rgba(0, 0, 0, 0.22)"
-      : "0 16px 40px rgba(108, 80, 46, 0.12)",
+      ? "0 2px 8px rgba(0, 0, 0, 0.15)"
+      : "0 2px 8px rgba(45, 54, 48, 0.04)",
     shellShadow: isDark
-      ? "0 28px 60px rgba(0, 0, 0, 0.38)"
-      : "0 28px 60px rgba(100, 74, 44, 0.14)",
+      ? "0 4px 16px rgba(0, 0, 0, 0.2)"
+      : "0 4px 16px rgba(45, 54, 48, 0.06)",
   }
 
   return createTheme({
     palette,
     app,
     shape: {
-      borderRadius: 24,
+      borderRadius: 16,
     },
     typography: {
-      fontFamily: '"DM Sans", sans-serif',
+      fontFamily: '"Outfit", sans-serif',
       h1: {
-        fontFamily: '"Fraunces", serif',
-        fontWeight: 700,
+        fontFamily: '"Cormorant Garamond", serif',
+        fontWeight: 600,
+        letterSpacing: "-0.02em",
       },
       h2: {
-        fontFamily: '"Fraunces", serif',
-        fontWeight: 700,
+        fontFamily: '"Cormorant Garamond", serif',
+        fontWeight: 600,
+        letterSpacing: "-0.02em",
       },
       h3: {
-        fontFamily: '"Fraunces", serif',
-        fontWeight: 700,
+        fontFamily: '"Cormorant Garamond", serif',
+        fontWeight: 600,
+        letterSpacing: "-0.01em",
       },
       h4: {
-        fontFamily: '"Fraunces", serif',
-        fontWeight: 700,
+        fontFamily: '"Cormorant Garamond", serif',
+        fontWeight: 600,
+        letterSpacing: "-0.01em",
       },
       h5: {
-        fontFamily: '"Fraunces", serif',
+        fontFamily: '"Cormorant Garamond", serif',
         fontWeight: 600,
+        fontSize: "1.25rem",
+        letterSpacing: 0,
       },
       h6: {
-        fontFamily: '"Fraunces", serif',
+        fontFamily: '"Cormorant Garamond", serif',
         fontWeight: 600,
       },
       button: {
-        fontWeight: 700,
+        fontWeight: 600,
         textTransform: "none",
-        letterSpacing: "-0.01em",
+        letterSpacing: "0",
+        fontSize: "0.875rem",
+      },
+      body1: {
+        fontWeight: 400,
+        letterSpacing: "-0.005em",
+      },
+      body2: {
+        fontWeight: 400,
+        letterSpacing: "-0.005em",
       },
     },
     components: {
       MuiCssBaseline: {
         styleOverrides: {
           body: {
-            background: isDark
-              ? "radial-gradient(circle at top left, rgba(125, 214, 182, 0.14), transparent 28%), radial-gradient(circle at top right, rgba(255, 176, 135, 0.18), transparent 32%), linear-gradient(180deg, #121a17 0%, #0b1110 100%)"
-              : "radial-gradient(circle at top left, rgba(255, 186, 145, 0.4), transparent 30%), radial-gradient(circle at top right, rgba(122, 201, 170, 0.28), transparent 28%), linear-gradient(180deg, #fbf5ee 0%, #f4ebdf 100%)",
+            backgroundColor: palette.background.default,
             color: palette.text.primary,
           },
           "*::selection": {
-            backgroundColor: alpha(palette.secondary.main, 0.28),
+            backgroundColor: alpha(palette.primary.main, 0.18),
           },
         },
       },
@@ -138,8 +149,8 @@ const buildTheme = mode => {
           root: {
             backgroundImage: "none",
             backgroundColor: palette.background.paper,
-            border: `1px solid ${app.border}`,
-            backdropFilter: "blur(18px)",
+            border: `1px solid ${palette.divider}`,
+            backdropFilter: "none",
             boxShadow: app.softShadow,
           },
         },
@@ -156,25 +167,25 @@ const buildTheme = mode => {
       MuiButton: {
         styleOverrides: {
           root: {
-            borderRadius: 18,
+            borderRadius: 12,
             paddingInline: 18,
             boxShadow: "none",
           },
           contained: {
             background: app.primaryGradient,
             color: palette.primary.contrastText,
-            boxShadow: app.softShadow,
+            boxShadow: "none",
             "&:hover": {
               background: app.primaryGradient,
-              boxShadow: app.softShadow,
+              boxShadow: "none",
+              filter: "brightness(1.05)",
             },
             "&.Mui-disabled": {
               color: alpha(palette.primary.contrastText, 0.65),
             },
           },
           outlined: {
-            borderColor: app.border,
-            backgroundColor: alpha(palette.background.paper, 0.42),
+            borderColor: palette.divider,
           },
         },
       },
@@ -184,33 +195,39 @@ const buildTheme = mode => {
             background: app.primaryGradient,
             color: palette.primary.contrastText,
             boxShadow: app.floatShadow,
+            "&:hover": {
+              filter: "brightness(1.05)",
+            },
           },
         },
       },
       MuiIconButton: {
         styleOverrides: {
           root: {
-            borderRadius: 18,
+            borderRadius: 12,
           },
         },
       },
       MuiDialog: {
         styleOverrides: {
           paper: {
-            borderRadius: 28,
+            borderRadius: 20,
             backgroundColor: palette.background.paper,
-            boxShadow: app.shellShadow,
+            boxShadow: isDark
+              ? "0 24px 64px rgba(0, 0, 0, 0.4)"
+              : "0 24px 64px rgba(45, 54, 48, 0.1)",
             backgroundImage: "none",
+            border: `1px solid ${palette.divider}`,
           },
         },
       },
       MuiBackdrop: {
         styleOverrides: {
           root: {
-            backdropFilter: "blur(14px)",
+            backdropFilter: "blur(8px)",
             backgroundColor: isDark
-              ? "rgba(7, 12, 10, 0.48)"
-              : "rgba(33, 24, 18, 0.18)",
+              ? "rgba(0, 0, 0, 0.4)"
+              : "rgba(45, 54, 48, 0.12)",
           },
         },
       },
@@ -218,20 +235,20 @@ const buildTheme = mode => {
         styleOverrides: {
           paper: {
             backgroundImage: "none",
-            backgroundColor: app.chrome,
+            backgroundColor: palette.background.paper,
           },
         },
       },
       MuiOutlinedInput: {
         styleOverrides: {
           root: {
-            borderRadius: 18,
-            backgroundColor: alpha(palette.background.paper, isDark ? 0.08 : 0.72),
+            borderRadius: 12,
+            backgroundColor: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.015)",
             ".MuiOutlinedInput-notchedOutline": {
-              borderColor: app.border,
+              borderColor: palette.divider,
             },
             "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: alpha(palette.primary.main, 0.5),
+              borderColor: alpha(palette.primary.main, 0.35),
             },
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
               borderColor: palette.primary.main,
@@ -254,13 +271,13 @@ const buildTheme = mode => {
       MuiBottomNavigationAction: {
         styleOverrides: {
           root: {
-            borderRadius: 18,
-            minWidth: 88,
+            borderRadius: 12,
+            minWidth: 80,
             color: palette.text.secondary,
           },
           label: {
-            fontSize: 12,
-            fontWeight: 700,
+            fontSize: 11,
+            fontWeight: 600,
           },
         },
       },
@@ -271,7 +288,7 @@ const buildTheme = mode => {
               color: palette.primary.main,
             },
             "&.Mui-checked + .MuiSwitch-track": {
-              backgroundColor: alpha(palette.primary.main, 0.72),
+              backgroundColor: alpha(palette.primary.main, 0.5),
             },
           },
           track: {
@@ -285,10 +302,10 @@ const buildTheme = mode => {
 
 const ToggleButtonGroup = styled(MuiToggleButtonGroup)`
   width: 100%;
-  padding: 6px;
-  border-radius: 22px;
+  padding: 4px;
+  border-radius: 14px;
   background: ${({ theme }) => theme.app.accentGradient};
-  border: 1px solid ${({ theme }) => theme.app.border};
+  border: 1px solid ${({ theme }) => theme.palette.divider};
 `
 
 const ToggleCard = styled.div`
@@ -299,9 +316,9 @@ const ToggleCard = styled.div`
 const ToggleLabel = styled.p`
   margin: 0 0 10px;
   color: ${({ theme }) => theme.palette.text.secondary};
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 `
 

@@ -6,16 +6,16 @@ import useSetting from "../useSetting"
 import AppBar from "../components/AppBar"
 
 const Screen = styled.div`
-  max-width: 860px;
+  max-width: 720px;
   margin: 0 auto;
-  padding: 0 12px 40px;
+  padding: 0 16px 40px;
 `
 
 const Hero = styled(Paper)`
-  padding: 22px;
-  border-radius: 28px;
+  padding: 20px;
+  border-radius: 14px;
   background: ${({ theme }) => theme.app.accentGradient};
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 `
 
 const Label = styled(FormControlLabel)`
@@ -30,9 +30,9 @@ const Label = styled(FormControlLabel)`
 `
 
 const Card = styled(Paper)`
-  padding: 18px 20px;
-  border-radius: 24px;
-  margin-bottom: 12px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  margin-bottom: 10px;
 `
 
 const Caption = styled.span`

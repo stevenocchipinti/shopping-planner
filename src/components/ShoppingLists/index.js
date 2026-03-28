@@ -7,32 +7,34 @@ import { slugify } from "../../helpers"
 import { EditItemDialog } from "../Dialogs"
 import { useAppState } from "../Backend"
 
-import { Paper } from "@mui/material"
-
 const Container = styled.div`
   padding: ${({ variant }) =>
-    variant === "embedded" ? "0 0 16px" : "0 12px 120px"};
+    variant === "embedded" ? "0 0 16px" : "4px 16px 120px"};
   margin: 0 auto;
-  max-width: 1000px;
+  max-width: 720px;
 `
 
-const Card = styled(Paper)`
-  margin: 0 0 14px;
-  padding: ${({ variant }) => (variant === "embedded" ? "0" : "16px")};
-  border-radius: 28px;
-  overflow: hidden;
+const Section = styled.div`
+  margin: 0 0 4px;
+  padding: 0;
+
+  & + & {
+    border-top: 1px solid ${({ theme }) => theme.palette.divider};
+    padding-top: 4px;
+  }
 `
 
 const Items = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
+  padding: 4px 0 8px;
 `
 
 const SectionTitle = styled.h2`
-  font-size: 13px;
-  margin: 0 0 12px;
-  font-weight: 700;
+  font-size: 11px;
+  margin: 12px 0 4px;
+  font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: ${({ theme }) => theme.palette.text.secondary};
@@ -98,13 +100,10 @@ const ShoppingLists = ({
     <>
       <Container variant={variant}>
         {sections.map((section, index) => (
-          <Card
-            variant={variant === "embedded" ? "outlined" : "elevation"}
-            key={index}
-          >
+          <Section key={index}>
             {section && <SectionTitle>{section}</SectionTitle>}
             <Items>{renderItemsFor(itemsBySection[section])}</Items>
-          </Card>
+          </Section>
         ))}
 
         {!loading && sections.length === 0 && <Placeholder />}

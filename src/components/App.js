@@ -37,54 +37,55 @@ import { AddItemDialog, AddPlanToListDialog } from "./Dialogs"
 const BottomNavigation = styled(MuiBottomNavigation)`
   && {
     position: fixed;
-    bottom: max(14px, env(safe-area-inset-bottom));
-    left: 12px;
-    right: 12px;
+    bottom: max(10px, env(safe-area-inset-bottom));
+    left: 16px;
+    right: 16px;
     z-index: 15;
     width: auto;
-    justify-content: space-around;
-    border: 1px solid ${({ theme }) => theme.app.border};
-    border-radius: 28px;
+    justify-content: center;
+    gap: 4px;
+    border: 1px solid ${({ theme }) => theme.palette.divider};
+    border-radius: 16px;
     background: ${({ theme }) => theme.app.shell};
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(12px);
     box-shadow: ${({ theme }) => theme.app.shellShadow};
     overflow: hidden;
-    padding: 8px 10px 12px;
-    min-height: 84px;
+    padding: 4px 8px;
+    min-height: 60px;
     align-items: stretch;
   }
 
   && .MuiBottomNavigationAction-root {
-    min-height: 64px;
-    padding: 10px 12px 8px;
+    min-height: 52px;
+    padding: 6px 12px 4px;
   }
 
   && .MuiBottomNavigationAction-label {
-    margin-top: 4px;
+    margin-top: 2px;
   }
 `
 
 const FAB = styled(FloatingActionButton)`
   && {
     position: fixed;
-    bottom: calc(88px + max(10px, env(safe-area-inset-bottom)));
-    right: 0;
-    left: 0;
-    margin: 0 auto;
+    bottom: calc(78px + max(10px, env(safe-area-inset-bottom)));
+    right: 20px;
+    left: auto;
+    margin: 0;
     z-index: 16;
   }
 
   &&:disabled {
-    background: ${({ theme }) => theme.app.chipDone};
+    background: ${({ theme }) => theme.palette.divider};
     color: ${({ theme }) => theme.palette.text.secondary};
   }
 `
 
 const Screen = styled.div`
-  max-width: 860px;
+  max-width: 720px;
   margin: 0 auto;
   min-height: 100dvh;
-  padding: 0 0 calc(144px + max(10px, env(safe-area-inset-bottom)));
+  padding: 0 0 calc(120px + max(10px, env(safe-area-inset-bottom)));
 `
 
 const App = () => {
