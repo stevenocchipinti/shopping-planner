@@ -1,9 +1,14 @@
 import React from "react"
+import data from "@emoji-mart/data"
 
 import customEmojis from "./customEmojis"
 import "./emojiData"
 
-export default ({ emoji: userEmoji, size = 24, style, ...props }) => {
+const isUnicodeEmoji = value => /\p{Extended_Pictographic}/u.test(value || "")
+
+const nativeEmojiById = id => data.emojis?.[id]?.skins?.[0]?.native || null
+
+const Emoji = ({ emoji: userEmoji, size = 24, style, ...props }) => {
   const emoji = customEmojis.find(customEmoji =>
     customEmoji.short_names.some(name => name === userEmoji)
   )
@@ -21,5 +26,25 @@ export default ({ emoji: userEmoji, size = 24, style, ...props }) => {
     )
   }
 
-  return <em-emoji id={userEmoji} set="apple" size={`${size}px`} style={style} {...props} />
+  if (isUnicodeEmoji(userEmoji)) {
+    return (
+      <span style={{ display: "inline-block", fontSize: size, lineHeight: 1, ...style }} {...props}>
+        {userEmoji}
+      </span>
+    )
+  }
+
+  const nativeEmoji = nativeEmojiById(userEmoji)
+
+  if (nativeEmoji) {
+    return (
+      <span style={{ display: "inline-block", fontSize: size, lineHeight: 1, ...style }} {...props}>
+        {nativeEmoji}
+      </span>
+    )
+  }
+
+  return null
 }
+
+export default Emoji

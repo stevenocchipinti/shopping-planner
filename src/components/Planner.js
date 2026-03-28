@@ -20,7 +20,7 @@ import { unslugify } from "../helpers"
 const Wrapper = styled.div`
   max-width: 1000px;
   margin: 0 auto;
-  padding: 10px 10px 100px 10px;
+  padding: 0 12px 120px;
 `
 
 const ChipContainer = styled.div`
@@ -31,7 +31,7 @@ const ChipContainer = styled.div`
 
 const ChipTableCell = styled(TableCell)`
   padding-left: 0;
-  height: 74px;
+  height: 84px;
   width: 100%;
 `
 
@@ -41,9 +41,17 @@ const AddButton = styled(IconButton).attrs({
   size: "small",
 })`
   && {
-    border: 1px dashed grey;
+    border: 1px dashed ${({ theme }) => theme.palette.text.secondary};
     margin: 4px;
+    border-radius: 999px;
+    min-width: 42px;
+    min-height: 42px;
   }
+`
+
+const PlannerCard = styled(TableContainer)`
+  border-radius: 30px;
+  overflow: hidden;
 `
 
 const days = [
@@ -65,12 +73,12 @@ const Planner = ({ onAdd, onEdit, onDelete }) => {
 
   return (
     <Wrapper>
-      <TableContainer component={Paper}>
+      <PlannerCard component={Paper}>
         <Table aria-label="Planner table">
           <TableBody>
             {days.map(day => (
               <TableRow key={day}>
-                <TableCell component="th" scope="row">
+                <TableCell component="th" scope="row" sx={{ width: 104, fontWeight: 700 }}>
                   {day}
                 </TableCell>
                 <ChipTableCell>
@@ -108,7 +116,7 @@ const Planner = ({ onAdd, onEdit, onDelete }) => {
             ))}
           </TableBody>
         </Table>
-      </TableContainer>
+      </PlannerCard>
 
       <AddPlannerItemDialog
         day={day}

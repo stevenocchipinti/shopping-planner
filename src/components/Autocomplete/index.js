@@ -7,6 +7,10 @@ import { unslugify, slugify } from "../../helpers"
 import { emojiSearch } from "../Emoji"
 import { TextField } from "@mui/material"
 
+const defaultEmojiFor = value => {
+  return emojiSearch(value)?.[0]?.id || value
+}
+
 const ItemAutocomplete = forwardRef(({ onChange, value, ...props }, ref) => {
   const [emojiSupport] = useSetting("emojiSupport")
   const { catalogue } = useAppState()
@@ -18,10 +22,9 @@ const ItemAutocomplete = forwardRef(({ onChange, value, ...props }, ref) => {
     onChange(newValue)
     if (emojiSupport && (props.emoji || props.onEmojiChange)) {
       const catalogueEntry = catalogue[slugify(newValue)]
-      const searchTerm = newValue.replace(/i?e?s?$/, "")
       const storedEmoji = catalogueEntry?.emoji
       props.onEmojiChange(
-        storedEmoji ? storedEmoji : emojiSearch(searchTerm)?.[0]?.id || null
+        storedEmoji ? storedEmoji : defaultEmojiFor(newValue)
       )
     }
   }
@@ -75,9 +78,8 @@ const ItemOrRecipeAutocomplete = forwardRef(
         const recipeEntry = recipes[slugify(newValue)]
         const catalogueEntry = catalogue[slugify(newValue)]
         const storedEmoji = recipeEntry?.emoji || catalogueEntry?.emoji
-        const searchTerm = newValue.replace(/i?e?s?$/, "")
         props.onEmojiChange(
-          storedEmoji ? storedEmoji : emojiSearch(searchTerm)?.[0]?.id || null
+          storedEmoji ? storedEmoji : defaultEmojiFor(newValue)
         )
       }
     }

@@ -11,25 +11,31 @@ import { Paper } from "@mui/material"
 
 const Container = styled.div`
   padding: ${({ variant }) =>
-    variant === "embedded" ? "0 0 100px" : "0 10px 100px"};
+    variant === "embedded" ? "0 0 16px" : "0 12px 120px"};
   margin: 0 auto;
   max-width: 1000px;
 `
 
 const Card = styled(Paper)`
-  margin: 10px 0;
-  padding: ${({ variant }) => (variant === "embedded" ? "0" : "10px")};
+  margin: 0 0 14px;
+  padding: ${({ variant }) => (variant === "embedded" ? "0" : "16px")};
+  border-radius: 28px;
+  overflow: hidden;
 `
 
 const Items = styled.div`
   display: flex;
   flex-wrap: wrap;
+  gap: 8px;
 `
 
 const SectionTitle = styled.h2`
-  font-size: 16px;
-  margin: 0 0 10px;
-  font-weight: normal;
+  font-size: 13px;
+  margin: 0 0 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: ${({ theme }) => theme.palette.text.secondary};
 `
 
 const ShoppingLists = ({

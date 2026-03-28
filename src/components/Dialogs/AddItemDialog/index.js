@@ -18,6 +18,18 @@ const Spacer = styled.div`
   flex-grow: 1;
 `
 
+const Actions = styled(DialogActions)`
+  && {
+    align-items: center;
+  }
+`
+
+const SubmitButton = styled(Button)`
+  && {
+    color: ${({ theme }) => theme.palette.primary.contrastText};
+  }
+`
+
 const AddItemDialog = ({ open, onSubmit, onClose }) => {
   const { items, catalogue } = useAppState()
   const [dialogState, dispatch] = useDialogState()
@@ -70,19 +82,19 @@ const AddItemDialog = ({ open, onSubmit, onClose }) => {
         />
         <NumberPicker value={dialogState.quantity} onChange={updateQuantity} />
       </DialogContent>
-      <DialogActions>
+      <Actions>
         <Alert visible={alertVisible}>Saved!</Alert>
         <Spacer />
         <Button onClick={onClose}>Close</Button>
-        <Button
+        <SubmitButton
           type="submit"
           variant="contained"
           color="primary"
           disabled={dialogState.actionDisabled}
         >
           {dialogState.actionLabel}
-        </Button>
-      </DialogActions>
+        </SubmitButton>
+      </Actions>
     </Dialog>
   )
 }

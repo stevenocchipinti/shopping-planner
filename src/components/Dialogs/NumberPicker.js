@@ -8,12 +8,15 @@ import {
 
 const Container = styled.div`
   display: flex;
-  justify-content: space-evenly;
-  margin-bottom: 2rem;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin: 0.5rem 0 1rem;
 `
 
 const Qty = styled(TextField)`
-  width: 6rem;
+  width: 5.5rem;
+
   & .MuiOutlinedInput-input {
     text-align: center;
   }

@@ -50,19 +50,31 @@ const randomFrom = arr => arr[Math.floor(Math.random() * arr.length)]
 
 const Container = styled(Paper).attrs({ elevation: 0, variant: "outlined" })`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  margin: 10px;
-  padding: 1rem 3rem;
+  gap: 14px;
+  width: 100%;
+  margin: 0;
+  padding: 1rem 1.25rem;
+  border-radius: 28px;
   && {
     color: ${({ theme }) => theme.palette.text.secondary};
   }
 `
 
+const Image = styled.img`
+  width: 40px;
+  height: 40px;
+  max-width: 100%;
+  flex: 0 0 auto;
+  object-fit: contain;
+`
+
 const Text = styled.p`
-  margin-top: 12px;
+  margin: 0;
   text-align: center;
+  font-size: 14px;
 `
 
 export default () => {
@@ -78,7 +90,7 @@ export default () => {
   return (
     <Zoom in={true}>
       <Container onClick={refresh}>
-        {cutePlaceholders && <img src={image} alt="" />}
+        {cutePlaceholders && <Image src={image} alt="" />}
         <Text>{text}</Text>
       </Container>
     </Zoom>

@@ -15,7 +15,7 @@ import { EmojiPicker, Emoji } from "../Emoji"
 import useSetting from "../../useSetting"
 
 const StyledAutocomplete = styled(MuiAutocomplete)`
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 `
 
 const stripSpecialCharacters = value =>

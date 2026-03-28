@@ -40,7 +40,7 @@ export default ({ open, anchorEl, onClose, onSelect }) => {
         previewPosition="none"
         skinTonePosition="none"
         onEmojiSelect={emoji => {
-          onSelect(emoji.id)
+          onSelect(emoji.native || emoji.id)
           onClose()
         }}
         perLine={7}

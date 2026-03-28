@@ -12,6 +12,7 @@ import {
 } from "@mui/icons-material"
 
 import {
+  Box,
   Divider as MuiDivider,
   IconButton,
   List as MuiList,
@@ -29,26 +30,64 @@ import { DarkModeToggle } from "../ThemeProvider"
 
 const Divider = styled(MuiDivider)`
   && {
-    margin-bottom: 8px;
+    margin-bottom: 12px;
+    opacity: 0.6;
   }
 `
 
 const List = styled(MuiList)`
   && {
-    padding: 0;
+    padding: 0 12px 12px;
   }
 `
 
 const MenuItem = styled(ListItemButton)`
   && {
-    padding-right: 3rem;
+    border-radius: 22px;
+    margin-bottom: 6px;
+    padding: 14px 18px;
   }
 `
 
 const DrawHeader = styled.div`
   display: flex;
   justify-content: flex-end;
-  margin: 4px;
+  margin: 10px 10px 0;
+`
+
+const DrawerInner = styled.div`
+  width: min(88vw, 340px);
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 12px;
+`
+
+const DrawerHero = styled.div`
+  padding: 18px 18px 10px;
+`
+
+const HeroEyebrow = styled.p`
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: ${({ theme }) => theme.palette.text.secondary};
+`
+
+const HeroTitle = styled.h2`
+  margin: 0;
+  font-family: "Fraunces", serif;
+  font-size: 30px;
+  line-height: 1;
+`
+
+const HeroCopy = styled.p`
+  margin: 10px 0 0;
+  color: ${({ theme }) => theme.palette.text.secondary};
+  font-size: 14px;
+  line-height: 1.5;
 `
 
 const AppBar = ({ open, onOpen, onClose }) => {
@@ -76,14 +115,21 @@ const AppBar = ({ open, onOpen, onClose }) => {
       />
 
       <Drawer open={open} onOpen={onOpen} onClose={onClose}>
-        <List component="nav">
+        <DrawerInner>
           <DrawHeader>
             <IconButton onClick={onClose}>
               <ChevronLeftIcon />
             </IconButton>
           </DrawHeader>
+          <DrawerHero>
+            <HeroEyebrow>Menu</HeroEyebrow>
+            <HeroTitle>Kitchen cockpit</HeroTitle>
+            <HeroCopy>
+              Jump between lists, share the live board, and fine-tune the planner.
+            </HeroCopy>
+          </DrawerHero>
           <Divider />
-
+          <List component="nav">
           {/* TODO: Bring this back
           <ListItem
             button
@@ -160,8 +206,11 @@ const AppBar = ({ open, onOpen, onClose }) => {
               <ListItemText primary="About" />
             </MenuItem>
           </ListItem>
-        </List>
-        <DarkModeToggle />
+          </List>
+          <Box sx={{ mt: "auto" }}>
+            <DarkModeToggle />
+          </Box>
+        </DrawerInner>
       </Drawer>
     </>
   )

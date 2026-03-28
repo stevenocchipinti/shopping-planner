@@ -19,7 +19,19 @@ import { useAppState } from "./Backend"
 const Wrapper = styled.div`
   max-width: 1000px;
   margin: 0 auto;
-  padding: 10px;
+  padding: 0 12px 120px;
+`
+
+const HeaderCard = styled(Paper)`
+  padding: 18px 20px;
+  border-radius: 28px;
+  margin-bottom: 14px;
+  background: ${({ theme }) => theme.app.accentGradient};
+`
+
+const TableCard = styled(TableContainer)`
+  border-radius: 28px;
+  overflow: hidden;
 `
 
 const Placeholder = styled(TableCell).attrs({
@@ -43,7 +55,21 @@ const Catalogue = ({ onDelete }) => {
 
   return (
     <Wrapper>
-      <TableContainer component={Paper}>
+      <HeaderCard>
+        <Table size="small" aria-hidden>
+          <TableBody>
+            <TableRow>
+              <TableCell sx={{ border: 0, p: 0 }}>
+                <strong>Saved sections</strong>
+              </TableCell>
+              <TableCell sx={{ border: 0, p: 0, color: "text.secondary" }} align="right">
+                {Object.keys(catalogue).length} items
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </HeaderCard>
+      <TableCard component={Paper}>
         <Table size="small" aria-label="History table">
           <TableHead>
             <TableRow>
@@ -76,7 +102,7 @@ const Catalogue = ({ onDelete }) => {
             ))}
           </TableBody>
         </Table>
-      </TableContainer>
+      </TableCard>
     </Wrapper>
   )
 }

@@ -33,31 +33,58 @@ import Recipes from "./Recipes"
 import Recipe from "./Recipe"
 import Planner from "./Planner"
 import { AddItemDialog, AddPlanToListDialog } from "./Dialogs"
-import { greys } from "../helpers"
 
 const BottomNavigation = styled(MuiBottomNavigation)`
   && {
     position: fixed;
-    bottom: 0;
-    z-index: 0;
-    width: 100%;
+    bottom: max(14px, env(safe-area-inset-bottom));
+    left: 12px;
+    right: 12px;
+    z-index: 15;
+    width: auto;
     justify-content: space-around;
-    border-top: 1px solid ${({ theme }) => theme.palette.divider};
+    border: 1px solid ${({ theme }) => theme.app.border};
+    border-radius: 28px;
+    background: ${({ theme }) => theme.app.shell};
+    backdrop-filter: blur(20px);
+    box-shadow: ${({ theme }) => theme.app.shellShadow};
+    overflow: hidden;
+    padding: 8px 10px 12px;
+    min-height: 84px;
+    align-items: stretch;
+  }
+
+  && .MuiBottomNavigationAction-root {
+    min-height: 64px;
+    padding: 10px 12px 8px;
+  }
+
+  && .MuiBottomNavigationAction-label {
+    margin-top: 4px;
   }
 `
 
 const FAB = styled(FloatingActionButton)`
   && {
     position: fixed;
-    bottom: 28px;
+    bottom: calc(88px + max(10px, env(safe-area-inset-bottom)));
     right: 0;
     left: 0;
     margin: 0 auto;
-    z-index: 1;
+    z-index: 16;
   }
+
   &&:disabled {
-    background-color: ${greys("300", "900")};
+    background: ${({ theme }) => theme.app.chipDone};
+    color: ${({ theme }) => theme.palette.text.secondary};
   }
+`
+
+const Screen = styled.div`
+  max-width: 860px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  padding: 0 0 calc(144px + max(10px, env(safe-area-inset-bottom)));
 `
 
 const App = () => {
@@ -104,10 +131,10 @@ const App = () => {
       <Route
         path="catalogue"
         element={
-          <>
+          <Screen>
             <AppBar loading={loading} title="History" />
             <Catalogue onDelete={item => backend.handleCatalogueDelete(item)} />
-          </>
+          </Screen>
         }
       />
 
@@ -116,10 +143,10 @@ const App = () => {
       <Route
         path="recipes"
         element={
-          <>
+          <Screen>
             <AppBar loading={loading} title="Recipes" />
             <Recipes />
-          </>
+          </Screen>
         }
       />
 
@@ -127,28 +154,30 @@ const App = () => {
         path="planner"
         element={
           <>
-            <AppBar
-              title="Weekly planner"
-              variant="main"
-              loading={loading}
-              actions={
-                hasSomePlannedItems && (
-                  <IconButton
-                    onClick={() => backend.handleClearPlanner()}
-                    color="inherit"
-                    edge="end"
-                    aria-label="Clear"
-                  >
-                    <SweepIcon />
-                  </IconButton>
-                )
-              }
-            />
-            <Planner
-              onAdd={entry => backend.handleAddToPlanner(entry)}
-              onEdit={entry => backend.handleEditPlannerItem(entry)}
-              onDelete={entry => backend.handleDeleteFromPlanner(entry)}
-            />
+            <Screen>
+              <AppBar
+                title="Weekly planner"
+                variant="main"
+                loading={loading}
+                actions={
+                  hasSomePlannedItems && (
+                    <IconButton
+                      onClick={() => backend.handleClearPlanner()}
+                      color="inherit"
+                      edge="end"
+                      aria-label="Clear"
+                    >
+                      <SweepIcon />
+                    </IconButton>
+                  )
+                }
+              />
+              <Planner
+                onAdd={entry => backend.handleAddToPlanner(entry)}
+                onEdit={entry => backend.handleEditPlannerItem(entry)}
+                onDelete={entry => backend.handleDeleteFromPlanner(entry)}
+              />
+            </Screen>
             <FAB
               disabled={loading || !hasSomePlannedItems}
               onClick={() => setAddPlanToListDialogOpen(true)}
@@ -174,28 +203,30 @@ const App = () => {
         index
         element={
           <>
-            <AppBar
-              variant="main"
-              actions={
-                <Zoom in={hasSomeTickedItems}>
-                  <IconButton
-                    onClick={() => backend.handleSweep()}
-                    color="inherit"
-                    edge="end"
-                    aria-label="Sweep"
-                  >
-                    <SweepIcon />
-                  </IconButton>
-                </Zoom>
-              }
-              loading={loading}
-            />
-            <ShoppingLists
-              items={items}
-              onMark={item => backend.handleMark(item)}
-              onEdit={entry => backend.handleEdit(entry)}
-              onDelete={entry => backend.handleDelete(entry)}
-            />
+            <Screen>
+              <AppBar
+                variant="main"
+                actions={
+                  <Zoom in={hasSomeTickedItems}>
+                    <IconButton
+                      onClick={() => backend.handleSweep()}
+                      color="inherit"
+                      edge="end"
+                      aria-label="Sweep"
+                    >
+                      <SweepIcon />
+                    </IconButton>
+                  </Zoom>
+                }
+                loading={loading}
+              />
+              <ShoppingLists
+                items={items}
+                onMark={item => backend.handleMark(item)}
+                onEdit={entry => backend.handleEdit(entry)}
+                onDelete={entry => backend.handleDelete(entry)}
+              />
+            </Screen>
             <FAB
               disabled={loading}
               onClick={() => setAddDialogOpen(true)}

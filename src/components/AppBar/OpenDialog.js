@@ -38,7 +38,7 @@ const Actions = styled.div`
 
 const TextField = styled(MuiTextField)`
   & .MuiInputBase-root {
-    height: 42px;
+    min-height: 48px;
   }
 `
 

@@ -3,27 +3,30 @@ import styled from "styled-components"
 import { emojiSearch, Emoji } from "../Emoji"
 
 import useLongPress from "./useLongPress"
-import { greys } from "../../helpers"
 import useSetting from "../../useSetting"
 
 const Chip = styled.span`
   display: flex;
-  align-items: stretch;
-  background-color: ${greys("300", "900")};
-  font-size: 14px;
+  align-items: center;
+  background: ${({ done, theme }) =>
+    done ? theme.app.chipDone : theme.app.chip};
+  font-size: 15px;
   line-height: 24px;
-  border-radius: 16px;
+  border-radius: 999px;
   box-shadow: ${({ theme, outline }) =>
     outline ? `inset 0 0 0px 1px ${theme.palette.grey[500]}` : "none"};
-  padding: 4px 12px;
-  margin: 0.25rem;
-  color: ${({ done, theme }) => (done ? theme.palette.grey.A200 : "inherit")};
+  padding: 8px 14px;
+  min-height: 44px;
+  border: 1px solid ${({ theme, done }) =>
+    done ? theme.app.border : theme.palette.action.selected};
+  color: ${({ done, theme }) =>
+    done ? theme.palette.text.secondary : theme.palette.text.primary};
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: background-color 0.3s ease-in-out;
+  transition: transform 0.2s ease, background-color 0.3s ease-in-out;
 
   :active {
-    background-color: ${greys("400", "700")};
+    transform: scale(0.98);
   }
 
   img,
@@ -36,6 +39,7 @@ const Chip = styled.span`
 `
 
 const Value = styled.span`
+  font-weight: 500;
   text-decoration-line: ${({ done }) => (done ? "line-through" : "inherit")};
 `
 
@@ -43,14 +47,14 @@ const Qty = styled.span`
   display: inline-flex;
   align-items: center;
   line-height: 16px;
-  background-color: ${greys("200", "800")};
-  border-radius: 0 12px 12px 0;
-  padding: 4px 7px 4px 6px;
-  margin: 0 -7px 0 7px;
+  background-color: ${({ theme }) => theme.palette.action.selected};
+  border-radius: 999px;
+  padding: 5px 8px;
+  margin-left: 8px;
 `
 
 const Svg = styled.svg`
-  stroke: ${greys("A200", "500")};
+  stroke: ${({ theme }) => theme.palette.text.secondary};
   margin-right: 3px;
 `
 

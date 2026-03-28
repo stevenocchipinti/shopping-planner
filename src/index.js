@@ -17,21 +17,30 @@ import { ThemeProvider } from "./components/ThemeProvider"
 import "./firebase"
 
 const GlobalStyle = createGlobalStyle`
+  :root {
+    color-scheme: ${({ theme }) => theme.palette.mode};
+  }
+
   body {
     margin: 0;
     padding: 0;
     background-color: ${({ theme }) => theme.palette.background.default};
     color: ${({ theme }) => theme.palette.text.primary};
-    min-height: 100vh;
+    min-height: 100dvh;
+    background-attachment: fixed;
   }
 
   #root {
-    min-height: 100vh;
+    min-height: 100dvh;
   }
 
   * {
-    font-family: Roboto, sans-serif;
+    font-family: "DM Sans", sans-serif;
     box-sizing: border-box;
+  }
+
+  a {
+    color: inherit;
   }
 `
 

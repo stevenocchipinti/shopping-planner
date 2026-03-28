@@ -23,6 +23,12 @@ const DialogHeader = styled.div`
   padding: 8px 12px 8px 24px;
 `
 
+const SubmitButton = styled(Button)`
+  && {
+    color: ${({ theme }) => theme.palette.primary.contrastText};
+  }
+`
+
 const EditItemDialog = ({ item, open, onSubmit, onDelete, onClose }) => {
   const { items, catalogue } = useAppState()
   const [dialogState, dispatch] = useDialogState()
@@ -94,14 +100,14 @@ const EditItemDialog = ({ item, open, onSubmit, onDelete, onClose }) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Close</Button>
-        <Button
+        <SubmitButton
           type="submit"
           variant="contained"
           color="primary"
           disabled={dialogState.actionDisabled}
         >
           {dialogState.actionLabel}
-        </Button>
+        </SubmitButton>
       </DialogActions>
     </Dialog>
   )
