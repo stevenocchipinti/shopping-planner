@@ -21,9 +21,14 @@
     "styled-components": "^5.3.11"
   },
   "devDependencies": {
+    "@types/node": "^25.5.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@types/styled-components": "^5.1.36",
     "@vitejs/plugin-react": "^4.4.1",
     "firebase-tools": "^13.35.1",
     "jsdom": "^25.0.1",
+    "typescript": "^6.0.2",
     "vite": "^6.3.6",
     "vitest": "^4.1.1"
   },
