@@ -12,7 +12,7 @@ import { Delete as DeleteIcon } from "@mui/icons-material"
 import Dialog from "../Dialog"
 import { ItemAutocomplete, SectionAutocomplete } from "../../Autocomplete"
 import NumberPicker from "../NumberPicker"
-import { prettify } from "../../../helpers"
+import { normalizeSection, prettify } from "../../../helpers"
 import { useDialogState } from "./useDialogState"
 import { useAppState } from "../../Backend"
 import { ShoppingItem } from "../../Backend/backend"
@@ -70,7 +70,7 @@ const EditItemDialog = ({
       onSubmit({
         item,
         newItem: prettify(dialogState.item),
-        newSection: prettify(dialogState.section),
+        newSection: normalizeSection(dialogState.section),
         newQuantity: parseInt(dialogState.quantity.toString()),
         newEmoji: dialogState.emoji,
       })

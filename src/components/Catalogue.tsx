@@ -13,7 +13,7 @@ import {
 } from "@mui/material"
 import { Delete as DeleteIcon } from "@mui/icons-material"
 
-import { unslugify } from "../helpers"
+import { normalizeSection, unslugify } from "../helpers"
 import { useAppState } from "./Backend"
 
 interface CatalogueProps {
@@ -36,6 +36,13 @@ const HeaderCard = styled(Paper)`
 const TableCard = styled(TableContainer)`
   border-radius: 14px;
   overflow: hidden;
+`
+
+const Row = styled(TableRow)`
+  &:last-child td,
+  &:last-child th {
+    border-bottom: 0;
+  }
 `
 
 const Placeholder = styled(TableCell).attrs({
@@ -62,14 +69,14 @@ const Catalogue: FC<CatalogueProps> = ({ onDelete }) => {
       <HeaderCard>
         <Table size="small" aria-hidden>
           <TableBody>
-            <TableRow>
+            <Row>
               <TableCell sx={{ border: 0, p: 0 }}>
                 <strong>Saved sections</strong>
               </TableCell>
               <TableCell sx={{ border: 0, p: 0, color: "text.secondary" }} align="right">
                 {Object.keys(catalogue).length} items
               </TableCell>
-            </TableRow>
+            </Row>
           </TableBody>
         </Table>
       </HeaderCard>
@@ -84,16 +91,16 @@ const Catalogue: FC<CatalogueProps> = ({ onDelete }) => {
           </TableHead>
           <TableBody>
             {!loading && Object.keys(catalogue).length === 0 && (
-              <TableRow>
+              <Row>
                 <Placeholder />
-              </TableRow>
+              </Row>
             )}
             {Object.keys(catalogue).map(item => (
-              <TableRow key={item}>
+              <Row key={item}>
                 <TableCell component="th" scope="row">
                   {unslugify(item)}
                 </TableCell>
-                <TableCell>{catalogue[item].section}</TableCell>
+                <TableCell>{normalizeSection(catalogue[item].section || "")}</TableCell>
                 <TableCell align="right">
                   <IconButton
                     onClick={() => onDelete(item)}
@@ -102,7 +109,7 @@ const Catalogue: FC<CatalogueProps> = ({ onDelete }) => {
                     <DeleteIcon />
                   </IconButton>
                 </TableCell>
-              </TableRow>
+              </Row>
             ))}
           </TableBody>
         </Table>

@@ -11,7 +11,7 @@ import {
   DocumentReference,
 } from "firebase/firestore"
 
-import { slugify } from "../../helpers"
+import { normalizeSection, slugify } from "../../helpers"
 import { db } from "../../firebase"
 
 export interface ShoppingItem {
@@ -231,7 +231,10 @@ export class Backend {
           quantity,
           done: false,
         })
-        batch.set(doc(this.catalogueRef, slug), { section, emoji })
+        batch.set(doc(this.catalogueRef, slug), {
+          section: normalizeSection(section),
+          emoji,
+        })
         batch.commit()
       },
 
@@ -252,7 +255,7 @@ export class Backend {
           done: false,
         })
         batch.set(doc(this.catalogueRef, newSlug), {
-          section: newSection,
+          section: normalizeSection(newSection),
           emoji: newEmoji,
         })
         batch.commit()

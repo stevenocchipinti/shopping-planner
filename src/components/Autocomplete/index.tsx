@@ -3,19 +3,19 @@ import React, { forwardRef, ForwardedRef } from "react"
 import useSetting from "../../useSetting"
 import Autocomplete from "./Autocomplete"
 import { useAppState } from "../Backend"
-import { unslugify, slugify } from "../../helpers"
+import { normalizeSection, unslugify, slugify } from "../../helpers"
 import { emojiSearch } from "../Emoji"
 import { TextField } from "@mui/material"
 
-const defaultEmojiFor = (value: string): string => {
-  return emojiSearch(value)?.[0]?.id || value
+const defaultEmojiFor = (value: string): string | null => {
+  return emojiSearch(value)?.[0]?.id || null
 }
 
 interface ItemAutocompleteProps {
   onChange: (value: string) => void
   value: string
   emoji?: string | null
-  onEmojiChange?: (emoji: string) => void
+  onEmojiChange?: (emoji: string | null) => void
   onDelete?: (option: string) => void
   autoFocus?: boolean
   label?: string
@@ -67,7 +67,7 @@ const SectionAutocomplete = forwardRef(
   ({ onChange, value, ...props }: SectionAutocompleteProps, ref: ForwardedRef<HTMLDivElement>) => {
     const { catalogue } = useAppState()
     const allSections = Object.values(catalogue)
-      .map(e => e.section)
+      .map(e => normalizeSection(e.section || ""))
       .filter(Boolean) as string[]
     
     return (
@@ -90,7 +90,7 @@ interface ItemOrRecipeAutocompleteProps {
   onChange: (value: string) => void
   value: string
   emoji?: string | null
-  onEmojiChange?: (emoji: string) => void
+  onEmojiChange?: (emoji: string | null) => void
   onDelete?: (option: string) => void
   autoFocus?: boolean
 }

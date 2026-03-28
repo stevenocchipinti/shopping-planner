@@ -8,9 +8,7 @@ import {
   TableContainer,
   TableRow,
   Paper,
-  IconButton,
 } from "@mui/material"
-import { Add as AddIcon } from "@mui/icons-material"
 
 import {
   AddToPlannerParams,
@@ -44,6 +42,7 @@ const ChipContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  gap: 6px;
 `
 
 const ChipTableCell = styled(TableCell)`
@@ -52,23 +51,43 @@ const ChipTableCell = styled(TableCell)`
   width: 100%;
 `
 
-const AddButton = styled(IconButton).attrs({
-  "aria-label": "add",
-  children: <AddIcon />,
-  size: "small",
-})`
-  && {
-    border: 1px dashed ${({ theme }) => theme.palette.text.secondary};
-    margin: 4px;
-    border-radius: 999px;
-    min-width: 42px;
-    min-height: 42px;
+const AddButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: 1px solid ${({ theme }) => theme.palette.divider};
+  border-radius: 999px;
+  padding: 7px 13px;
+  min-height: 38px;
+  cursor: pointer;
+  color: ${({ theme }) => theme.palette.text.secondary};
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  transition: border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+
+  &:hover {
+    border-color: ${({ theme }) => theme.palette.text.secondary};
+    color: ${({ theme }) => theme.palette.text.primary};
+  }
+
+  &:active {
+    transform: scale(0.97);
   }
 `
 
 const PlannerCard = styled(TableContainer)`
   border-radius: 16px;
   overflow: hidden;
+`
+
+const Row = styled(TableRow)`
+  &:last-child td,
+  &:last-child th {
+    border-bottom: 0;
+  }
 `
 
 const days = [
@@ -94,7 +113,7 @@ const Planner: FC<PlannerProps> = ({ onAdd, onEdit, onDelete }) => {
         <Table aria-label="Planner table">
           <TableBody>
             {days.map(day => (
-              <TableRow key={day}>
+              <Row key={day}>
                 <TableCell component="th" scope="row" sx={{ width: 104, fontWeight: 700 }}>
                   {day}
                 </TableCell>
@@ -121,15 +140,18 @@ const Planner: FC<PlannerProps> = ({ onAdd, onEdit, onDelete }) => {
                     })}
                     {!loading && (
                       <AddButton
+                        aria-label="add"
                         onClick={() => {
                           setDay(day)
                           setAddDialogOpen(true)
                         }}
-                      />
+                      >
+                        + Add
+                      </AddButton>
                     )}
                   </ChipContainer>
                 </ChipTableCell>
-              </TableRow>
+              </Row>
             ))}
           </TableBody>
         </Table>

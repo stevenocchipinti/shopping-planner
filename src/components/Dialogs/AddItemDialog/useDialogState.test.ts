@@ -250,4 +250,25 @@ describe("reducer", () => {
       })
     })
   })
+
+  describe("section case differences", () => {
+    const newItemState = reducer(defaultState, {
+      type: "item",
+      items,
+      catalogue,
+      newItem: "Apples",
+    })
+
+    const newSectionState = reducer(newItemState, {
+      type: "section",
+      items,
+      catalogue,
+      newSection: "fresh produce",
+    })
+
+    it("treats differently cased sections as the same section", () => {
+      expect(newSectionState).toHaveProperty("actionLabel", "Already exists!")
+      expect(newSectionState).toHaveProperty("actionDisabled", true)
+    })
+  })
 })

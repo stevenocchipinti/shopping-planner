@@ -1,5 +1,5 @@
 import { useReducer } from "react"
-import { slugify } from "../../../helpers"
+import { normalizeSection, slugify } from "../../../helpers"
 import { ShoppingItem, CatalogueEntry } from "../../Backend/backend"
 
 export interface DialogState {
@@ -47,18 +47,20 @@ export const reducer = (state: DialogState, action: Action): DialogState => {
 
   const itemOnList = items.find(i => i.name === newState.item)
   const catalogueEntry = catalogue[slugify(newState.item)]
-  const storedSection = catalogueEntry?.section
+  const storedSection = normalizeSection(catalogueEntry?.section || "")
   const storedQuantity = itemOnList?.quantity
 
   if (newState.item.trim().length > 0) newState.actionDisabled = false
   if (newItem && storedSection) newState.section = storedSection
   if (newItem && storedQuantity) newState.quantity = storedQuantity
 
-  if (itemOnList && newState.section !== storedSection) {
+  const currentSection = normalizeSection(newState.section)
+
+  if (itemOnList && currentSection !== storedSection) {
     newState.actionLabel = "Move"
   } else if (
     itemOnList &&
-    newState.section === storedSection &&
+    currentSection === storedSection &&
     newState.quantity === (storedQuantity || 1)
   ) {
     if (itemOnList.done) {

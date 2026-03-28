@@ -1,5 +1,5 @@
 import { useReducer } from "react"
-import { slugify, prettify } from "../../../helpers"
+import { normalizeSection, slugify, prettify } from "../../../helpers"
 import { ShoppingItem, CatalogueEntry } from "../../Backend/backend"
 
 export interface DialogState {
@@ -56,7 +56,7 @@ export const reducer = (state: DialogState, action: Action): DialogState => {
     return {
       ...defaultState,
       item: item.name,
-      section: originalSection || "",
+      section: normalizeSection(originalSection || ""),
       quantity: originalQuantity,
       emoji: originalEmoji ?? null,
       actionDisabled: true,
@@ -65,7 +65,7 @@ export const reducer = (state: DialogState, action: Action): DialogState => {
 
   const originalName = item?.name || ""
   const catalogueEntry = catalogue[slugify(item?.name || "")]
-  const originalSection = catalogueEntry?.section
+  const originalSection = normalizeSection(catalogueEntry?.section || "")
   const originalEmoji = catalogueEntry?.emoji
   const originalQuantity = item?.quantity || 1
 
@@ -79,7 +79,7 @@ export const reducer = (state: DialogState, action: Action): DialogState => {
 
   const noChanges =
     prettify(newState.item) === prettify(originalName) &&
-    prettify(newState.section) === prettify(originalSection || "") &&
+    normalizeSection(newState.section) === originalSection &&
     newState.quantity === originalQuantity &&
     newState.emoji === originalEmoji
 

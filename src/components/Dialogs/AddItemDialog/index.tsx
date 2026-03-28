@@ -11,7 +11,7 @@ import Dialog from "../Dialog"
 import { ItemAutocomplete, SectionAutocomplete } from "../../Autocomplete"
 import NumberPicker from "../NumberPicker"
 import useDialogState from "./useDialogState"
-import { prettify } from "../../../helpers"
+import { normalizeSection, prettify } from "../../../helpers"
 import { useAppState } from "../../Backend"
 
 const Spacer = styled.div`
@@ -55,7 +55,7 @@ const AddItemDialog = ({
     e.preventDefault()
     onSubmit({
       item: prettify(dialogState.item),
-      section: prettify(dialogState.section),
+      section: normalizeSection(dialogState.section),
       quantity: parseInt(dialogState.quantity.toString()),
       emoji: dialogState.emoji,
     })

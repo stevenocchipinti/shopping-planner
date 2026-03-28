@@ -131,7 +131,7 @@ const Menu: FC<MenuProps> = ({ open, onOpen, onClose }) => {
           </DrawHeader>
           <DrawerHero>
             <HeroEyebrow>Menu</HeroEyebrow>
-            <HeroTitle>Kitchen cockpit</HeroTitle>
+            <HeroTitle>Shopping planner</HeroTitle>
             <HeroCopy>
               Jump between lists, share the live board, and fine-tune the planner.
             </HeroCopy>

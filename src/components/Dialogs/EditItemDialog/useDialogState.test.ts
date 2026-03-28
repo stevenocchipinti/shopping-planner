@@ -154,5 +154,20 @@ describe("reducer", () => {
         expect(newItemState).toHaveProperty("actionDisabled", false)
       })
     })
+
+    describe("then changing only the section casing", () => {
+      const newSectionState = reducer(newSetState, {
+        type: "section",
+        newSection: "fresh produce",
+        item: itemToEdit,
+        items,
+        catalogue,
+      })
+
+      it("keeps the save button disabled", () => {
+        expect(newSectionState).toHaveProperty("actionLabel", "Save")
+        expect(newSectionState).toHaveProperty("actionDisabled", true)
+      })
+    })
   })
 })

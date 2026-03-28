@@ -3,7 +3,7 @@ import styled from "styled-components"
 
 import Placeholder from "./Placeholder"
 import Chip from "../Chip"
-import { slugify } from "../../helpers"
+import { normalizeSection, slugify } from "../../helpers"
 import { EditItemDialog } from "../Dialogs"
 import { useAppState } from "../Backend"
 import { ShoppingItem, CatalogueEntry } from "../Backend/backend"
@@ -102,7 +102,7 @@ const ShoppingLists: FC<ShoppingListsProps> = ({
 
   const itemsBySection = items.reduce<ItemsBySection>((a, item) => {
     const catalogueEntry = catalogue[slugify(item.name)] as CatalogueEntry | undefined
-    const section = catalogueEntry?.section || ""
+    const section = normalizeSection(catalogueEntry?.section || "")
     return {
       ...a,
       [section]: [
