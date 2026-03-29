@@ -2,6 +2,7 @@ import { getApp, getApps, initializeApp } from "firebase/app"
 import {
   initializeFirestore,
   memoryLocalCache,
+  persistentLocalCache,
 } from "firebase/firestore"
 import { FirebaseApp } from "firebase/app"
 import { Firestore } from "firebase/firestore"
@@ -45,8 +46,20 @@ const firebaseConfig: FirebaseConfig = Object.fromEntries(
 
 const app: FirebaseApp =
   getApps().length > 0 ? getApp() : initializeApp(firebaseConfig)
+
+const createFirestoreCache = () => {
+  if (typeof window === "undefined") return memoryLocalCache()
+
+  try {
+    return persistentLocalCache()
+  } catch (error) {
+    console.warn("Falling back to memory-only Firestore cache.", error)
+    return memoryLocalCache()
+  }
+}
+
 const db: Firestore = initializeFirestore(app, {
-  localCache: memoryLocalCache(),
+  localCache: createFirestoreCache(),
 })
 
 export { app, db, firebaseConfig }

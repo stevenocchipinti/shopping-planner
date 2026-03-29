@@ -50,6 +50,7 @@ export interface BackendCallbacks {
   onPlannerChanged: (planner: Record<string, PlannerDay>) => void
   onRecipesChanged: (recipes: Record<string, RecipeEntry>) => void
   onLoadingChanged: (loading: boolean) => void
+  onSyncStateChanged: (state: { hasPendingWrites: boolean }) => void
 }
 
 // Action parameter types
@@ -120,6 +121,12 @@ export class Backend {
   private catalogue: Record<string, CatalogueEntry> = {}
   private planner: Record<string, PlannerDay> = {}
   private recipes: Record<string, RecipeEntry> = {}
+  private pendingWrites = {
+    catalogue: false,
+    items: false,
+    planner: false,
+    recipes: false,
+  }
 
   private listRef!: DocumentReference
   private itemsRef!: CollectionReference
@@ -141,6 +148,12 @@ export class Backend {
     this.catalogue = {}
     this.planner = {}
     this.recipes = {}
+    this.pendingWrites = {
+      catalogue: false,
+      items: false,
+      planner: false,
+      recipes: false,
+    }
 
     this.listRef = doc(db, "lists", listName)
     this.itemsRef = collection(this.listRef, "items")
@@ -155,6 +168,7 @@ export class Backend {
         this.catalogueRef,
         { includeMetadataChanges: true },
         querySnapshot => {
+          this.updateSyncState("catalogue", querySnapshot.metadata.hasPendingWrites)
           this.catalogue = querySnapshot.docs.reduce(
             (a, doc) => ({ ...a, [doc.id]: doc.data() as CatalogueEntry }),
             {}
@@ -170,6 +184,7 @@ export class Backend {
         this.itemsRef,
         { includeMetadataChanges: true },
         querySnapshot => {
+          this.updateSyncState("items", querySnapshot.metadata.hasPendingWrites)
           this.items = querySnapshot.docs.map(d => d.data() as ShoppingItem)
           this.callbacks.onItemsChanged(this.items)
           this.setDone()
@@ -182,6 +197,7 @@ export class Backend {
         this.plannerRef,
         { includeMetadataChanges: true },
         querySnapshot => {
+          this.updateSyncState("planner", querySnapshot.metadata.hasPendingWrites)
           this.planner = querySnapshot.docs.reduce(
             (a, doc) => ({ ...a, [doc.id]: doc.data() as PlannerDay }),
             {}
@@ -197,6 +213,7 @@ export class Backend {
         this.recipesRef,
         { includeMetadataChanges: true },
         querySnapshot => {
+          this.updateSyncState("recipes", querySnapshot.metadata.hasPendingWrites)
           this.recipes = querySnapshot.docs.reduce(
             (a, doc) => ({ ...a, [doc.id]: doc.data() as RecipeEntry }),
             {}
@@ -219,6 +236,16 @@ export class Backend {
 
   private setDone(): void {
     this.callbacks.onLoadingChanged(false)
+  }
+
+  private updateSyncState(
+    key: keyof Backend["pendingWrites"],
+    hasPendingWrites: boolean
+  ): void {
+    this.pendingWrites[key] = hasPendingWrites
+    this.callbacks.onSyncStateChanged({
+      hasPendingWrites: Object.values(this.pendingWrites).some(Boolean),
+    })
   }
 
   public actions(): BackendActions {

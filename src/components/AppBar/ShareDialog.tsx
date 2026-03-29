@@ -3,13 +3,18 @@ import React, { FC } from "react"
 import Dialog from "../Dialogs/Dialog"
 import { Button, TextField } from "../ui"
 import { field, fieldLabel } from "../ui.css"
+import { dialogActions } from "../dialogs.css"
 import {
   dialogBody,
-  dialogDescription,
-  dialogFooter,
+  dialogFooterGrow,
   dialogHeader,
   dialogTitle,
 } from "../ui.css"
+import {
+  warningCallout,
+  warningCalloutLabel,
+  warningCalloutText,
+} from "../app-shell.css"
 
 interface ShareDialogProps {
   open: boolean
@@ -35,9 +40,12 @@ const ShareDialog: FC<ShareDialogProps> = ({ open, onClose }) => {
         <h2 className={dialogTitle}>Share Live List URL</h2>
       </div>
       <div className={dialogBody}>
-        <p className={dialogDescription}>
-          WARNING: Anyone who has this URL will be able to view and modify this list!
-        </p>
+        <div className={warningCallout}>
+          <span className={warningCalloutLabel}>Warning</span>
+          <p className={warningCalloutText}>
+            Anyone who has this URL will be able to view and modify this list.
+          </p>
+        </div>
         <label className={field}>
           <span className={fieldLabel}>Share URL</span>
           <TextField
@@ -48,7 +56,8 @@ const ShareDialog: FC<ShareDialogProps> = ({ open, onClose }) => {
           />
         </label>
       </div>
-      <div className={dialogFooter}>
+      <div className={dialogActions}>
+        <span className={dialogFooterGrow} />
         <Button onClick={onClose}>Done</Button>
         {navigator.share !== undefined ? (
           <Button variant="solid" onClick={share}>

@@ -1,12 +1,12 @@
 import React, { FC, HTMLAttributes } from "react"
 
-import useSetting from "../../useSetting"
 import { emojiSearch, Emoji } from "../Emoji"
 import {
   chip,
   chipDone,
   chipEmoji,
   chipEmojiDone,
+  chipNoQuantity,
   chipQty,
   chipQtyX,
   chipValue,
@@ -15,7 +15,7 @@ import {
 import { cx } from "../ui"
 import useLongPress from "./useLongPress"
 
-interface ChipProps extends HTMLAttributes<HTMLButtonElement> {
+interface ChipProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   done?: boolean
   qty?: number
   children: React.ReactNode
@@ -33,19 +33,19 @@ const Chip: FC<ChipProps> = ({
   ...props
 }) => {
   const longPress = useLongPress(onLongPress)
-  const [emojiSupport] = useSetting("emojiSupport")
   const assumedEmoji =
     emoji === undefined ? emojiSearch(String(children))?.[0]?.id : emoji
   const hasQty = Boolean(qty && qty > 1)
+  const hasEmoji = Boolean(assumedEmoji)
 
   return (
     <button
-      className={cx(chip, done && chipDone)}
+      className={cx(chip, done && chipDone, !hasQty && chipNoQuantity)}
       type="button"
       {...longPress}
       {...props}
     >
-      {emojiSupport && assumedEmoji ? (
+      {hasEmoji ? (
         <span className={cx(chipEmoji, done && chipEmojiDone)}>
           <Emoji emoji={assumedEmoji} size={15} />
         </span>

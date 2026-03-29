@@ -8,6 +8,7 @@ import { Button } from "../../ui"
 import { dialogActions, spacer } from "../../dialogs.css"
 import {
   dialogBody,
+  dialogDescription,
   dialogFooterGrow,
   dialogHeader,
   dialogTitle,
@@ -28,13 +29,14 @@ interface AddItemDialogProps {
 }
 
 const AddItemDialog = ({ open, onSubmit, onClose }: AddItemDialogProps) => {
-  const { items, catalogue } = useAppState()
+  const { items, catalogue, isOnline } = useAppState()
   const [dialogState, dispatch] = useDialogState()
   const [alertVisible, setAlertVisible] = useState(false)
   const itemInputRef = useRef<HTMLInputElement>(null)
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault()
+
     onSubmit({
       item: prettify(dialogState.item),
       section: normalizeSection(dialogState.section),
@@ -72,6 +74,11 @@ const AddItemDialog = ({ open, onSubmit, onClose }: AddItemDialogProps) => {
         />
         <SectionAutocomplete value={dialogState.section} onChange={updateSection} />
         <NumberPicker value={dialogState.quantity} onChange={updateQuantity} />
+        {!isOnline ? (
+          <p className={dialogDescription}>
+            You are offline. Changes save on this device and will sync when you reconnect.
+          </p>
+        ) : null}
       </div>
       <div className={dialogActions}>
         <Alert visible={alertVisible}>Saved!</Alert>

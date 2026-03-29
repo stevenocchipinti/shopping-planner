@@ -9,7 +9,7 @@ import {
 } from "../../Autocomplete"
 import { Button, IconButton } from "../../ui"
 import { dialogActions, dialogHeader } from "../../dialogs.css"
-import { dialogBody, dialogFooterGrow, dialogTitle } from "../../ui.css"
+import { dialogBody, dialogDescription, dialogFooterGrow, dialogTitle } from "../../ui.css"
 import DayPicker from "../DayPicker"
 import Dialog from "../Dialog"
 
@@ -42,7 +42,7 @@ const EditPlannerItemDialog = ({
   onDelete,
   onClose,
 }: EditPlannerItemDialogProps) => {
-  const { recipes, catalogue } = useAppState()
+  const { recipes, catalogue, isOnline } = useAppState()
   const [item, setItem] = useState("")
   const [emoji, setEmoji] = useState<string | null>(null)
   const [ingredients, setIngredients] = useState<string[]>([])
@@ -104,6 +104,11 @@ const EditPlannerItemDialog = ({
           autoFocus
         />
         <IngredientAutocomplete value={ingredients} onChange={setIngredients} />
+        {!isOnline ? (
+          <p className={dialogDescription}>
+            You are offline. Planner changes save on this device and will sync when you reconnect.
+          </p>
+        ) : null}
       </div>
       <div className={dialogActions}>
         <span className={dialogFooterGrow} />

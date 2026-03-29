@@ -8,19 +8,21 @@ import React, {
 } from "react"
 import { Search, Smile, X } from "lucide-react"
 
-import useSetting from "../../useSetting"
 import { Emoji, EmojiPicker } from "../Emoji"
 import { cx, IconButton, TextField } from "../ui"
 import {
   autocompleteDelete,
   autocompleteItem,
+  autocompleteItemAction,
   autocompleteItemText,
   autocompleteList,
   autocompleteRoot,
   field,
+  fieldCompact,
   fieldLabel,
-  fieldButton,
   helperText,
+  inputAdorned,
+  inputAdornmentButton,
   tags,
   tag,
   tagRemove,
@@ -92,10 +94,9 @@ const Autocomplete = forwardRef(
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
     const [internalInputValue, setInternalInputValue] = useState("")
 
-    const [emojiSupport] = useSetting("emojiSupport")
     const isControlled = inputValue !== undefined
     const currentInputValue = isControlled ? inputValue : internalInputValue
-    const showEmoji = emojiSupport && emoji !== false && (emoji || onEmojiChange)
+    const showEmoji = emoji !== false && (emoji || onEmojiChange)
     const filteredOptions = useMemo(
       () => fuzzy(options, currentInputValue).slice(0, 8),
       [currentInputValue, options]
@@ -156,7 +157,9 @@ const Autocomplete = forwardRef(
     const handleSelect = (option: string) => {
       if (multiple) commitMultipleValue(option)
       else commitSingleValue(option)
-      inputRef.current?.focus()
+      window.setTimeout(() => {
+        inputRef.current?.blur()
+      }, 0)
     }
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -202,6 +205,7 @@ const Autocomplete = forwardRef(
 
     const startAdornment = showEmoji ? (
       <IconButton
+        className={inputAdornmentButton}
         ref={emojiButtonRef}
         onClick={() => setAnchorEl(emojiButtonRef.current)}
         aria-label="Choose emoji"
@@ -239,6 +243,7 @@ const Autocomplete = forwardRef(
           value={currentInputValue}
           disabled={disabled}
           inputRef={syncRef}
+          inputClassName={showEmoji ? undefined : inputAdorned}
           onFocus={() => setMenuOpen(true)}
           onKeyDown={handleKeyDown}
           onChange={event => {
@@ -260,7 +265,7 @@ const Autocomplete = forwardRef(
             {fieldContent}
           </label>
         ) : (
-          fieldContent
+          <div className={fieldCompact}>{fieldContent}</div>
         )}
 
         {showEmoji ? (
@@ -282,7 +287,7 @@ const Autocomplete = forwardRef(
                 onMouseEnter={() => setHighlightedIndex(index)}
               >
                 <button
-                  className={fieldButton}
+                  className={autocompleteItemAction}
                   type="button"
                   onClick={() => handleSelect(option)}
                 >

@@ -13,6 +13,7 @@ import { useAppState, useBackend } from "./Backend"
 import AppBar from "./AppBar"
 import Catalogue from "./Catalogue"
 import { AddItemDialog, AddPlanToListDialog } from "./Dialogs"
+import OfflineNotice from "./OfflineNotice"
 import Planner from "./Planner"
 import Recipe from "./Recipe"
 import Recipes from "./Recipes"
@@ -68,11 +69,11 @@ const App: FC = () => {
       <Route
         path="catalogue"
         element={
-          <div className={appScreen}>
-            <AppBar loading={loading} title="History" />
-            <Catalogue onDelete={item => backend.handleCatalogueDelete(item)} />
-          </div>
-        }
+            <div className={appScreen}>
+              <AppBar loading={loading} title="History" titleAside={<OfflineNotice />} />
+              <Catalogue onDelete={item => backend.handleCatalogueDelete(item)} />
+            </div>
+          }
       />
 
       <Route path="recipes/:recipeId" element={<Recipe />} />
@@ -80,11 +81,11 @@ const App: FC = () => {
       <Route
         path="recipes"
         element={
-          <div className={appScreen}>
-            <AppBar loading={loading} title="Recipes" />
-            <Recipes />
-          </div>
-        }
+            <div className={appScreen}>
+              <AppBar loading={loading} title="Recipes" titleAside={<OfflineNotice />} />
+              <Recipes />
+            </div>
+          }
       />
 
       <Route
@@ -96,10 +97,15 @@ const App: FC = () => {
                 title="Weekly planner"
                 variant="main"
                 loading={loading}
+                titleAside={<OfflineNotice />}
                 actions={
                   hasSomePlannedItems ? (
                     <IconButton
-                      onClick={() => backend.handleClearPlanner()}
+                      onClick={() => {
+                        if (window.confirm("Clear the whole weekly planner?")) {
+                          backend.handleClearPlanner()
+                        }
+                      }}
                       aria-label="Clear planner"
                     >
                       <Trash2 size={18} />
@@ -148,12 +154,16 @@ const App: FC = () => {
                 variant="main"
                 actions={
                   hasSomeTickedItems ? (
-                    <IconButton onClick={() => backend.handleSweep()} aria-label="Sweep checked items">
+                    <IconButton
+                      onClick={() => backend.handleSweep()}
+                      aria-label="Sweep checked items"
+                    >
                       <Trash2 size={18} />
                     </IconButton>
                   ) : null
                 }
                 loading={loading}
+                titleAside={<OfflineNotice />}
               />
               <ShoppingLists
                 items={items}

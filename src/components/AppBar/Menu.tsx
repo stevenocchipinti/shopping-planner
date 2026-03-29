@@ -3,7 +3,6 @@ import {
   ChevronLeft,
   History,
   Info,
-  Settings,
   Share2,
   ArrowRightLeft,
 } from "lucide-react"
@@ -43,9 +42,18 @@ const Menu: FC<MenuProps> = ({ open, onOpen, onClose }) => {
 
   return (
     <>
-      <OpenDialog open={openDialogOpen} onClose={() => setOpenDialogOpen(false)} />
-      <ShareDialog open={shareDialogOpen} onClose={() => setShareDialogOpen(false)} />
-      <AboutDialog open={aboutDialogOpen} onClose={() => setAboutDialogOpen(false)} />
+      <OpenDialog
+        open={openDialogOpen}
+        onClose={() => setOpenDialogOpen(false)}
+      />
+      <ShareDialog
+        open={shareDialogOpen}
+        onClose={() => setShareDialogOpen(false)}
+      />
+      <AboutDialog
+        open={aboutDialogOpen}
+        onClose={() => setAboutDialogOpen(false)}
+      />
 
       <Drawer open={open} onClose={onClose}>
         <div className={drawerContent}>
@@ -56,10 +64,10 @@ const Menu: FC<MenuProps> = ({ open, onOpen, onClose }) => {
           </div>
 
           <div className={drawerHero}>
-            <p className={eyebrow}>Menu</p>
             <h2 className={drawerTitle}>Shopping planner</h2>
             <p className={drawerCopy}>
-              Jump between lists, share the live board, and fine-tune the planner.
+              Jump between lists, share the live board, and fine-tune the
+              planner.
             </p>
           </div>
 
@@ -103,13 +111,6 @@ const Menu: FC<MenuProps> = ({ open, onOpen, onClose }) => {
                 <History size={18} />
               </span>
               <span className={drawerItemLabel}>History</span>
-            </Link>
-
-            <Link className={drawerItem} to="/settings" onClick={() => onClose()}>
-              <span className={drawerItemIcon}>
-                <Settings size={18} />
-              </span>
-              <span className={drawerItemLabel}>Settings</span>
             </Link>
 
             <button

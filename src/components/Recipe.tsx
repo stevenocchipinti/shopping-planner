@@ -7,6 +7,7 @@ import { useAppState, useBackend } from "./Backend"
 import { recipeBackButton, recipeCard, recipeDescription, recipeImage, recipeLink, recipeTitle, recipeTitleRow, recipeWrapper } from "./app-shell.css"
 import AppBar from "./AppBar"
 import { Emoji } from "./Emoji"
+import OfflineNotice from "./OfflineNotice"
 import { IconButton } from "./ui"
 
 const Recipe: FC = () => {
@@ -54,6 +55,7 @@ const Recipe: FC = () => {
         <div className={recipeTitleRow}>
           {emoji ? <Emoji emoji={emoji} size={40} /> : null}
           <h1 className={recipeTitle}>{title}</h1>
+          <OfflineNotice variant="recipe" />
         </div>
 
         <div className={recipeCard}>

@@ -1,6 +1,5 @@
 import React, { forwardRef, ForwardedRef } from "react"
 
-import useSetting from "../../useSetting"
 import Autocomplete from "./Autocomplete"
 import { useAppState } from "../Backend"
 import { normalizeSection, unslugify, slugify } from "../../helpers"
@@ -22,7 +21,6 @@ interface ItemAutocompleteProps {
 
 const ItemAutocomplete = forwardRef(
   ({ onChange, value, ...props }: ItemAutocompleteProps, ref: ForwardedRef<HTMLInputElement>) => {
-    const [emojiSupport] = useSetting("emojiSupport")
     const { catalogue } = useAppState()
     const allItems = Object.keys(catalogue).map(unslugify)
 
@@ -30,7 +28,7 @@ const ItemAutocomplete = forwardRef(
       if (!e) return false
 
       onChange(newValue || "")
-      if (emojiSupport && (props.emoji || props.onEmojiChange)) {
+      if (props.emoji || props.onEmojiChange) {
         const catalogueEntry = catalogue[slugify(newValue || "")]
         const storedEmoji = catalogueEntry?.emoji
         props.onEmojiChange?.(
@@ -96,7 +94,6 @@ interface ItemOrRecipeAutocompleteProps {
 
 const ItemOrRecipeAutocomplete = forwardRef(
   ({ onChange, value, ...props }: ItemOrRecipeAutocompleteProps, ref: ForwardedRef<HTMLInputElement>) => {
-    const [emojiSupport] = useSetting("emojiSupport")
     const { catalogue, recipes } = useAppState()
     const allItems = [
       ...Object.keys(recipes).map(unslugify),
@@ -107,7 +104,7 @@ const ItemOrRecipeAutocomplete = forwardRef(
       if (!e) return false
 
       onChange(newValue || "")
-      if (emojiSupport && (props.emoji || props.onEmojiChange)) {
+      if (props.emoji || props.onEmojiChange) {
         const recipeEntry = recipes[slugify(newValue || "")]
         const catalogueEntry = catalogue[slugify(newValue || "")]
         const storedEmoji = recipeEntry?.emoji || catalogueEntry?.emoji

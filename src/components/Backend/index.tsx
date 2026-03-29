@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, createContext, ReactNode } from "react"
+import React, { useEffect, useRef, useState, createContext, ReactNode } from "react"
 import {
   Backend,
   generateListName,
@@ -7,6 +7,7 @@ import {
   CatalogueEntry,
   PlannerDay,
   RecipeEntry,
+  BackendCallbacks,
 } from "./backend"
 
 interface AppState {
@@ -15,6 +16,10 @@ interface AppState {
   planner: Record<string, PlannerDay>
   recipes: Record<string, RecipeEntry>
   loading: boolean
+  isOnline: boolean
+  showingCachedData: boolean
+  hasPendingWrites: boolean
+  recentlyReconnected: boolean
 }
 
 interface AppProviderProps {
@@ -33,7 +38,44 @@ const AppProvider: React.FC<AppProviderProps> = ({ listId, children }) => {
   const [planner, setPlanner] = useState<Record<string, PlannerDay>>({})
   const [recipes, setRecipes] = useState<Record<string, RecipeEntry>>({})
   const [loading, setLoading] = useState(true)
+  const [hasPendingWrites, setHasPendingWrites] = useState(false)
+  const [recentlyReconnected, setRecentlyReconnected] = useState(false)
+  const [isOnline, setIsOnline] = useState(
+    typeof navigator === "undefined" ? true : navigator.onLine
+  )
   const [actions, setActions] = useState<BackendActions | undefined>(undefined)
+  const showingCachedData = !isOnline
+  const wasOfflineRef = useRef(!isOnline)
+
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true)
+      if (wasOfflineRef.current) {
+        setRecentlyReconnected(true)
+      }
+    }
+    const handleOffline = () => {
+      wasOfflineRef.current = true
+      setIsOnline(false)
+    }
+
+    window.addEventListener("online", handleOnline)
+    window.addEventListener("offline", handleOffline)
+
+    return () => {
+      window.removeEventListener("online", handleOnline)
+      window.removeEventListener("offline", handleOffline)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!isOnline) return
+
+    if (!hasPendingWrites) {
+      setRecentlyReconnected(false)
+      wasOfflineRef.current = false
+    }
+  }, [hasPendingWrites, isOnline])
 
   useEffect(() => {
     window.localStorage.setItem("listName", listId)
@@ -43,6 +85,8 @@ const AppProvider: React.FC<AppProviderProps> = ({ listId, children }) => {
       onPlannerChanged: planner => setPlanner(planner),
       onRecipesChanged: recipes => setRecipes(recipes),
       onLoadingChanged: loading => setLoading(loading),
+      onSyncStateChanged: (state: Parameters<BackendCallbacks["onSyncStateChanged"]>[0]) =>
+        setHasPendingWrites(state.hasPendingWrites),
     })
 
     backend.current = instance
@@ -50,6 +94,7 @@ const AppProvider: React.FC<AppProviderProps> = ({ listId, children }) => {
 
     return () => {
       setActions(undefined)
+      setHasPendingWrites(false)
       instance.disconnect()
       if (backend.current === instance) {
         backend.current = null
@@ -59,7 +104,17 @@ const AppProvider: React.FC<AppProviderProps> = ({ listId, children }) => {
 
   return (
     <AppContext.Provider
-      value={{ items, catalogue, planner, recipes, loading }}
+      value={{
+        items,
+        catalogue,
+        planner,
+        recipes,
+        loading,
+        isOnline,
+        showingCachedData,
+        hasPendingWrites,
+        recentlyReconnected,
+      }}
     >
       <BackendContext.Provider value={actions}>
         {actions ? children : null}

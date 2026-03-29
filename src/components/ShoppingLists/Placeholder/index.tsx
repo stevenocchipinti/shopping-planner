@@ -1,6 +1,5 @@
 import React, { FC, useState } from "react"
 
-import useSetting from "../../../useSetting"
 import { placeholderCard, placeholderImage, placeholderText } from "../../listing.css"
 import bread from "./bread.png"
 import coffee from "./coffee.png"
@@ -48,7 +47,6 @@ const texts = [
 const randomFrom = <T,>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)]
 
 const Placeholder: FC = () => {
-  const [cutePlaceholders] = useSetting("cutePlaceholders")
   const [image, setImage] = useState(randomFrom(images))
   const [text, setText] = useState(randomFrom(texts))
 
@@ -59,7 +57,7 @@ const Placeholder: FC = () => {
 
   return (
     <button className={placeholderCard} type="button" onClick={refresh}>
-      {cutePlaceholders ? <img className={placeholderImage} src={image} alt="" /> : null}
+      <img className={placeholderImage} src={image} alt="" />
       <p className={placeholderText}>{text}</p>
     </button>
   )

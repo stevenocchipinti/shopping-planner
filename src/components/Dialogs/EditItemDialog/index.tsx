@@ -7,7 +7,7 @@ import { useAppState } from "../../Backend"
 import { ItemAutocomplete, SectionAutocomplete } from "../../Autocomplete"
 import { Button, IconButton } from "../../ui"
 import { dialogActions, dialogHeader } from "../../dialogs.css"
-import { dialogBody, dialogFooterGrow, dialogTitle } from "../../ui.css"
+import { dialogBody, dialogDescription, dialogFooterGrow, dialogTitle } from "../../ui.css"
 import Dialog from "../Dialog"
 import NumberPicker from "../NumberPicker"
 import { useDialogState } from "./useDialogState"
@@ -33,7 +33,7 @@ const EditItemDialog = ({
   onDelete,
   onClose,
 }: EditItemDialogProps) => {
-  const { items, catalogue } = useAppState()
+  const { items, catalogue, isOnline } = useAppState()
   const [dialogState, dispatch] = useDialogState()
 
   useEffect(() => {
@@ -87,6 +87,11 @@ const EditItemDialog = ({
         />
         <SectionAutocomplete value={dialogState.section} onChange={updateSection} />
         <NumberPicker value={dialogState.quantity} onChange={updateQuantity} />
+        {!isOnline ? (
+          <p className={dialogDescription}>
+            You are offline. Changes save on this device and will sync when you reconnect.
+          </p>
+        ) : null}
       </div>
       <div className={dialogActions}>
         <span className={dialogFooterGrow} />

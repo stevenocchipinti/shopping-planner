@@ -21,7 +21,7 @@ const NumberPicker = ({ onChange, value, ...props }: NumberPickerProps) => {
         <MinusCircle size={18} />
       </IconButton>
       <TextField
-        className={numberInput}
+        inputClassName={numberInput}
         inputMode="numeric"
         pattern="[0-9]+"
         required

@@ -11,6 +11,7 @@ import React, {
 import { createPortal } from "react-dom"
 
 import {
+  drawerOverlayDismiss,
   button,
   drawerPanel,
   drawerViewport,
@@ -119,11 +120,20 @@ interface TextFieldProps
   startAdornment?: ReactNode
   endAdornment?: ReactNode
   inputRef?: React.Ref<HTMLInputElement>
+  inputClassName?: string
 }
 
 const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
   (
-    { startAdornment, endAdornment, className, inputRef, readOnly, ...props },
+    {
+      startAdornment,
+      endAdornment,
+      className,
+      inputClassName,
+      inputRef,
+      readOnly,
+      ...props
+    },
     ref
   ) => {
     const mergedRef = (node: HTMLInputElement | null) => {
@@ -136,14 +146,18 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
 
     return (
       <div className={cx(inputShell, className)}>
-        {startAdornment ? <span className={inputAdornment}>{startAdornment}</span> : null}
+        {startAdornment ? (
+          <span className={inputAdornment}>{startAdornment}</span>
+        ) : null}
         <input
-          className={cx(input, readOnly && inputReadOnly)}
+          className={cx(input, inputClassName, readOnly && inputReadOnly)}
           readOnly={readOnly}
           ref={mergedRef}
           {...props}
         />
-        {endAdornment ? <span className={inputAdornment}>{endAdornment}</span> : null}
+        {endAdornment ? (
+          <span className={inputAdornment}>{endAdornment}</span>
+        ) : null}
       </div>
     )
   }
@@ -197,9 +211,10 @@ interface DrawerProps {
   onClose: () => void
   children: ReactNode
   className?: string
+  panelClassName?: string
 }
 
-const Drawer = ({ open, onClose, children, className }: DrawerProps) => {
+const Drawer = ({ open, onClose, children, className, panelClassName }: DrawerProps) => {
   const portalRoot = usePortalRoot()
   useBodyLock(open)
   useEscape(open, onClose)
@@ -210,7 +225,13 @@ const Drawer = ({ open, onClose, children, className }: DrawerProps) => {
     <>
       <div className={overlay} onClick={onClose} />
       <div className={cx(drawerViewport, className)}>
-        <div className={drawerPanel}>{children}</div>
+        <div className={cx(drawerPanel, panelClassName)}>{children}</div>
+        <button
+          className={drawerOverlayDismiss}
+          type="button"
+          aria-label="Close menu"
+          onClick={onClose}
+        />
       </div>
     </>,
     portalRoot
@@ -236,7 +257,10 @@ const Popover = ({ open, anchorEl, onClose, children }: PopoverProps) => {
 
     const updatePosition = () => {
       const rect = anchorEl.getBoundingClientRect()
-      const maxLeft = Math.max(12, window.innerWidth - Math.min(360, window.innerWidth - 24) - 12)
+      const maxLeft = Math.max(
+        12,
+        window.innerWidth - Math.min(360, window.innerWidth - 24) - 12
+      )
       setPosition({
         top: Math.min(window.innerHeight - 24, rect.bottom + 8),
         left: Math.min(maxLeft, Math.max(12, rect.left)),
@@ -278,7 +302,8 @@ const Popover = ({ open, anchorEl, onClose, children }: PopoverProps) => {
   )
 }
 
-interface SwitchProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "type"> {
+interface SwitchProps
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, "type"> {
   label?: string
 }
 
@@ -290,5 +315,15 @@ const Switch = ({ className, ...props }: SwitchProps) => (
   </label>
 )
 
-export { Button, Dialog, Drawer, IconButton, Popover, Spinner, Switch, TextField, cx }
+export {
+  Button,
+  Dialog,
+  Drawer,
+  IconButton,
+  Popover,
+  Spinner,
+  Switch,
+  TextField,
+  cx,
+}
 export { button, dialogForm, iconButton }

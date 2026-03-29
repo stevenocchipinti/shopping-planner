@@ -9,7 +9,7 @@ import {
 import Alert from "../../Alert"
 import { Button } from "../../ui"
 import { dialogActions } from "../../dialogs.css"
-import { dialogBody, dialogFooterGrow, dialogHeader, dialogTitle } from "../../ui.css"
+import { dialogBody, dialogDescription, dialogFooterGrow, dialogHeader, dialogTitle } from "../../ui.css"
 import DayPicker from "../DayPicker"
 import Dialog from "../Dialog"
 
@@ -35,7 +35,7 @@ const AddPlannerItemDialog = ({
   onClose,
   onChangeDay,
 }: AddPlannerItemDialogProps) => {
-  const { recipes, planner } = useAppState()
+  const { recipes, planner, isOnline } = useAppState()
   const [item, setItem] = useState("")
   const [emoji, setEmoji] = useState<string | null>(null)
   const [ingredients, setIngredients] = useState<string[]>([])
@@ -80,6 +80,11 @@ const AddPlannerItemDialog = ({
           autoFocus
         />
         <IngredientAutocomplete value={ingredients} onChange={setIngredients} />
+        {!isOnline ? (
+          <p className={dialogDescription}>
+            You are offline. Planner changes save on this device and will sync when you reconnect.
+          </p>
+        ) : null}
       </div>
       <div className={dialogActions}>
         <Alert visible={alertVisible}>Saved!</Alert>

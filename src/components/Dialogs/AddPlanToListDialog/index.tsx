@@ -25,7 +25,7 @@ interface AddPlanToListDialogProps {
 }
 
 const AddPlanToListDialog = ({ open, onSubmit, onClose }: AddPlanToListDialogProps) => {
-  const { items, catalogue, recipes, planner } = useAppState()
+  const { items, catalogue, recipes, planner, isOnline } = useAppState()
   const [ignoredItems, setIgnoredItems] = useState<string[]>([])
 
   const plannerItems = Object.values(planner).flatMap(day => day.items)
@@ -82,7 +82,11 @@ const AddPlanToListDialog = ({ open, onSubmit, onClose }: AddPlanToListDialogPro
         <h2 className={dialogTitle}>Add planner items to list</h2>
       </div>
       <div className={dialogBody}>
-        <p className={dialogDescription}>You can deselect any items you don&apos;t want.</p>
+        <p className={dialogDescription}>
+          {!isOnline
+            ? "You are offline. Any list updates you confirm here will save on this device and sync when you reconnect."
+            : "You can deselect any items you don't want."}
+        </p>
         <ShoppingLists variant="embedded" items={plannedItems} onMark={handleMark} />
       </div>
       <div className={dialogActions}>

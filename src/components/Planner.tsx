@@ -13,6 +13,7 @@ import {
   plannerAddButton,
   plannerChipCell,
   plannerChipContainer,
+  plannerRowLast,
   table,
   tableCard,
   tableCell,
@@ -54,8 +55,11 @@ const Planner: FC<PlannerProps> = ({ onAdd, onEdit, onDelete }) => {
       <div className={tableCard}>
         <table className={table} aria-label="Planner table">
           <tbody>
-            {days.map(entryDay => (
-              <tr key={entryDay}>
+            {days.map((entryDay, index) => (
+              <tr
+                key={entryDay}
+                className={index === days.length - 1 ? plannerRowLast : undefined}
+              >
                 <th className={`${tableCell} ${tableCellStrong}`} scope="row" style={{ width: 104 }}>
                   {entryDay}
                 </th>
@@ -77,12 +81,12 @@ const Planner: FC<PlannerProps> = ({ onAdd, onEdit, onDelete }) => {
                       )
                     })}
                     {!loading ? (
-                      <button
-                        className={plannerAddButton}
-                        aria-label={`Add item for ${entryDay}`}
-                        onClick={() => {
-                          setDay(entryDay)
-                          setAddDialogOpen(true)
+                        <button
+                          className={plannerAddButton}
+                          aria-label={`Add item for ${entryDay}`}
+                          onClick={() => {
+                            setDay(entryDay)
+                            setAddDialogOpen(true)
                         }}
                         type="button"
                       >

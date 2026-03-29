@@ -19,6 +19,7 @@ interface AppBarProps {
   loading?: boolean
   back?: string
   actions?: ReactNode
+  titleAside?: ReactNode
 }
 
 const AppBar: FC<AppBarProps> = ({
@@ -27,6 +28,7 @@ const AppBar: FC<AppBarProps> = ({
   loading,
   back,
   actions = null,
+  titleAside = null,
 }) => {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const { listId } = useParams()
@@ -54,7 +56,10 @@ const AppBar: FC<AppBarProps> = ({
             )}
           </div>
 
-          <h1 className={appBarTitle}>{title}</h1>
+          <div className={appBarTitle}>
+            <span>{title}</span>
+            {titleAside}
+          </div>
 
           <div className={appBarSlot}>{actions}</div>
 
