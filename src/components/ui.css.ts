@@ -9,7 +9,7 @@ const fadeIn = keyframes({
 })
 
 const slideUp = keyframes({
-  from: { opacity: 0, transform: "translate3d(0, 18px, 0) scale(0.98)" },
+  from: { opacity: 0, transform: "translate3d(0, 1.125rem, 0) scale(0.98)" },
   to: { opacity: 1, transform: "translate3d(0, 0, 0) scale(1)" },
 })
 
@@ -40,15 +40,15 @@ export const srOnly = style({
 })
 
 export const screen = style({
-  maxWidth: 720,
+  maxWidth: "45rem",
   margin: "0 auto",
   minHeight: "100dvh",
-  paddingBottom: "calc(120px + max(10px, env(safe-area-inset-bottom)))",
+  paddingBottom: "calc(7.5rem + max(0.625rem, env(safe-area-inset-bottom)))",
 })
 
 export const surfaceCard = style({
   background: vars.color.surface,
-  border: `1px solid ${vars.color.divider}`,
+  border: `0.0625rem solid ${vars.color.divider}`,
   borderRadius: vars.radius.lg,
   boxShadow: vars.shadow.soft,
 })
@@ -62,7 +62,7 @@ export const accentCard = style([
 
 export const eyebrow = style({
   margin: 0,
-  fontSize: 11,
+  fontSize: "0.6875rem",
   fontWeight: 700,
   letterSpacing: "0.12em",
   textTransform: "uppercase",
@@ -86,8 +86,12 @@ export const field = style({
   marginBottom: vars.space.md,
 })
 
+export const fieldCompact = style({
+  marginBottom: vars.space.md,
+})
+
 export const fieldLabel = style({
-  fontSize: 12,
+  fontSize: "0.75rem",
   fontWeight: 700,
   letterSpacing: "0.08em",
   textTransform: "uppercase",
@@ -98,16 +102,16 @@ export const inputShell = style({
   display: "flex",
   alignItems: "center",
   gap: vars.space.sm,
-  minHeight: 48,
-  borderRadius: 12,
-  border: `1px solid ${vars.color.divider}`,
+  minHeight: "3rem",
+  borderRadius: "0.75rem",
+  border: `0.0625rem solid ${vars.color.divider}`,
   background: vars.color.surfaceMuted,
-  padding: "0 14px",
+  padding: "0 0.25rem",
   transition: `border-color ${vars.duration.fast} ease, box-shadow ${vars.duration.fast} ease, background ${vars.duration.fast} ease`,
   selectors: {
     "&:focus-within": {
       borderColor: vars.color.primary,
-      boxShadow: `0 0 0 4px ${vars.color.focus}`,
+      boxShadow: `0 0 0 0.25rem ${vars.color.focus}`,
       background: vars.color.surface,
     },
   },
@@ -120,8 +124,8 @@ export const input = style({
   outline: 0,
   background: "transparent",
   color: vars.color.text,
-  fontSize: 16,
-  padding: "13px 0",
+  fontSize: "1rem",
+  padding: "0.8125rem 0",
   selectors: {
     "&::placeholder": {
       color: vars.color.textMuted,
@@ -143,11 +147,23 @@ export const inputAdornment = style({
   justifyContent: "center",
   flexShrink: 0,
   color: vars.color.textMuted,
+  width: "2.25rem",
+  marginLeft: "0.25rem",
+})
+
+export const inputAdornmentButton = style({
+  width: "2.25rem",
+  height: "2.25rem",
+  borderRadius: 0,
+})
+
+export const inputAdorned = style({
+  paddingLeft: 0,
 })
 
 export const helperText = style({
   margin: 0,
-  fontSize: 13,
+  fontSize: "0.8125rem",
   lineHeight: 1.5,
   color: vars.color.textMuted,
 })
@@ -161,17 +177,25 @@ export const fieldButton = style({
   textAlign: "left",
 })
 
+export const autocompleteItemAction = style([
+  fieldButton,
+  {
+    display: "flex",
+    alignItems: "center",
+  },
+])
+
 export const button = recipe({
   base: {
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
     gap: vars.space.xs,
-    minHeight: 40,
-    borderRadius: 12,
-    border: "1px solid transparent",
-    padding: "0 18px",
-    fontSize: 14,
+    minHeight: "2.5rem",
+    borderRadius: "0.75rem",
+    border: "0.0625rem solid transparent",
+    padding: "0 1.125rem",
+    fontSize: "0.875rem",
     fontWeight: 600,
     lineHeight: 1,
     textDecoration: "none",
@@ -219,9 +243,9 @@ export const button = recipe({
       },
     },
     size: {
-      sm: { minHeight: 36, padding: "0 14px", fontSize: 13 },
+      sm: { minHeight: "2.25rem", padding: "0 0.875rem", fontSize: "0.8125rem" },
       md: {},
-      lg: { minHeight: 46, padding: "0 20px" },
+      lg: { minHeight: "2.875rem", padding: "0 1.25rem" },
     },
     fullWidth: {
       true: { width: "100%" },
@@ -240,10 +264,10 @@ export const iconButton = recipe({
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    border: "1px solid transparent",
+    width: "2.5rem",
+    height: "2.5rem",
+    borderRadius: "0.75rem",
+    border: "0.0625rem solid transparent",
     background: "transparent",
     color: vars.color.text,
     cursor: "pointer",
@@ -273,10 +297,10 @@ export const iconButton = recipe({
 })
 
 export const spinner = style({
-  width: 28,
-  height: 28,
+  width: "1.75rem",
+  height: "1.75rem",
   borderRadius: "50%",
-  border: `3px solid ${vars.color.divider}`,
+  border: `0.1875rem solid ${vars.color.divider}`,
   borderTopColor: vars.color.primary,
   animation: `${spin} 0.9s linear infinite`,
 })
@@ -286,7 +310,7 @@ export const progressTrack = style({
   right: 0,
   bottom: 0,
   left: 0,
-  height: 2,
+  height: "0.125rem",
   overflow: "hidden",
   background: vars.color.divider,
 })
@@ -304,7 +328,7 @@ export const overlay = style({
   inset: 0,
   zIndex: 40,
   background: vars.color.backdrop,
-  backdropFilter: "blur(8px)",
+  backdropFilter: "blur(0.5rem)",
   animation: `${fadeIn} ${vars.duration.normal} ease`,
 })
 
@@ -314,20 +338,19 @@ export const dialogViewport = style({
   zIndex: 41,
   display: "grid",
   placeItems: "center",
-  padding: 12,
 })
 
 export const dialogPanel = style({
-  width: "min(460px, calc(100vw - 24px))",
-  maxHeight: "min(100dvh - 24px, 760px)",
+  width: "min(28.75rem, calc(100vw - 1.5rem))",
+  maxHeight: "min(100dvh - 1.5rem, 47.5rem)",
   overflow: "auto",
-  borderRadius: 20,
+  borderRadius: "1.25rem",
   background: vars.color.surface,
-  border: `1px solid ${vars.color.divider}`,
+  border: `0.0625rem solid ${vars.color.divider}`,
   boxShadow: vars.shadow.modal,
   animation: `${slideUp} ${vars.duration.normal} ease`,
-  '@media': {
-    "screen and (max-width: 640px)": {
+  "@media": {
+    "screen and (max-width: 40rem)": {
       width: "100vw",
       height: "100dvh",
       maxHeight: "100dvh",
@@ -347,20 +370,20 @@ export const dialogHeader = style({
   alignItems: "center",
   justifyContent: "space-between",
   gap: vars.space.sm,
-  padding: "20px 20px 10px",
+  padding: "1.25rem 1.25rem 0.625rem",
 })
 
 export const dialogTitle = style({
   margin: 0,
   fontFamily: vars.font.serif,
-  fontSize: 30,
+  fontSize: "1.875rem",
   lineHeight: 1,
   fontWeight: 600,
   letterSpacing: "-0.02em",
 })
 
 export const dialogBody = style({
-  padding: "10px 20px 8px",
+  padding: "0.625rem 1.25rem 0.5rem",
   display: "flex",
   flexDirection: "column",
 })
@@ -375,7 +398,7 @@ export const dialogFooter = style({
   display: "flex",
   alignItems: "center",
   gap: vars.space.sm,
-  padding: "14px 20px 20px",
+  padding: "0.875rem 1.25rem 1.25rem",
   marginTop: "auto",
   flexWrap: "wrap",
 })
@@ -391,13 +414,21 @@ export const drawerViewport = style({
   display: "flex",
 })
 
+export const drawerOverlayDismiss = style({
+  flex: 1,
+  border: 0,
+  background: "transparent",
+  padding: 0,
+  cursor: "pointer",
+})
+
 export const drawerPanel = style({
-  width: "min(88vw, 340px)",
+  width: "min(88vw, 21.25rem)",
   minHeight: "100%",
   display: "flex",
   flexDirection: "column",
   background: vars.color.surface,
-  borderRight: `1px solid ${vars.color.divider}`,
+  borderRight: `0.0625rem solid ${vars.color.divider}`,
   boxShadow: vars.shadow.modal,
   animation: `${slideInLeft} ${vars.duration.normal} ease`,
 })
@@ -405,11 +436,11 @@ export const drawerPanel = style({
 export const popover = style({
   position: "fixed",
   zIndex: 45,
-  width: "min(360px, calc(100vw - 24px))",
-  maxWidth: "calc(100vw - 24px)",
-  borderRadius: 18,
+  width: "min(22.5rem, calc(100vw - 1.5rem))",
+  maxWidth: "calc(100vw - 1.5rem)",
+  borderRadius: "1.125rem",
   background: vars.color.surface,
-  border: `1px solid ${vars.color.divider}`,
+  border: `0.0625rem solid ${vars.color.divider}`,
   boxShadow: vars.shadow.modal,
   overflow: "hidden",
   animation: `${slideUp} ${vars.duration.fast} ease`,
@@ -419,8 +450,8 @@ export const switchRoot = style({
   position: "relative",
   display: "inline-flex",
   alignItems: "center",
-  width: 48,
-  height: 30,
+  width: "3rem",
+  height: "1.875rem",
   flexShrink: 0,
 })
 
@@ -437,7 +468,7 @@ export const switchTrack = style({
   height: "100%",
   borderRadius: vars.radius.full,
   background: vars.color.divider,
-  border: `1px solid ${vars.color.border}`,
+  border: `0.0625rem solid ${vars.color.border}`,
   transition: `background ${vars.duration.fast} ease, border-color ${vars.duration.fast} ease`,
   selectors: {
     [`${switchInput}:checked + &`]: {
@@ -449,17 +480,17 @@ export const switchTrack = style({
 
 export const switchThumb = style({
   position: "absolute",
-  top: 3,
-  left: 3,
-  width: 22,
-  height: 22,
+  top: "0.1875rem",
+  left: "0.1875rem",
+  width: "1.375rem",
+  height: "1.375rem",
   borderRadius: "50%",
   background: vars.color.surface,
   boxShadow: vars.shadow.soft,
   transition: `transform ${vars.duration.fast} ease, background ${vars.duration.fast} ease`,
   selectors: {
     [`${switchInput}:checked ~ &`]: {
-      transform: "translateX(18px)",
+      transform: "translateX(1.125rem)",
       background: vars.color.primary,
     },
   },
@@ -467,18 +498,18 @@ export const switchThumb = style({
 
 export const segmentedControl = style({
   display: "grid",
-  gap: 4,
+  gap: "0.25rem",
   width: "100%",
-  padding: 4,
-  borderRadius: 14,
+  padding: "0.25rem",
+  borderRadius: "0.875rem",
   background: vars.gradient.accent,
-  border: `1px solid ${vars.color.divider}`,
+  border: `0.0625rem solid ${vars.color.divider}`,
 })
 
 export const segmentedButton = style({
-  minHeight: 40,
+  minHeight: "2.5rem",
   border: 0,
-  borderRadius: 10,
+  borderRadius: "0.625rem",
   background: "transparent",
   color: vars.color.textMuted,
   display: "inline-flex",
@@ -503,26 +534,26 @@ export const segmentedButton = style({
 export const tags = style({
   display: "flex",
   flexWrap: "wrap",
-  gap: 8,
-  marginBottom: 8,
+  gap: "0.5rem",
+  marginBottom: "0.5rem",
 })
 
 export const tag = style({
   display: "inline-flex",
   alignItems: "center",
-  gap: 6,
-  minHeight: 30,
-  padding: "0 10px",
+  gap: "0.375rem",
+  minHeight: "1.875rem",
+  padding: "0 0.625rem",
   borderRadius: vars.radius.full,
   background: vars.color.actionSelected,
   color: vars.color.text,
-  fontSize: 13,
+  fontSize: "0.8125rem",
   fontWeight: 600,
 })
 
 export const tagRemove = style({
-  width: 18,
-  height: 18,
+  width: "1.125rem",
+  height: "1.125rem",
   padding: 0,
   border: 0,
   borderRadius: "50%",
@@ -544,11 +575,11 @@ export const autocompleteList = style([
   {
     position: "absolute",
     zIndex: 20,
-    top: "calc(100% + 8px)",
+    top: "calc(100% + 0.5rem)",
     left: 0,
     right: 0,
-    padding: 8,
-    maxHeight: 240,
+    padding: "0.5rem",
+    maxHeight: "15rem",
     overflowY: "auto",
   },
 ])
@@ -559,9 +590,9 @@ export const autocompleteItem = style({
   justifyContent: "space-between",
   gap: vars.space.sm,
   width: "100%",
-  padding: "10px 12px",
+  padding: "0.625rem 0.75rem",
   border: 0,
-  borderRadius: 12,
+  borderRadius: "0.75rem",
   background: "transparent",
   color: vars.color.text,
   cursor: "pointer",
@@ -579,10 +610,10 @@ export const autocompleteItemText = style({
 })
 
 export const autocompleteDelete = style({
-  width: 28,
-  height: 28,
+  width: "1.75rem",
+  height: "1.75rem",
   border: 0,
-  borderRadius: 8,
+  borderRadius: "0.5rem",
   background: "transparent",
   color: vars.color.textMuted,
   display: "inline-flex",
@@ -596,7 +627,7 @@ export const fadePresence = style({
   selectors: {
     '&[data-visible="false"]': {
       opacity: 0,
-      transform: "translateY(4px)",
+      transform: "translateY(0.25rem)",
       pointerEvents: "none",
     },
     '&[data-visible="true"]': {

@@ -5,13 +5,13 @@ import { segmentedButton, segmentedControl } from "./ui.css"
 
 export const toggleCard = style({
   marginTop: "auto",
-  padding: 16,
+  padding: "1rem",
 })
 
 export const toggleLabel = style({
-  margin: "0 0 10px",
+  margin: "0 0 0.625rem",
   color: vars.color.textMuted,
-  fontSize: 11,
+  fontSize: "0.6875rem",
   fontWeight: 700,
   letterSpacing: "0.1em",
   textTransform: "uppercase",

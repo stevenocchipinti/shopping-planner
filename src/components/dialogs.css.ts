@@ -8,13 +8,13 @@ export const alert = style([
   {
     display: "inline-flex",
     alignItems: "center",
-    gap: 8,
-    minHeight: 36,
-    padding: "0 12px",
+    gap: "0.5rem",
+    minHeight: "2.25rem",
+    padding: "0 0.75rem",
     borderRadius: vars.radius.full,
     background: vars.color.actionSelected,
     color: vars.color.success,
-    fontSize: 13,
+    fontSize: "0.8125rem",
     fontWeight: 700,
   },
 ])
@@ -23,15 +23,15 @@ export const dialogHeader = style({
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  padding: "8px 12px 8px 24px",
+  padding: "0.5rem 0.75rem 0.5rem 1.5rem",
 })
 
 export const dialogActions = style({
   display: "flex",
   alignItems: "center",
-  gap: 10,
+  gap: "0.625rem",
   flexWrap: "wrap",
-  padding: "12px 20px 20px",
+  padding: "0.75rem 1.25rem 1.25rem",
   marginTop: "auto",
 })
 
@@ -42,8 +42,8 @@ export const spacer = style({
 export const openDialogActions = style({
   display: "flex",
   flexDirection: "column",
-  minWidth: 250,
-  gap: 16,
+  minWidth: "15.625rem",
+  gap: "1rem",
 })
 
 export const centeredText = style({
@@ -64,12 +64,13 @@ export const numberPicker = style({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  gap: 20,
+  gap: "1.25rem",
   margin: "0.5rem 0 1rem",
 })
 
 export const numberInput = style({
   width: "5.5rem",
+  textAlign: "center",
 })
 
 export const numberInputField = style({
@@ -89,6 +90,6 @@ export const emojiPickerWrap = style({
 export const emojiPickerFooter = style({
   display: "flex",
   justifyContent: "flex-end",
-  padding: 10,
-  borderTop: `1px solid ${vars.color.divider}`,
+  padding: "0.625rem",
+  borderTop: `0.0625rem solid ${vars.color.divider}`,
 })

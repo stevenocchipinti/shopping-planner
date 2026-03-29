@@ -10,6 +10,7 @@ const backgroundDrift = keyframes({
 globalStyle("html", {
   background: vars.color.bg,
   colorScheme: "light",
+  WebkitTapHighlightColor: "transparent",
 })
 
 globalStyle('[data-theme="dark"]', {
