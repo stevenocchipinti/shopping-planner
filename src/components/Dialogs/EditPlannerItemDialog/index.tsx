@@ -1,30 +1,17 @@
-import React, { useRef, useEffect, useState } from "react"
-import {
-  DialogActions,
-  DialogContent,
-  Button,
-  IconButton,
-  Typography,
-} from "@mui/material"
+import React, { useEffect, useRef, useState } from "react"
+import { Trash2 } from "lucide-react"
 
-import { Delete as DeleteIcon } from "@mui/icons-material"
-
+import { slugify, unslugify } from "../../../helpers"
 import { useAppState } from "../../Backend"
+import {
+  IngredientAutocomplete,
+  ItemOrRecipeAutocomplete,
+} from "../../Autocomplete"
+import { Button, IconButton } from "../../ui"
+import { dialogActions, dialogHeader } from "../../dialogs.css"
+import { dialogBody, dialogFooterGrow, dialogTitle } from "../../ui.css"
 import DayPicker from "../DayPicker"
 import Dialog from "../Dialog"
-import {
-  ItemOrRecipeAutocomplete,
-  IngredientAutocomplete,
-} from "../../Autocomplete"
-import { unslugify, slugify } from "../../../helpers"
-import styled from "styled-components"
-
-const DialogHeader = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px 8px 24px;
-`
 
 interface PlannerItem {
   name: string
@@ -65,21 +52,22 @@ const EditPlannerItemDialog = ({
 
   useEffect(() => {
     if (!itemToEdit) return
+
     const { name, day: itemDay, type } = itemToEdit
-    const emoji =
-      type === "recipe" ? recipes[name]?.emoji : catalogue[name]?.emoji
-    const ingredients = recipes[name]?.ingredients?.map(i => unslugify(i.slug))
+    const itemEmoji = type === "recipe" ? recipes[name]?.emoji : catalogue[name]?.emoji
+    const recipeIngredients = recipes[name]?.ingredients?.map(ingredient => unslugify(ingredient.slug))
+
     setItem(unslugify(name))
-    setIngredients((type === "recipe" && ingredients) || [])
-    setEmoji(emoji ?? null)
+    setIngredients((type === "recipe" && recipeIngredients) || [])
+    setEmoji(itemEmoji ?? null)
     setDay(itemDay)
   }, [itemToEdit, recipes, catalogue])
 
   const disabled = slugify(item) === ""
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    itemToEdit &&
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault()
+    if (itemToEdit) {
       onSubmit({
         item: itemToEdit,
         newItem: item,
@@ -87,36 +75,25 @@ const EditPlannerItemDialog = ({
         newEmoji: emoji,
         newIngredients: ingredients,
       })
+    }
     onClose()
   }
 
-  const handleDelete = (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleDelete = (event: React.FormEvent) => {
+    event.preventDefault()
     onDelete({ item, day })
     onClose()
   }
 
   return (
-    <Dialog
-      title="Edit item"
-      open={open}
-      onClose={onClose}
-      onSubmit={handleSubmit}
-    >
-      <DialogHeader>
-        <Typography component="h2" variant="h6">
-          Edit item
-        </Typography>
-        <IconButton
-          onClick={handleDelete}
-          color="inherit"
-          edge="start"
-          aria-label="menu"
-        >
-          <DeleteIcon />
+    <Dialog open={open} onClose={onClose} onSubmit={handleSubmit} title="Edit item">
+      <div className={dialogHeader}>
+        <h2 className={dialogTitle}>Edit item</h2>
+        <IconButton onClick={handleDelete} aria-label="Delete planner item">
+          <Trash2 size={18} />
         </IconButton>
-      </DialogHeader>
-      <DialogContent>
+      </div>
+      <div className={dialogBody}>
         <DayPicker days={days} value={day} onChange={setDay} />
         <ItemOrRecipeAutocomplete
           emoji={emoji}
@@ -127,18 +104,14 @@ const EditPlannerItemDialog = ({
           autoFocus
         />
         <IngredientAutocomplete value={ingredients} onChange={setIngredients} />
-      </DialogContent>
-      <DialogActions>
+      </div>
+      <div className={dialogActions}>
+        <span className={dialogFooterGrow} />
         <Button onClick={onClose}>Close</Button>
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          disabled={disabled}
-        >
+        <Button type="submit" variant="solid" disabled={disabled}>
           Save
         </Button>
-      </DialogActions>
+      </div>
     </Dialog>
   )
 }

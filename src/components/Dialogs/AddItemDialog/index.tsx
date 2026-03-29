@@ -1,34 +1,20 @@
 import React, { useRef, useState } from "react"
-import styled from "styled-components"
-import {
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Button,
-} from "@mui/material"
-import Alert from "../../Alert"
-import Dialog from "../Dialog"
-import { ItemAutocomplete, SectionAutocomplete } from "../../Autocomplete"
-import NumberPicker from "../NumberPicker"
-import useDialogState from "./useDialogState"
+
 import { normalizeSection, prettify } from "../../../helpers"
 import { useAppState } from "../../Backend"
-
-const Spacer = styled.div`
-  flex-grow: 1;
-`
-
-const Actions = styled(DialogActions)`
-  && {
-    align-items: center;
-  }
-`
-
-const SubmitButton = styled(Button)`
-  && {
-    color: ${({ theme }) => theme.palette.primary.contrastText};
-  }
-`
+import { ItemAutocomplete, SectionAutocomplete } from "../../Autocomplete"
+import Alert from "../../Alert"
+import { Button } from "../../ui"
+import { dialogActions, spacer } from "../../dialogs.css"
+import {
+  dialogBody,
+  dialogFooterGrow,
+  dialogHeader,
+  dialogTitle,
+} from "../../ui.css"
+import Dialog from "../Dialog"
+import NumberPicker from "../NumberPicker"
+import useDialogState from "./useDialogState"
 
 interface AddItemDialogProps {
   open: boolean
@@ -41,22 +27,18 @@ interface AddItemDialogProps {
   onClose: () => void
 }
 
-const AddItemDialog = ({
-  open,
-  onSubmit,
-  onClose,
-}: AddItemDialogProps) => {
+const AddItemDialog = ({ open, onSubmit, onClose }: AddItemDialogProps) => {
   const { items, catalogue } = useAppState()
   const [dialogState, dispatch] = useDialogState()
   const [alertVisible, setAlertVisible] = useState(false)
   const itemInputRef = useRef<HTMLInputElement>(null)
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault()
     onSubmit({
       item: prettify(dialogState.item),
       section: normalizeSection(dialogState.section),
-      quantity: parseInt(dialogState.quantity.toString()),
+      quantity: parseInt(dialogState.quantity.toString(), 10),
       emoji: dialogState.emoji,
     })
     setAlertVisible(true)
@@ -75,14 +57,11 @@ const AddItemDialog = ({
     dispatch({ type: "emoji", newEmoji, items, catalogue })
 
   return (
-    <Dialog
-      title="Add items"
-      open={open}
-      onClose={onClose}
-      onSubmit={handleSubmit}
-    >
-      <DialogTitle>Add items</DialogTitle>
-      <DialogContent>
+    <Dialog open={open} onClose={onClose} onSubmit={handleSubmit} title="Add items">
+      <div className={dialogHeader}>
+        <h2 className={dialogTitle}>Add items</h2>
+      </div>
+      <div className={dialogBody}>
         <ItemAutocomplete
           value={dialogState.item}
           onChange={updateItem}
@@ -91,25 +70,21 @@ const AddItemDialog = ({
           ref={itemInputRef}
           autoFocus
         />
-        <SectionAutocomplete
-          value={dialogState.section}
-          onChange={updateSection}
-        />
+        <SectionAutocomplete value={dialogState.section} onChange={updateSection} />
         <NumberPicker value={dialogState.quantity} onChange={updateQuantity} />
-      </DialogContent>
-      <Actions>
+      </div>
+      <div className={dialogActions}>
         <Alert visible={alertVisible}>Saved!</Alert>
-        <Spacer />
+        <span className={dialogFooterGrow} />
         <Button onClick={onClose}>Close</Button>
-        <SubmitButton
+        <Button
           type="submit"
-          variant="contained"
-          color="primary"
+          variant="solid"
           disabled={dialogState.actionDisabled}
         >
           {dialogState.actionLabel}
-        </SubmitButton>
-      </Actions>
+        </Button>
+      </div>
     </Dialog>
   )
 }

@@ -1,34 +1,16 @@
 import React, { useEffect } from "react"
-import styled from "styled-components"
-import {
-  DialogActions,
-  DialogContent,
-  Button,
-  IconButton,
-  Typography,
-} from "@mui/material"
-import { Delete as DeleteIcon } from "@mui/icons-material"
+import { Trash2 } from "lucide-react"
 
-import Dialog from "../Dialog"
-import { ItemAutocomplete, SectionAutocomplete } from "../../Autocomplete"
-import NumberPicker from "../NumberPicker"
 import { normalizeSection, prettify } from "../../../helpers"
-import { useDialogState } from "./useDialogState"
-import { useAppState } from "../../Backend"
 import { ShoppingItem } from "../../Backend/backend"
-
-const DialogHeader = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px 8px 24px;
-`
-
-const SubmitButton = styled(Button)`
-  && {
-    color: ${({ theme }) => theme.palette.primary.contrastText};
-  }
-`
+import { useAppState } from "../../Backend"
+import { ItemAutocomplete, SectionAutocomplete } from "../../Autocomplete"
+import { Button, IconButton } from "../../ui"
+import { dialogActions, dialogHeader } from "../../dialogs.css"
+import { dialogBody, dialogFooterGrow, dialogTitle } from "../../ui.css"
+import Dialog from "../Dialog"
+import NumberPicker from "../NumberPicker"
+import { useDialogState } from "./useDialogState"
 
 interface EditItemDialogProps {
   item: ShoppingItem | undefined
@@ -55,25 +37,26 @@ const EditItemDialog = ({
   const [dialogState, dispatch] = useDialogState()
 
   useEffect(() => {
-    item && dispatch({ type: "set", item, items, catalogue })
+    if (item) dispatch({ type: "set", item, items, catalogue })
   }, [dispatch, item, items, catalogue, open])
 
-  const handleDelete = (e: React.FormEvent) => {
-    e.preventDefault()
-    item && onDelete(item)
+  const handleDelete = (event: React.FormEvent) => {
+    event.preventDefault()
+    if (item) onDelete(item)
     onClose()
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    item &&
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault()
+    if (item) {
       onSubmit({
         item,
         newItem: prettify(dialogState.item),
         newSection: normalizeSection(dialogState.section),
-        newQuantity: parseInt(dialogState.quantity.toString()),
+        newQuantity: parseInt(dialogState.quantity.toString(), 10),
         newEmoji: dialogState.emoji,
       })
+    }
     onClose()
   }
 
@@ -87,26 +70,14 @@ const EditItemDialog = ({
     dispatch({ type: "emoji", newEmoji, item, items, catalogue })
 
   return (
-    <Dialog
-      title="Edit item"
-      open={open}
-      onClose={onClose}
-      onSubmit={handleSubmit}
-    >
-      <DialogHeader>
-        <Typography component="h2" variant="h6">
-          Edit item
-        </Typography>
-        <IconButton
-          onClick={handleDelete}
-          color="inherit"
-          edge="start"
-          aria-label="menu"
-        >
-          <DeleteIcon />
+    <Dialog open={open} onClose={onClose} onSubmit={handleSubmit} title="Edit item">
+      <div className={dialogHeader}>
+        <h2 className={dialogTitle}>Edit item</h2>
+        <IconButton onClick={handleDelete} aria-label="Delete item">
+          <Trash2 size={18} />
         </IconButton>
-      </DialogHeader>
-      <DialogContent>
+      </div>
+      <div className={dialogBody}>
         <ItemAutocomplete
           value={dialogState.item}
           onChange={updateItem}
@@ -114,23 +85,20 @@ const EditItemDialog = ({
           onEmojiChange={updateEmoji}
           autoFocus
         />
-        <SectionAutocomplete
-          value={dialogState.section}
-          onChange={updateSection}
-        />
+        <SectionAutocomplete value={dialogState.section} onChange={updateSection} />
         <NumberPicker value={dialogState.quantity} onChange={updateQuantity} />
-      </DialogContent>
-      <DialogActions>
+      </div>
+      <div className={dialogActions}>
+        <span className={dialogFooterGrow} />
         <Button onClick={onClose}>Close</Button>
-        <SubmitButton
+        <Button
           type="submit"
-          variant="contained"
-          color="primary"
+          variant="solid"
           disabled={dialogState.actionDisabled}
         >
           {dialogState.actionLabel}
-        </SubmitButton>
-      </DialogActions>
+        </Button>
+      </div>
     </Dialog>
   )
 }

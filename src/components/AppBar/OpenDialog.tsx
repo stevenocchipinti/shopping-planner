@@ -1,47 +1,25 @@
-import React, { useState, FC } from "react"
-import styled from "styled-components"
-
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  TextField as MuiTextField,
-  Button,
-  Typography,
-} from "@mui/material"
-import AutoComplete from "../Autocomplete"
-
+import React, { FC, useMemo, useState } from "react"
 import { Link, useNavigate, useParams } from "react-router-dom"
-import useLocalStorage from "../../useLocalStorage"
+
+import AutoComplete from "../Autocomplete"
 import { generateListName } from "../../components/Backend"
+import useLocalStorage from "../../useLocalStorage"
+import Dialog from "../Dialogs/Dialog"
+import { Button } from "../ui"
+import { centeredText, dialogActions, openDialogActions, spacer } from "../dialogs.css"
+import {
+  dialogBody,
+  dialogDescription,
+  dialogHeader,
+  dialogTitle,
+  field,
+  fieldLabel,
+} from "../ui.css"
 
 interface OpenDialogProps {
   open: boolean
   onClose: () => void
 }
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-`
-
-const Actions = styled.div`
-  display: flex;
-  flex-direction: column;
-  min-width: 250px;
-  && > * {
-    margin-bottom: 1rem;
-  }
-`
-
-const TextField = styled(MuiTextField)`
-  & .MuiInputBase-root {
-    min-height: 48px;
-  }
-`
 
 const OpenDialog: FC<OpenDialogProps> = ({ open, onClose }) => {
   const [listMRU, setListMRU] = useLocalStorage<string[]>("listMRU", [])
@@ -52,77 +30,66 @@ const OpenDialog: FC<OpenDialogProps> = ({ open, onClose }) => {
   const addToListMRU = (list: string) => setListMRU([...new Set([...listMRU, list])])
   const removeFromListMRU = (list: string) => setListMRU(listMRU.filter(l => l !== list))
 
-  const openList = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (newList.length === 0) return
-    let list = newList
+  const cleanedValue = useMemo(() => newList.trim(), [newList])
+
+  const openList = (event: React.FormEvent) => {
+    event.preventDefault()
+    if (cleanedValue.length === 0) return
+
+    let list = cleanedValue
+
     try {
-      const url = new URL(newList)
+      const url = new URL(cleanedValue)
       const match = url.pathname.match(/\/list\/([^/]+)/)
       if (match) {
         list = match[1]
       }
-    } catch (error) {}
+    } catch {}
+
     addToListMRU(list)
     navigate(`/list/${list}`)
     onClose()
   }
 
   return (
-    <Dialog open={open} onClose={onClose}>
-      <Form onSubmit={openList} autoComplete="off">
-        <DialogTitle>Change list</DialogTitle>
-        <DialogContent>
-          <DialogContentText>Your list ID: {id}</DialogContentText>
-          <Actions>
-            <p>Open an existing list:</p>
+    <Dialog open={open} onClose={onClose} onSubmit={openList}>
+      <div className={dialogHeader}>
+        <h2 className={dialogTitle}>Change list</h2>
+      </div>
 
-            {/* Having `-search` in the id stops lastpass autocomplete */}
+      <div className={dialogBody}>
+        <p className={dialogDescription}>Your list ID: {id}</p>
+        <div className={openDialogActions}>
+          <label className={field}>
+            <span className={fieldLabel}>Open an existing list</span>
             <AutoComplete
               id="list-search"
+              placeholder="ID or URL"
               options={listMRU}
               inputValue={newList}
-              onInputChange={(e: React.SyntheticEvent | null, newValue: string) => e && setNewList(newValue)}
+              onInputChange={(_, value) => setNewList(value)}
               onDelete={removeFromListMRU}
               autoFocus
-              renderInput={(params: any) => (
-                <TextField
-                  {...params}
-                  variant="outlined"
-                  placeholder="ID or URL"
-                  autoFocus
-                  id="open"
-                  fullWidth={true}
-                  size="small"
-                />
-              )}
             />
+          </label>
 
-            <Typography align="center">or</Typography>
-            <Button
-              component={Link}
-              onClick={onClose}
-              to={`/list/${generateListName()}`}
-              color="primary"
-              variant="outlined"
-              size="large"
-            >
+          <p className={centeredText}>or</p>
+
+          <Link to={`/list/${generateListName()}`} onClick={onClose}>
+            <Button variant="outline" size="lg" fullWidth>
               Create new list
             </Button>
-          </Actions>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button
-            disabled={newList.length === 0}
-            variant="contained"
-            type="submit"
-            color="primary"
-          >
-            Open
-          </Button>
-        </DialogActions>
-      </Form>
+          </Link>
+        </div>
+      </div>
+
+      <div className={dialogActions}>
+        <span className={spacer} />
+        <Button onClick={onClose}>Cancel</Button>
+        <Button variant="solid" type="submit" disabled={cleanedValue.length === 0}>
+          Open
+        </Button>
+      </div>
     </Dialog>
   )
 }

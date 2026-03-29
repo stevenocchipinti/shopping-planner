@@ -1,24 +1,17 @@
 import React, { useRef, useState } from "react"
+
+import { slugify, unslugify } from "../../../helpers"
+import { useAppState } from "../../Backend"
 import {
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Button,
-} from "@mui/material"
+  IngredientAutocomplete,
+  ItemOrRecipeAutocomplete,
+} from "../../Autocomplete"
 import Alert from "../../Alert"
+import { Button } from "../../ui"
+import { dialogActions } from "../../dialogs.css"
+import { dialogBody, dialogFooterGrow, dialogHeader, dialogTitle } from "../../ui.css"
 import DayPicker from "../DayPicker"
 import Dialog from "../Dialog"
-import {
-  ItemOrRecipeAutocomplete,
-  IngredientAutocomplete,
-} from "../../Autocomplete"
-import { slugify, unslugify } from "../../../helpers"
-import styled from "styled-components"
-import { useAppState } from "../../Backend"
-
-const Spacer = styled.div`
-  flex-grow: 1;
-`
 
 interface AddPlannerItemDialogProps {
   day: string | null
@@ -51,17 +44,12 @@ const AddPlannerItemDialog = ({
   const itemInputRef = useRef<HTMLInputElement>(null)
 
   const plannedItems = planner[day!]?.items || []
-  const alreadyPlanned = plannedItems.some(i => i.name === slugify(item))
+  const alreadyPlanned = plannedItems.some(entry => entry.name === slugify(item))
   const disabled = slugify(item) === "" || alreadyPlanned
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    onSubmit({
-      day: day!,
-      name: item,
-      ingredients,
-      emoji,
-    })
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault()
+    onSubmit({ day: day!, name: item, ingredients, emoji })
     setAlertVisible(true)
     setTimeout(() => setAlertVisible(false), 1000)
     setItem("")
@@ -73,18 +61,15 @@ const AddPlannerItemDialog = ({
   const updateItem = (newItem: string) => {
     setItem(newItem)
     const recipe = recipes[slugify(newItem)]
-    if (recipe) setIngredients(recipe.ingredients.map(i => unslugify(i.slug)))
+    if (recipe) setIngredients(recipe.ingredients.map(ingredient => unslugify(ingredient.slug)))
   }
 
   return (
-    <Dialog
-      title="Add items"
-      open={open}
-      onClose={onClose}
-      onSubmit={handleSubmit}
-    >
-      <DialogTitle>Add items to planner</DialogTitle>
-      <DialogContent>
+    <Dialog open={open} onClose={onClose} onSubmit={handleSubmit} title="Add items">
+      <div className={dialogHeader}>
+        <h2 className={dialogTitle}>Add items to planner</h2>
+      </div>
+      <div className={dialogBody}>
         <DayPicker days={days} value={day} onChange={onChangeDay} />
         <ItemOrRecipeAutocomplete
           emoji={emoji}
@@ -95,20 +80,15 @@ const AddPlannerItemDialog = ({
           autoFocus
         />
         <IngredientAutocomplete value={ingredients} onChange={setIngredients} />
-      </DialogContent>
-      <DialogActions>
+      </div>
+      <div className={dialogActions}>
         <Alert visible={alertVisible}>Saved!</Alert>
-        <Spacer />
+        <span className={dialogFooterGrow} />
         <Button onClick={onClose}>Close</Button>
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          disabled={disabled}
-        >
+        <Button type="submit" variant="solid" disabled={disabled}>
           {alreadyPlanned ? "Already exists!" : "Save"}
         </Button>
-      </DialogActions>
+      </div>
     </Dialog>
   )
 }

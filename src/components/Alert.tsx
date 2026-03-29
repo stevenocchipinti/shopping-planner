@@ -1,5 +1,7 @@
-import React, { ReactNode, FC } from "react"
-import { Alert as MuiAlert, Fade } from "@mui/material"
+import React, { FC, ReactNode } from "react"
+import { CheckCircle2, CircleAlert, CircleX, Info } from "lucide-react"
+
+import { alert } from "./dialogs.css"
 
 interface AlertProps {
   children: ReactNode
@@ -7,10 +9,22 @@ interface AlertProps {
   severity?: "success" | "info" | "warning" | "error"
 }
 
-const Alert: FC<AlertProps> = ({ children, visible = true, severity = "success" }) => (
-  <Fade in={visible}>
-    <MuiAlert severity={severity}>{children}</MuiAlert>
-  </Fade>
+const icons = {
+  success: <CheckCircle2 size={14} />,
+  info: <Info size={14} />,
+  warning: <CircleAlert size={14} />,
+  error: <CircleX size={14} />,
+}
+
+const Alert: FC<AlertProps> = ({
+  children,
+  visible = true,
+  severity = "success",
+}) => (
+  <div className={alert} data-visible={visible} aria-live="polite">
+    {icons[severity]}
+    <span>{children}</span>
+  </div>
 )
 
 export default Alert

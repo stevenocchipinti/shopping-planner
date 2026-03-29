@@ -1,120 +1,74 @@
 import React, { FC } from "react"
-import styled from "styled-components"
-
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  IconButton,
-} from "@mui/material"
-import { Delete as DeleteIcon } from "@mui/icons-material"
+import { Trash2 } from "lucide-react"
 
 import { normalizeSection, unslugify } from "../helpers"
 import { useAppState } from "./Backend"
+import {
+  headerSummaryCard,
+  headerSummaryRow,
+  placeholderRow,
+  table,
+  tableCard,
+  tableCell,
+  tableCellRight,
+  tableCellStrong,
+  tableHeadCell,
+  tableWrapper,
+} from "./listing.css"
+import { IconButton } from "./ui"
 
 interface CatalogueProps {
   onDelete: (item: string) => void
 }
 
-const Wrapper = styled.div`
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 4px 16px 120px;
-`
-
-const HeaderCard = styled(Paper)`
-  padding: 16px 18px;
-  border-radius: 14px;
-  margin-bottom: 12px;
-  background: ${({ theme }) => theme.app.accentGradient};
-`
-
-const TableCard = styled(TableContainer)`
-  border-radius: 14px;
-  overflow: hidden;
-`
-
-const Row = styled(TableRow)`
-  &:last-child td,
-  &:last-child th {
-    border-bottom: 0;
-  }
-`
-
-const Placeholder = styled(TableCell).attrs({
-  colSpan: 3,
-  component: "th",
-  scope: "row",
-  children: "No history yet",
-})`
-  &&& {
-    border: none;
-    text-align: center;
-    height: 4rem;
-    margin: 10px;
-    padding: 3rem;
-    color: ${({ theme }) => theme.palette.text.secondary};
-  }
-`
-
 const Catalogue: FC<CatalogueProps> = ({ onDelete }) => {
   const { catalogue, loading } = useAppState()
+  const entries = Object.keys(catalogue)
 
   return (
-    <Wrapper>
-      <HeaderCard>
-        <Table size="small" aria-hidden>
-          <TableBody>
-            <Row>
-              <TableCell sx={{ border: 0, p: 0 }}>
-                <strong>Saved sections</strong>
-              </TableCell>
-              <TableCell sx={{ border: 0, p: 0, color: "text.secondary" }} align="right">
-                {Object.keys(catalogue).length} items
-              </TableCell>
-            </Row>
-          </TableBody>
-        </Table>
-      </HeaderCard>
-      <TableCard as={Paper}>
-        <Table size="small" aria-label="History table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Item</TableCell>
-              <TableCell>Section</TableCell>
-              <TableCell align="right">Delete</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {!loading && Object.keys(catalogue).length === 0 && (
-              <Row>
-                <Placeholder />
-              </Row>
-            )}
-            {Object.keys(catalogue).map(item => (
-              <Row key={item}>
-                <TableCell component="th" scope="row">
+    <div className={tableWrapper}>
+      <div className={headerSummaryCard}>
+        <div className={headerSummaryRow}>
+          <strong>Saved sections</strong>
+          <span>{entries.length} items</span>
+        </div>
+      </div>
+
+      <div className={tableCard}>
+        <table className={table} aria-label="History table">
+          <thead>
+            <tr>
+              <th className={tableHeadCell}>Item</th>
+              <th className={tableHeadCell}>Section</th>
+              <th className={`${tableHeadCell} ${tableCellRight}`}>Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            {!loading && entries.length === 0 ? (
+              <tr>
+                <th className={placeholderRow} colSpan={3} scope="row">
+                  No history yet
+                </th>
+              </tr>
+            ) : null}
+
+            {entries.map(item => (
+              <tr key={item}>
+                <th className={`${tableCell} ${tableCellStrong}`} scope="row">
                   {unslugify(item)}
-                </TableCell>
-                <TableCell>{normalizeSection(catalogue[item].section || "")}</TableCell>
-                <TableCell align="right">
-                  <IconButton
-                    onClick={() => onDelete(item)}
-                    aria-label="delete"
-                  >
-                    <DeleteIcon />
+                </th>
+                <td className={tableCell}>{normalizeSection(catalogue[item].section || "")}</td>
+                <td className={`${tableCell} ${tableCellRight}`}>
+                  <IconButton onClick={() => onDelete(item)} aria-label={`Delete ${unslugify(item)}`}>
+                    <Trash2 size={18} />
                   </IconButton>
-                </TableCell>
-              </Row>
+                </td>
+              </tr>
             ))}
-          </TableBody>
-        </Table>
-      </TableCard>
-    </Wrapper>
+          </tbody>
+        </table>
+      </div>
+    </div>
   )
 }
 

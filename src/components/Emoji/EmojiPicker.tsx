@@ -1,8 +1,9 @@
 import React, { useEffect, useRef } from "react"
 import Picker from "@emoji-mart/react"
-import { useTheme } from "styled-components"
-import { Button, Popover } from "@mui/material"
 
+import { Button, Popover } from "../ui"
+import { useAppTheme } from "../ThemeProvider"
+import { emojiPickerFooter, emojiPickerWrap, emojiPopoverContent } from "../dialogs.css"
 import { data, customCategories } from "./emojiData"
 
 interface EmojiPickerProps {
@@ -18,7 +19,7 @@ interface EmojiSelectEvent {
 }
 
 const EmojiPicker = ({ open, anchorEl, onClose, onSelect }: EmojiPickerProps) => {
-  const { palette } = useTheme()
+  const { mode, colors } = useAppTheme()
   const pickerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -55,53 +56,37 @@ const EmojiPicker = ({ open, anchorEl, onClose, onSelect }: EmojiPickerProps) =>
   }, [open])
 
   return (
-    <Popover
-      PaperProps={{
-        style: {
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-end",
-          backgroundColor: palette.mode === "dark" ? "#222" : "white",
-        },
-      }}
-      open={open}
-      anchorEl={anchorEl}
-      onClose={onClose}
-      anchorOrigin={{
-        vertical: "bottom",
-        horizontal: "left",
-      }}
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "left",
-      }}
-    >
-      <div ref={pickerRef}>
-        <Picker
-          data={data}
-          color={palette.primary.main}
-          theme={palette.mode}
-          set="apple"
-          custom={customCategories}
-          autoFocus
-          previewPosition="none"
-          skinTonePosition="none"
-          onEmojiSelect={(emoji: EmojiSelectEvent) => {
-            onSelect(emoji.native || emoji.id || null)
-            onClose()
-          }}
-          perLine={7}
-          style={{ margin: "0 auto", border: 0 }}
-        />
+    <Popover open={open} anchorEl={anchorEl} onClose={onClose}>
+      <div className={emojiPopoverContent}>
+        <div className={emojiPickerWrap} ref={pickerRef}>
+          <Picker
+            data={data}
+            color={colors.color.primary}
+            theme={mode}
+            set="apple"
+            custom={customCategories}
+            autoFocus
+            previewPosition="none"
+            skinTonePosition="none"
+            onEmojiSelect={(emoji: EmojiSelectEvent) => {
+              onSelect(emoji.native || emoji.id || null)
+              onClose()
+            }}
+            perLine={7}
+            style={{ margin: "0 auto", border: 0 }}
+          />
+        </div>
+        <div className={emojiPickerFooter}>
+          <Button
+            onClick={() => {
+              onSelect(null)
+              onClose()
+            }}
+          >
+            Clear
+          </Button>
+        </div>
       </div>
-      <Button
-        onClick={() => {
-          onSelect(null)
-          onClose()
-        }}
-      >
-        Clear
-      </Button>
     </Popover>
   )
 }

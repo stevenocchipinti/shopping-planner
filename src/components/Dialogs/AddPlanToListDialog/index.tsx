@@ -1,16 +1,18 @@
 import React, { useState } from "react"
-import {
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Button,
-} from "@mui/material"
 
-import Dialog from "../Dialog"
-import ShoppingLists from "../../ShoppingLists"
 import { unslugify } from "../../../helpers"
 import { useAppState } from "../../Backend"
+import ShoppingLists from "../../ShoppingLists"
+import { Button } from "../../ui"
+import { dialogActions } from "../../dialogs.css"
+import {
+  dialogBody,
+  dialogDescription,
+  dialogFooterGrow,
+  dialogHeader,
+  dialogTitle,
+} from "../../ui.css"
+import Dialog from "../Dialog"
 
 interface AddPlanToListDialogProps {
   open: boolean
@@ -22,25 +24,19 @@ interface AddPlanToListDialogProps {
   onClose: () => void
 }
 
-const AddPlanToListDialog = ({
-  open,
-  onSubmit,
-  onClose,
-}: AddPlanToListDialogProps) => {
+const AddPlanToListDialog = ({ open, onSubmit, onClose }: AddPlanToListDialogProps) => {
   const { items, catalogue, recipes, planner } = useAppState()
   const [ignoredItems, setIgnoredItems] = useState<string[]>([])
 
-  // Returns: ["apples", "pizza"]
-  const plannerItems = Object.values(planner).flatMap(p => p.items)
+  const plannerItems = Object.values(planner).flatMap(day => day.items)
   const plannedItemSlugs = [
     ...plannerItems
-      ?.filter(i => i.type === "recipe")
-      ?.flatMap(i => recipes[i.name]?.ingredients.map(i => i.slug))
-      ?.filter(Boolean),
-    ...plannerItems?.filter(i => i.type === "item")?.map(i => i.name),
+      .filter(item => item.type === "recipe")
+      .flatMap(item => recipes[item.name]?.ingredients.map(ingredient => ingredient.slug))
+      .filter(Boolean),
+    ...plannerItems.filter(item => item.type === "item").map(item => item.name),
   ]
 
-  // Returns: {"apples": 2, "bananas": 1}
   const qtyBySlug = plannedItemSlugs.reduce(
     (result, slug) => ({
       ...result,
@@ -52,9 +48,9 @@ const AddPlanToListDialog = ({
   const plannedItems = [...new Set(plannedItemSlugs)].map(slug => {
     const name = unslugify(slug)
     const existingItem = items.find(item => item.name === name)
-    const existingQty =
-      existingItem && !existingItem?.done ? existingItem?.quantity || 1 : 0
+    const existingQty = existingItem && !existingItem.done ? existingItem.quantity || 1 : 0
     const qtyToAdd = qtyBySlug[slug] || 1
+
     return {
       name,
       section: catalogue[slug]?.section || "",
@@ -64,11 +60,11 @@ const AddPlanToListDialog = ({
   })
 
   const itemsToAdd = plannedItems
-    .filter(i => !i.done)
+    .filter(item => !item.done)
     .map(({ name, section, quantity }) => ({ name, section, quantity }))
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault()
     onSubmit(itemsToAdd)
     onClose()
   }
@@ -76,39 +72,26 @@ const AddPlanToListDialog = ({
   const handleMark = ({ name }: { name: string }) =>
     setIgnoredItems(
       ignoredItems.includes(name)
-        ? ignoredItems.filter(i => i !== name)
+        ? ignoredItems.filter(item => item !== name)
         : [...ignoredItems, name]
     )
 
   return (
-    <Dialog
-      title="Add items"
-      open={open}
-      onClose={onClose}
-      onSubmit={handleSubmit}
-    >
-      <DialogTitle>Add planner items to list</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          You can deselect any items you don't want.
-        </DialogContentText>
-        <ShoppingLists
-          variant="embedded"
-          items={plannedItems}
-          onMark={handleMark}
-        />
-      </DialogContent>
-      <DialogActions>
+    <Dialog open={open} onClose={onClose} onSubmit={handleSubmit} title="Add items">
+      <div className={dialogHeader}>
+        <h2 className={dialogTitle}>Add planner items to list</h2>
+      </div>
+      <div className={dialogBody}>
+        <p className={dialogDescription}>You can deselect any items you don&apos;t want.</p>
+        <ShoppingLists variant="embedded" items={plannedItems} onMark={handleMark} />
+      </div>
+      <div className={dialogActions}>
+        <span className={dialogFooterGrow} />
         <Button onClick={onClose}>Close</Button>
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          disabled={itemsToAdd.length === 0}
-        >
+        <Button type="submit" variant="solid" disabled={itemsToAdd.length === 0}>
           Add
         </Button>
-      </DialogActions>
+      </div>
     </Dialog>
   )
 }

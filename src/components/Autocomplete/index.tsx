@@ -5,7 +5,6 @@ import Autocomplete from "./Autocomplete"
 import { useAppState } from "../Backend"
 import { normalizeSection, unslugify, slugify } from "../../helpers"
 import { emojiSearch } from "../Emoji"
-import { TextField } from "@mui/material"
 
 const defaultEmojiFor = (value: string): string | null => {
   return emojiSearch(value)?.[0]?.id || null
@@ -22,7 +21,7 @@ interface ItemAutocompleteProps {
 }
 
 const ItemAutocomplete = forwardRef(
-  ({ onChange, value, ...props }: ItemAutocompleteProps, ref: ForwardedRef<HTMLDivElement>) => {
+  ({ onChange, value, ...props }: ItemAutocompleteProps, ref: ForwardedRef<HTMLInputElement>) => {
     const [emojiSupport] = useSetting("emojiSupport")
     const { catalogue } = useAppState()
     const allItems = Object.keys(catalogue).map(unslugify)
@@ -64,7 +63,7 @@ interface SectionAutocompleteProps {
 }
 
 const SectionAutocomplete = forwardRef(
-  ({ onChange, value, ...props }: SectionAutocompleteProps, ref: ForwardedRef<HTMLDivElement>) => {
+  ({ onChange, value, ...props }: SectionAutocompleteProps, ref: ForwardedRef<HTMLInputElement>) => {
     const { catalogue } = useAppState()
     const allSections = Object.values(catalogue)
       .map(e => normalizeSection(e.section || ""))
@@ -96,7 +95,7 @@ interface ItemOrRecipeAutocompleteProps {
 }
 
 const ItemOrRecipeAutocomplete = forwardRef(
-  ({ onChange, value, ...props }: ItemOrRecipeAutocompleteProps, ref: ForwardedRef<HTMLDivElement>) => {
+  ({ onChange, value, ...props }: ItemOrRecipeAutocompleteProps, ref: ForwardedRef<HTMLInputElement>) => {
     const [emojiSupport] = useSetting("emojiSupport")
     const { catalogue, recipes } = useAppState()
     const allItems = [
@@ -142,24 +141,21 @@ export interface IngredientAutocompleteProps {
 }
 
 const IngredientAutocomplete = forwardRef(
-  ({ onChange, ...props }: IngredientAutocompleteProps, ref: ForwardedRef<HTMLDivElement>) => {
+  ({ onChange, ...props }: IngredientAutocompleteProps, ref: ForwardedRef<HTMLInputElement>) => {
     const { catalogue } = useAppState()
     const allItems = Object.keys(catalogue).map(unslugify)
 
     return (
-      <Autocomplete
-        multiple
-        emoji={false}
-        label="Ingredients"
-        id="ingredient-search"
-        options={Array.from(new Set(allItems))}
-        ref={ref}
-        renderInput={(params: any) => (
-          <TextField variant="outlined" label="Ingredients" {...params} />
-        )}
-        onChange={(e: React.SyntheticEvent, newValue: unknown) => e && onChange(newValue as string[])}
-        value={props.value}
-        {...props}
+        <Autocomplete
+          multiple
+          emoji={false}
+          label="Ingredients"
+          id="ingredient-search"
+          options={Array.from(new Set(allItems))}
+          ref={ref}
+          onChange={(e: React.SyntheticEvent, newValue: unknown) => e && onChange(newValue as string[])}
+          value={props.value}
+          {...props}
       />
     )
   }

@@ -1,5 +1,3 @@
-import { Theme } from "@mui/material/styles"
-
 export const capitalize = (s: string): string =>
   `${s[0]?.toUpperCase() || ""}${s?.slice(1)}`
 
@@ -18,12 +16,3 @@ export const slugify = (s: string): string =>
     ?.trim()
     ?.replace(/[\s\W-]+/g, "-")
     ?.replace(/^-+|-+$/g, "")
-
-export const greys = (
-  light: number,
-  dark: number
-): ((props: { theme: Theme }) => string) =>
-  ({ theme }) =>
-    theme.palette.mode === "light"
-      ? theme.palette.grey[light as keyof typeof theme.palette.grey]
-      : theme.palette.grey[dark as keyof typeof theme.palette.grey]

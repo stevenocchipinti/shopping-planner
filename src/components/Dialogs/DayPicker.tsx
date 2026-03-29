@@ -1,18 +1,6 @@
 import React from "react"
-import styled from "styled-components"
-import {
-  ToggleButtonGroup as MuiToggleButtonGroup,
-  ToggleButton as MuiToggleButton,
-} from "@mui/material"
 
-const ToggleButtonGroup = styled(MuiToggleButtonGroup)`
-  width: 100%;
-  margin-bottom: 2rem;
-`
-
-const ToggleButton = styled(MuiToggleButton)`
-  flex-grow: 1;
-`
+import { dayPicker, dayPickerButton } from "../dialogs.css"
 
 interface DayPickerProps {
   days: string[]
@@ -21,18 +9,19 @@ interface DayPickerProps {
 }
 
 const DayPicker = ({ days, value, onChange }: DayPickerProps) => (
-  <ToggleButtonGroup
-    exclusive
-    value={value || days[0]}
-    onChange={(e, v) => onChange(v)}
-    aria-label="Day"
-  >
-    {days.map(d => (
-      <ToggleButton key={d} value={d}>
-        {d[0]}
-      </ToggleButton>
+  <div className={dayPicker} role="tablist" aria-label="Day">
+    {days.map(day => (
+      <button
+        key={day}
+        className={dayPickerButton}
+        data-selected={(value || days[0]) === day}
+        type="button"
+        onClick={() => onChange(day)}
+      >
+        {day[0]}
+      </button>
     ))}
-  </ToggleButtonGroup>
+  </div>
 )
 
 export default DayPicker

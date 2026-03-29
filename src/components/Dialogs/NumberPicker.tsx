@@ -1,26 +1,8 @@
 import React from "react"
-import styled from "styled-components"
-import { IconButton, TextField } from "@mui/material"
-import {
-  RemoveCircleOutline as RemoveCircleOutlineIcon,
-  AddCircleOutline as AddCircleOutlineIcon,
-} from "@mui/icons-material"
+import { MinusCircle, PlusCircle } from "lucide-react"
 
-const Container = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  margin: 0.5rem 0 1rem;
-`
-
-const Qty = styled(TextField)`
-  width: 5.5rem;
-
-  & .MuiOutlinedInput-input {
-    text-align: center;
-  }
-`
+import { numberInput, numberInputField, numberPicker } from "../dialogs.css"
+import { IconButton, TextField } from "../ui"
 
 interface NumberPickerProps {
   onChange: (value: number) => void
@@ -34,26 +16,25 @@ const NumberPicker = ({ onChange, value, ...props }: NumberPickerProps) => {
   const inc = () => onChange(val + 1)
 
   return (
-    <Container>
+    <div className={numberPicker}>
       <IconButton onClick={dec} tabIndex={-1} aria-label="Decrement quantity">
-        <RemoveCircleOutlineIcon />
+        <MinusCircle size={18} />
       </IconButton>
-      <Qty
-        type="tel"
-        inputProps={{
-          pattern: "[0-9]+",
-          required: true,
-        }}
-        label="Quantity"
-        variant="outlined"
-        onChange={e => onChange(parseInt(e.target.value))}
+      <TextField
+        className={numberInput}
+        inputMode="numeric"
+        pattern="[0-9]+"
+        required
+        placeholder="Quantity"
+        aria-label="Quantity"
+        onChange={event => onChange(parseInt(event.target.value, 10))}
         value={value}
         {...props}
       />
       <IconButton onClick={inc} tabIndex={-1} aria-label="Increment quantity">
-        <AddCircleOutlineIcon />
+        <PlusCircle size={18} />
       </IconButton>
-    </Container>
+    </div>
   )
 }
 

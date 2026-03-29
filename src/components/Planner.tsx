@@ -1,24 +1,24 @@
-import React, { useState, FC } from "react"
-import styled from "styled-components"
+import React, { FC, useState } from "react"
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
-  Paper,
-} from "@mui/material"
-
+import { unslugify } from "../helpers"
 import {
   AddToPlannerParams,
-  EditPlannerItemParams,
   DeleteFromPlannerParams,
+  EditPlannerItemParams,
 } from "./Backend/backend"
 import { useAppState } from "./Backend"
-import { AddPlannerItemDialog, EditPlannerItemDialog } from "./Dialogs"
 import Chip from "./Chip"
-import { unslugify } from "../helpers"
+import { AddPlannerItemDialog, EditPlannerItemDialog } from "./Dialogs"
+import {
+  plannerAddButton,
+  plannerChipCell,
+  plannerChipContainer,
+  table,
+  tableCard,
+  tableCell,
+  tableCellStrong,
+  tableWrapper,
+} from "./listing.css"
 
 interface PlannerItem {
   name: string
@@ -31,64 +31,6 @@ interface PlannerProps {
   onEdit: (entry: EditPlannerItemParams) => void
   onDelete: (entry: DeleteFromPlannerParams) => void
 }
-
-const Wrapper = styled.div`
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 4px 16px 120px;
-`
-
-const ChipContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-`
-
-const ChipTableCell = styled(TableCell)`
-  padding-left: 0;
-  height: 84px;
-  width: 100%;
-`
-
-const AddButton = styled.button`
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background: transparent;
-  border: 1px solid ${({ theme }) => theme.palette.divider};
-  border-radius: 999px;
-  padding: 7px 13px;
-  min-height: 38px;
-  cursor: pointer;
-  color: ${({ theme }) => theme.palette.text.secondary};
-  font-size: 13px;
-  font-weight: 500;
-  font-family: inherit;
-  transition: border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
-  -webkit-tap-highlight-color: transparent;
-
-  &:hover {
-    border-color: ${({ theme }) => theme.palette.text.secondary};
-    color: ${({ theme }) => theme.palette.text.primary};
-  }
-
-  &:active {
-    transform: scale(0.97);
-  }
-`
-
-const PlannerCard = styled(TableContainer)`
-  border-radius: 16px;
-  overflow: hidden;
-`
-
-const Row = styled(TableRow)`
-  &:last-child td,
-  &:last-child th {
-    border-bottom: 0;
-  }
-`
 
 const days = [
   "Monday",
@@ -108,29 +50,25 @@ const Planner: FC<PlannerProps> = ({ onAdd, onEdit, onDelete }) => {
   const [itemToEdit, setItemToEdit] = useState<PlannerItem | undefined>(undefined)
 
   return (
-    <Wrapper>
-      <PlannerCard as={Paper}>
-        <Table aria-label="Planner table">
-          <TableBody>
-            {days.map(day => (
-              <Row key={day}>
-                <TableCell component="th" scope="row" sx={{ width: 104, fontWeight: 700 }}>
-                  {day}
-                </TableCell>
-                <ChipTableCell>
-                  <ChipContainer>
-                    {planner?.[day]?.items?.map(({ name, type }, index) => {
-                      const emoji =
-                        type === "recipe"
-                          ? recipes[name]?.emoji
-                          : catalogue[name]?.emoji
+    <div className={tableWrapper}>
+      <div className={tableCard}>
+        <table className={table} aria-label="Planner table">
+          <tbody>
+            {days.map(entryDay => (
+              <tr key={entryDay}>
+                <th className={`${tableCell} ${tableCellStrong}`} scope="row" style={{ width: 104 }}>
+                  {entryDay}
+                </th>
+                <td className={`${tableCell} ${plannerChipCell}`}>
+                  <div className={plannerChipContainer}>
+                    {planner?.[entryDay]?.items?.map(({ name, type }, index) => {
+                      const emoji = type === "recipe" ? recipes[name]?.emoji : catalogue[name]?.emoji
                       return (
                         <Chip
                           emoji={emoji}
                           key={index}
-                          onClick={() => console.log("Goto", name)}
                           onLongPress={() => {
-                            setItemToEdit({ day, name, type })
+                            setItemToEdit({ day: entryDay, name, type })
                             setEditDialogOpen(true)
                           }}
                         >
@@ -138,24 +76,26 @@ const Planner: FC<PlannerProps> = ({ onAdd, onEdit, onDelete }) => {
                         </Chip>
                       )
                     })}
-                    {!loading && (
-                      <AddButton
-                        aria-label="add"
+                    {!loading ? (
+                      <button
+                        className={plannerAddButton}
+                        aria-label={`Add item for ${entryDay}`}
                         onClick={() => {
-                          setDay(day)
+                          setDay(entryDay)
                           setAddDialogOpen(true)
                         }}
+                        type="button"
                       >
                         + Add
-                      </AddButton>
-                    )}
-                  </ChipContainer>
-                </ChipTableCell>
-              </Row>
+                      </button>
+                    ) : null}
+                  </div>
+                </td>
+              </tr>
             ))}
-          </TableBody>
-        </Table>
-      </PlannerCard>
+          </tbody>
+        </table>
+      </div>
 
       <AddPlannerItemDialog
         day={day}
@@ -174,7 +114,7 @@ const Planner: FC<PlannerProps> = ({ onAdd, onEdit, onDelete }) => {
         onDelete={onDelete}
         onClose={() => setEditDialogOpen(false)}
       />
-    </Wrapper>
+    </div>
   )
 }
 

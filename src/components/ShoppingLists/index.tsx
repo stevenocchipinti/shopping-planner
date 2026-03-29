@@ -1,12 +1,19 @@
-import React, { useState, FC } from "react"
-import styled from "styled-components"
+import React, { FC, useState } from "react"
 
-import Placeholder from "./Placeholder"
-import Chip from "../Chip"
 import { normalizeSection, slugify } from "../../helpers"
-import { EditItemDialog } from "../Dialogs"
+import { CatalogueEntry, ShoppingItem } from "../Backend/backend"
 import { useAppState } from "../Backend"
-import { ShoppingItem, CatalogueEntry } from "../Backend/backend"
+import Chip from "../Chip"
+import { EditItemDialog } from "../Dialogs"
+import Placeholder from "./Placeholder"
+import {
+  shoppingContainer,
+  shoppingContainerEmbedded,
+  shoppingItems,
+  shoppingSection,
+  shoppingSectionTitle,
+} from "../listing.css"
+import { cx } from "../ui"
 
 interface EditItemEntry {
   item: ShoppingItem
@@ -23,39 +30,6 @@ interface ShoppingListsProps {
   items: ShoppingItem[]
   variant?: "main" | "embedded"
 }
-
-const Container = styled.div<{ variant?: string }>`
-  padding: ${({ variant }) =>
-    variant === "embedded" ? "0 0 16px" : "4px 16px 120px"};
-  margin: 0 auto;
-  max-width: 720px;
-`
-
-const Section = styled.div`
-  margin: 0 0 4px;
-  padding: 0;
-
-  & + & {
-    border-top: 1px solid ${({ theme }) => theme.palette.divider};
-    padding-top: 4px;
-  }
-`
-
-const Items = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  padding: 4px 0 8px;
-`
-
-const SectionTitle = styled.h2`
-  font-size: 11px;
-  margin: 12px 0 4px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: ${({ theme }) => theme.palette.text.secondary};
-`
 
 interface ItemWithEmoji extends ShoppingItem {
   emoji?: string | null
@@ -86,6 +60,7 @@ const ShoppingLists: FC<ShoppingListsProps> = ({
   const renderItemsFor = (section: ItemWithEmoji[]) => {
     const notDone = section.filter(i => !i.done).sort((a, b) => a.name.localeCompare(b.name))
     const done = section.filter(i => i.done).sort((a, b) => a.name.localeCompare(b.name))
+
     return notDone.concat(done).map((item, index) => (
       <Chip
         key={index}
@@ -100,15 +75,13 @@ const ShoppingLists: FC<ShoppingListsProps> = ({
     ))
   }
 
-  const itemsBySection = items.reduce<ItemsBySection>((a, item) => {
+  const itemsBySection = items.reduce<ItemsBySection>((acc, item) => {
     const catalogueEntry = catalogue[slugify(item.name)] as CatalogueEntry | undefined
     const section = normalizeSection(catalogueEntry?.section || "")
+
     return {
-      ...a,
-      [section]: [
-        ...(a[section] || []),
-        { ...item, emoji: catalogueEntry?.emoji },
-      ],
+      ...acc,
+      [section]: [...(acc[section] || []), { ...item, emoji: catalogueEntry?.emoji }],
     }
   }, {})
 
@@ -123,16 +96,16 @@ const ShoppingLists: FC<ShoppingListsProps> = ({
 
   return (
     <>
-      <Container variant={variant}>
+      <div className={cx(shoppingContainer, variant === "embedded" && shoppingContainerEmbedded)}>
         {sections.map((section, index) => (
-          <Section key={index}>
-            {section && <SectionTitle>{section}</SectionTitle>}
-            <Items>{renderItemsFor(itemsBySection[section])}</Items>
-          </Section>
+          <section className={shoppingSection} key={index}>
+            {section ? <h2 className={shoppingSectionTitle}>{section}</h2> : null}
+            <div className={shoppingItems}>{renderItemsFor(itemsBySection[section])}</div>
+          </section>
         ))}
 
-        {!loading && sections.length === 0 && <Placeholder />}
-      </Container>
+        {!loading && sections.length === 0 ? <Placeholder /> : null}
+      </div>
 
       <EditItemDialog
         item={itemToEdit}
