@@ -14,6 +14,7 @@ export function AppBar({ onMenuClick }: AppBarProps) {
 
   const isListView = location.pathname === `/list/${listId}`
   const isPlannerView = location.pathname === `/list/${listId}/planner`
+  const isCatalogueView = location.pathname === `/list/${listId}/catalogue`
 
   const hasDoneItems = items.some(item => item.done)
   const hasPlannerItems = Object.values(planner).some(
@@ -44,12 +45,20 @@ export function AppBar({ onMenuClick }: AppBarProps) {
             variant="ghost"
             size="icon"
             onClick={onMenuClick}
-            className="md:hidden"
+            className=""
           >
             <Menu className="h-5 w-5" />
             <span className="sr-only">Menu</span>
           </Button>
-          <h1 className="text-lg font-semibold">Shopping Planner</h1>
+          <h1 className="text-lg font-semibold">
+            {isPlannerView
+              ? "Weekly planner"
+              : isCatalogueView
+                ? "Catalogue"
+                : isListView
+                  ? "Shopping list"
+                  : "Shopping Planner"}
+          </h1>
         </div>
 
         <div className="flex items-center gap-2">

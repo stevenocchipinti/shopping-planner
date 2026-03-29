@@ -40,8 +40,8 @@ export function PlannerPage() {
 
   return (
     <div className="container mx-auto p-4">
-      {/* Desktop: horizontal scroll, Mobile: vertical stack */}
-      <div className="flex flex-col md:flex-row gap-2 overflow-x-auto">
+      {/* Mobile: compact row layout matching prod, Desktop: column layout */}
+      <div className="flex flex-col gap-px rounded-xl border bg-card shadow-sm overflow-hidden md:flex-row md:gap-2 md:rounded-none md:border-0 md:bg-transparent md:shadow-none md:overflow-x-auto">
         {DAYS.map(day => (
           <PlannerDayColumn
             key={day.value}
