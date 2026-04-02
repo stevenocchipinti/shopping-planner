@@ -97,9 +97,10 @@ const Autocomplete = forwardRef(
     const isControlled = inputValue !== undefined
     const currentInputValue = isControlled ? inputValue : internalInputValue
     const showEmoji = emoji !== false && (emoji || onEmojiChange)
+    const hasTypedValue = currentInputValue.trim().length > 0
     const filteredOptions = useMemo(
-      () => fuzzy(options, currentInputValue).slice(0, 8),
-      [currentInputValue, options]
+      () => (hasTypedValue ? fuzzy(options, currentInputValue).slice(0, 8) : []),
+      [currentInputValue, hasTypedValue, options]
     )
     const selectedValues = Array.isArray(value) ? value : []
 
@@ -244,13 +245,14 @@ const Autocomplete = forwardRef(
           disabled={disabled}
           inputRef={syncRef}
           inputClassName={showEmoji ? undefined : inputAdorned}
-          onFocus={() => setMenuOpen(true)}
-          onKeyDown={handleKeyDown}
-          onChange={event => {
-            if (!isControlled) setInternalInputValue(event.target.value)
-            onInputChange?.(event, event.target.value, "input")
-            setMenuOpen(true)
-          }}
+           onFocus={() => setMenuOpen(hasTypedValue)}
+           onKeyDown={handleKeyDown}
+           onChange={event => {
+             const nextValue = event.target.value
+             if (!isControlled) setInternalInputValue(nextValue)
+             onInputChange?.(event, nextValue, "input")
+             setMenuOpen(nextValue.trim().length > 0)
+           }}
           aria-autocomplete="list"
           aria-expanded={menuOpen}
         />

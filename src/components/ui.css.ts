@@ -334,15 +334,19 @@ export const overlay = style({
 
 export const dialogViewport = style({
   position: "fixed",
-  inset: 0,
+  top: 0,
+  right: 0,
+  left: 0,
   zIndex: 41,
   display: "grid",
   placeItems: "center",
+  padding: "0.75rem",
+  boxSizing: "border-box",
 })
 
 export const dialogPanel = style({
   width: "min(28.75rem, calc(100vw - 1.5rem))",
-  maxHeight: "min(100dvh - 1.5rem, 47.5rem)",
+  maxHeight: "min(calc(var(--dialog-available-height, 100dvh) - 1.5rem), 47.5rem)",
   overflow: "auto",
   borderRadius: "1.25rem",
   background: vars.color.surface,
@@ -351,10 +355,9 @@ export const dialogPanel = style({
   animation: `${slideUp} ${vars.duration.normal} ease`,
   "@media": {
     "screen and (max-width: 40rem)": {
-      width: "100vw",
-      height: "100dvh",
-      maxHeight: "100dvh",
-      borderRadius: 0,
+      width: "min(28.75rem, calc(100vw - 1rem))",
+      maxHeight: "calc(var(--dialog-available-height, 100dvh) - 1rem)",
+      borderRadius: "1.25rem",
     },
   },
 })
@@ -530,6 +533,20 @@ export const segmentedButton = style({
     },
   },
 })
+
+export const historySegmentedControl = style([
+  segmentedControl,
+  {
+    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+  },
+])
+
+export const historySegmentedButton = style([
+  segmentedButton,
+  {
+    minWidth: 0,
+  },
+])
 
 export const tags = style({
   display: "flex",

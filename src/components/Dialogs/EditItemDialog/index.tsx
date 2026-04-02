@@ -24,6 +24,7 @@ interface EditItemDialogProps {
   }) => void
   onDelete: (item: ShoppingItem) => void
   onClose: () => void
+  title?: string
 }
 
 const EditItemDialog = ({
@@ -32,6 +33,7 @@ const EditItemDialog = ({
   onSubmit,
   onDelete,
   onClose,
+  title = "Edit item",
 }: EditItemDialogProps) => {
   const { items, catalogue, isOnline } = useAppState()
   const [dialogState, dispatch] = useDialogState()
@@ -70,9 +72,9 @@ const EditItemDialog = ({
     dispatch({ type: "emoji", newEmoji, item, items, catalogue })
 
   return (
-    <Dialog open={open} onClose={onClose} onSubmit={handleSubmit} title="Edit item">
+    <Dialog open={open} onClose={onClose} onSubmit={handleSubmit} title={title}>
       <div className={dialogHeader}>
-        <h2 className={dialogTitle}>Edit item</h2>
+        <h2 className={dialogTitle}>{title}</h2>
         <IconButton onClick={handleDelete} aria-label="Delete item">
           <Trash2 size={18} />
         </IconButton>

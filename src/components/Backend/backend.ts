@@ -76,6 +76,20 @@ export interface AddToPlannerParams {
   emoji?: string | null
 }
 
+export interface EditCatalogueParams {
+  item: string
+  newItem: string
+  newSection: string
+  newEmoji?: string | null
+}
+
+export interface EditRecipeParams {
+  item: string
+  newItem: string
+  newIngredients: string[]
+  newEmoji?: string | null
+}
+
 export interface EditPlannerItemParams {
   item: { name: string; day: string }
   newItem: string
@@ -98,6 +112,8 @@ export interface AddPlanToListItem {
 export interface BackendActions {
   handleAdd: (params: AddItemParams) => void
   handleEdit: (params: EditItemParams) => void
+  handleCatalogueEdit: (params: EditCatalogueParams) => void
+  handleRecipeEdit: (params: EditRecipeParams) => void
   handleMark: (item: ShoppingItem) => void
   handleDelete: (params: { name: string }) => void
   handleCatalogueDelete: (item: string) => void
@@ -248,6 +264,75 @@ export class Backend {
     })
   }
 
+  private renamePlannerEntries(
+    batch: ReturnType<typeof writeBatch>,
+    type: PlannerItem["type"],
+    existingSlug: string,
+    newSlug: string
+  ): void {
+    Object.entries(this.planner).forEach(([day, plannerDay]) => {
+      let changed = false
+
+      const items = plannerDay.items.map(entry => {
+        if (entry.type !== type || entry.name !== existingSlug) return entry
+        changed = true
+        return { ...entry, name: newSlug }
+      })
+
+      if (changed) batch.set(doc(this.plannerRef, day), { items })
+    })
+  }
+
+  private renameRecipeIngredientReferences(
+    batch: ReturnType<typeof writeBatch>,
+    existingSlug: string,
+    newSlug: string
+  ): void {
+    Object.entries(this.recipes).forEach(([slug, recipe]) => {
+      let changed = false
+
+      const ingredients = recipe.ingredients.map(ingredient => {
+        if (ingredient.slug !== existingSlug) return ingredient
+        changed = true
+        return { slug: newSlug }
+      })
+
+      if (changed) {
+        batch.set(doc(this.recipesRef, slug), { ...recipe, ingredients })
+      }
+    })
+  }
+
+  private moveListItem(
+    batch: ReturnType<typeof writeBatch>,
+    existingSlug: string,
+    newSlug: string,
+    item: ShoppingItem
+  ): void {
+    if (existingSlug !== newSlug) batch.delete(doc(this.itemsRef, existingSlug))
+    batch.set(doc(this.itemsRef, newSlug), item)
+  }
+
+  private moveCatalogueEntry(
+    batch: ReturnType<typeof writeBatch>,
+    existingSlug: string,
+    newSlug: string,
+    entry: CatalogueEntry
+  ): void {
+    if (existingSlug !== newSlug) batch.delete(doc(this.catalogueRef, existingSlug))
+    batch.set(doc(this.catalogueRef, newSlug), entry)
+  }
+
+  private moveRecipeEntry(
+    batch: ReturnType<typeof writeBatch>,
+    existingSlug: string,
+    newSlug: string,
+    entry: RecipeEntry
+  ): void {
+    if (existingSlug !== newSlug) batch.delete(doc(this.recipesRef, existingSlug))
+    batch.set(doc(this.recipesRef, newSlug), entry)
+  }
+
   public actions(): BackendActions {
     return {
       handleAdd: ({ item, section, quantity = 1, emoji = null }) => {
@@ -285,6 +370,48 @@ export class Backend {
           section: normalizeSection(newSection),
           emoji: newEmoji,
         })
+        this.renamePlannerEntries(batch, "item", existingSlug, newSlug)
+        this.renameRecipeIngredientReferences(batch, existingSlug, newSlug)
+        batch.commit()
+      },
+
+      handleCatalogueEdit: ({ item, newItem, newSection, newEmoji = null }) => {
+        const existingSlug = slugify(item)
+        const newSlug = slugify(newItem)
+        const batch = writeBatch(db)
+        const existingItem = this.items.find(entry => slugify(entry.name) === existingSlug)
+
+        this.moveCatalogueEntry(batch, existingSlug, newSlug, {
+          section: normalizeSection(newSection),
+          emoji: newEmoji,
+        })
+
+        if (existingItem) {
+          this.moveListItem(batch, existingSlug, newSlug, {
+            ...existingItem,
+            name: newItem,
+          })
+        }
+
+        this.renamePlannerEntries(batch, "item", existingSlug, newSlug)
+        this.renameRecipeIngredientReferences(batch, existingSlug, newSlug)
+        batch.commit()
+      },
+
+      handleRecipeEdit: ({ item, newItem, newIngredients, newEmoji = null }) => {
+        const existingSlug = slugify(item)
+        const newSlug = slugify(newItem)
+        const existingRecipe = this.recipes[existingSlug]
+        if (!existingRecipe) return
+
+        const batch = writeBatch(db)
+        this.moveRecipeEntry(batch, existingSlug, newSlug, {
+          ...existingRecipe,
+          emoji: newEmoji,
+          title: newItem,
+          ingredients: newIngredients.map(ingredient => ({ slug: slugify(ingredient) })),
+        })
+        this.renamePlannerEntries(batch, "recipe", existingSlug, newSlug)
         batch.commit()
       },
 
@@ -387,8 +514,10 @@ export class Backend {
         batch.set(doc(this.plannerRef, newDay), {
           items: newItemsForNewDay,
         })
-        if (type === "item")
+        if (type === "item") {
           batch.set(doc(this.catalogueRef, newSlug), { emoji: newEmoji })
+          this.renameRecipeIngredientReferences(batch, existingSlug, newSlug)
+        }
         if (type === "recipe")
           batch.set(doc(this.recipesRef, newSlug), {
             ingredients: newIngredients.map(i => ({ slug: slugify(i) })),

@@ -152,6 +152,10 @@ export const tableWrapper = style({
   padding: "0.25rem 1rem 7.5rem",
 })
 
+export const tableWrapperEmbedded = style({
+  padding: 0,
+})
+
 export const tableCard = style([
   surfaceCard,
   {
@@ -187,6 +191,30 @@ export const tableCellStrong = style({
   fontWeight: 500,
 })
 
+export const itemCell = style({
+  textAlign: "left",
+})
+
+export const itemCellContent = style({
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "0.625rem",
+  width: "100%",
+})
+
+export const itemCellEmoji = style({
+  width: "1.25rem",
+  minWidth: "1.25rem",
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  color: vars.color.textMuted,
+})
+
+export const itemCellLabel = style({
+  minWidth: 0,
+})
+
 export const tableRowLast = style({})
 
 globalStyle(`${tableRowLast} td, ${tableRowLast} th`, {
@@ -202,17 +230,32 @@ globalStyle(`${plannerRowLast} td, ${plannerRowLast} th`, {
 export const headerSummaryCard = style([
   surfaceCard,
   {
+    display: "grid",
+    gap: "0.1875rem",
     padding: "1rem 1.125rem",
     marginBottom: "0.75rem",
     background: vars.gradient.accent,
   },
 ])
 
-export const headerSummaryRow = style({
-  display: "flex",
-  justifyContent: "space-between",
+export const headerSummaryGrid = style({
+  display: "grid",
+  gridTemplateColumns: "minmax(0, 1fr) auto",
+  gap: "0.1875rem 0.75rem",
   alignItems: "center",
-  gap: "0.75rem",
+})
+
+export const headerSummaryTitle = style({
+  fontWeight: 700,
+})
+
+export const headerSummaryMeta = style({
+  color: vars.color.textMuted,
+  fontSize: "0.875rem",
+})
+
+export const headerSummaryMetaSplit = style({
+  textAlign: "right",
 })
 
 export const placeholderRow = style({
@@ -220,6 +263,24 @@ export const placeholderRow = style({
   textAlign: "center",
   padding: "3rem",
 })
+
+export const recipeIngredients = style({
+  color: vars.color.textMuted,
+  lineHeight: 1.5,
+})
+
+export const historyRowAction = style({
+  width: "100%",
+  minHeight: 0,
+  padding: 0,
+  justifyContent: "flex-start",
+  background: "transparent",
+  border: 0,
+  borderRadius: 0,
+  font: "inherit",
+  color: "inherit",
+  textAlign: "left",
+ })
 
 export const plannerChipCell = style({
   paddingLeft: 0,

@@ -1,5 +1,6 @@
 import React, {
   ButtonHTMLAttributes,
+  CSSProperties,
   FormEvent,
   InputHTMLAttributes,
   ReactNode,
@@ -67,6 +68,40 @@ const usePortalRoot = () => {
   }, [])
 
   return mounted && canUseDom ? document.body : null
+}
+
+const useVisualViewport = (active: boolean) => {
+  const [viewport, setViewport] = useState({
+    height: 0,
+    offsetTop: 0,
+  })
+
+  useEffect(() => {
+    if (!canUseDom || !active) return
+
+    const updateViewport = () => {
+      const currentViewport = window.visualViewport
+      setViewport({
+        height: currentViewport?.height || window.innerHeight,
+        offsetTop: currentViewport?.offsetTop || 0,
+      })
+    }
+
+    updateViewport()
+
+    const currentViewport = window.visualViewport
+    currentViewport?.addEventListener("resize", updateViewport)
+    currentViewport?.addEventListener("scroll", updateViewport)
+    window.addEventListener("resize", updateViewport)
+
+    return () => {
+      currentViewport?.removeEventListener("resize", updateViewport)
+      currentViewport?.removeEventListener("scroll", updateViewport)
+      window.removeEventListener("resize", updateViewport)
+    }
+  }, [active])
+
+  return viewport
 }
 
 type ButtonVariants = Parameters<typeof button>[0]
@@ -182,16 +217,29 @@ interface DialogProps {
 
 const Dialog = ({ open, onClose, onSubmit, children }: DialogProps) => {
   const portalRoot = usePortalRoot()
+  const { height, offsetTop } = useVisualViewport(open)
   useBodyLock(open)
   useEscape(open, onClose)
+  const availableHeight = height || (canUseDom ? window.innerHeight : 0)
+
+  const viewportStyle = {
+    height: `${availableHeight}px`,
+    top: `${offsetTop}px`,
+    ["--dialog-available-height" as string]: `${availableHeight}px`,
+  } satisfies CSSProperties
 
   if (!open || !portalRoot) return null
 
   return createPortal(
     <>
       <div className={overlay} onClick={onClose} />
-      <div className={dialogViewport}>
-        <div className={dialogPanel} role="dialog" aria-modal="true">
+      <div className={dialogViewport} style={viewportStyle} onClick={onClose}>
+        <div
+          className={dialogPanel}
+          role="dialog"
+          aria-modal="true"
+          onClick={event => event.stopPropagation()}
+        >
           {onSubmit ? (
             <form className={dialogForm} onSubmit={onSubmit} autoComplete="off">
               {children}

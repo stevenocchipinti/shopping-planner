@@ -11,12 +11,10 @@ import {
 
 import { useAppState, useBackend } from "./Backend"
 import AppBar from "./AppBar"
-import Catalogue from "./Catalogue"
 import { AddItemDialog, AddPlanToListDialog } from "./Dialogs"
+import History from "./History"
 import OfflineNotice from "./OfflineNotice"
 import Planner from "./Planner"
-import Recipe from "./Recipe"
-import Recipes from "./Recipes"
 import ShoppingLists from "./ShoppingLists"
 import {
   appScreen,
@@ -69,23 +67,21 @@ const App: FC = () => {
       <Route
         path="catalogue"
         element={
-            <div className={appScreen}>
-              <AppBar loading={loading} title="History" titleAside={<OfflineNotice />} />
-              <Catalogue onDelete={item => backend.handleCatalogueDelete(item)} />
-            </div>
-          }
+          <div className={appScreen}>
+            <AppBar loading={loading} title="History" titleAside={<OfflineNotice />} />
+            <History onDelete={item => backend.handleCatalogueDelete(item)} />
+          </div>
+        }
       />
-
-      <Route path="recipes/:recipeId" element={<Recipe />} />
 
       <Route
         path="recipes"
         element={
-            <div className={appScreen}>
-              <AppBar loading={loading} title="Recipes" titleAside={<OfflineNotice />} />
-              <Recipes />
-            </div>
-          }
+          <div className={appScreen}>
+            <AppBar loading={loading} title="History" titleAside={<OfflineNotice />} />
+            <History onDelete={item => backend.handleCatalogueDelete(item)} />
+          </div>
+        }
       />
 
       <Route

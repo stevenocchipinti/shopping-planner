@@ -1,4 +1,4 @@
-import { globalStyle, style } from "@vanilla-extract/css"
+import { style } from "@vanilla-extract/css"
 
 import { vars } from "../theme.css"
 import {
@@ -23,7 +23,7 @@ export const homeTitle = style([
   titleSerif,
   {
     marginBottom: "0.625rem",
-    fontSize: "clamp(2.6rem, 10vw, 4.5rem)",
+    fontSize: "clamp(2.8rem, 10.5vw, 4.75rem)",
     lineHeight: 0.94,
   },
 ])
@@ -48,6 +48,14 @@ export const pageShell = style({
   maxWidth: "45rem",
   margin: "0 auto",
   padding: "0 1rem 2.5rem",
+})
+
+export const historyTabsWrap = style({
+  position: "sticky",
+  top: "calc(max(0.5rem, env(safe-area-inset-top)) + 3.75rem)",
+  zIndex: 10,
+  padding: "0.25rem 0 0.75rem",
+  backdropFilter: "blur(0.75rem)",
 })
 
 export const heroCard = style([
@@ -236,7 +244,7 @@ export const appBarTitle = style([
     padding: 0,
     lineHeight: 1,
     textAlign: "center",
-    fontSize: "1.35rem",
+    fontSize: "1.5rem",
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis",
@@ -456,74 +464,3 @@ export const recipeLink = style({
   alignItems: "center",
   gap: "0.5rem",
 })
-
-export const recipesMasonry = style({
-  display: "flex",
-  marginLeft: "-1rem",
-  padding: "1rem",
-  width: "auto",
-})
-
-globalStyle(`${recipesMasonry} .masonry-column`, {
-  paddingLeft: "1rem",
-  backgroundClip: "padding-box",
-})
-
-export const recipeFigure = style({
-  width: "100%",
-  margin: "0 0 1rem",
-})
-
-export const recipeTileLink = style({
-  textDecoration: "none",
-})
-
-export const recipeTileImage = style({
-  borderRadius: "0.625rem",
-  width: "100%",
-  transition: "transform 120ms ease",
-})
-
-export const recipeTilePlaceholder = style([
-  surfaceCard,
-  {
-    height: "6.25rem",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    transition: "transform 120ms ease",
-  },
-])
-
-globalStyle(`${recipeTileLink}:hover .${recipeTileImage}`, {
-  transform: "translateY(-2px)",
-})
-
-globalStyle(`${recipeTileLink}:hover .${recipeTilePlaceholder}`, {
-  transform: "translateY(-2px)",
-})
-
-export const recipeTilePlaceholderImage = style({
-  height: "3.75rem",
-})
-
-export const recipeFigcaption = style([
-  mutedText,
-  {
-    paddingTop: "0.375rem",
-  },
-])
-
-export const emptyRecipes = style([
-  surfaceCard,
-  {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    margin: "0.625rem",
-    padding: "3rem",
-    color: vars.color.textMuted,
-    textAlign: "center",
-  },
-])
