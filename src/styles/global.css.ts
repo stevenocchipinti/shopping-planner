@@ -7,6 +7,68 @@ const backgroundDrift = keyframes({
   "100%": { transform: "translate3d(0, -16px, 0) scale(1.02)" },
 })
 
+const screenTransitionIn = keyframes({
+  from: {
+    opacity: 0,
+  },
+  to: {
+    opacity: 1,
+  },
+})
+
+const screenTransitionOut = keyframes({
+  from: {
+    opacity: 1,
+  },
+  to: {
+    opacity: 0,
+  },
+})
+
+const screenTransitionInFromLeft = keyframes({
+  from: {
+    opacity: 0,
+    transform: "translateX(-56px)",
+  },
+  to: {
+    opacity: 1,
+    transform: "translateX(0)",
+  },
+})
+
+const screenTransitionOutToRight = keyframes({
+  from: {
+    opacity: 1,
+    transform: "translateX(0)",
+  },
+  to: {
+    opacity: 0,
+    transform: "translateX(40px)",
+  },
+})
+
+const screenTransitionInFromRight = keyframes({
+  from: {
+    opacity: 0,
+    transform: "translateX(56px)",
+  },
+  to: {
+    opacity: 1,
+    transform: "translateX(0)",
+  },
+})
+
+const screenTransitionOutToLeft = keyframes({
+  from: {
+    opacity: 1,
+    transform: "translateX(0)",
+  },
+  to: {
+    opacity: 0,
+    transform: "translateX(-40px)",
+  },
+})
+
 globalStyle("html", {
   background: vars.color.bg,
   colorScheme: "light",
@@ -40,6 +102,49 @@ globalStyle("body::before", {
 globalStyle("#root", {
   minHeight: "100dvh",
   isolation: "isolate",
+})
+
+globalStyle("::view-transition-group(app-screen)", {
+  animationDuration: "280ms",
+})
+
+globalStyle("::view-transition-old(app-screen)", {
+  animation: `${screenTransitionOut} 220ms ease both`,
+  mixBlendMode: "normal",
+})
+
+globalStyle("::view-transition-new(app-screen)", {
+  animation: `${screenTransitionIn} 280ms cubic-bezier(0.22, 1, 0.36, 1) both`,
+  mixBlendMode: "normal",
+})
+
+globalStyle('html[data-nav-direction="list"]::view-transition-old(app-screen)', {
+  animation: `${screenTransitionOutToRight} 240ms ease both`,
+})
+
+globalStyle('html[data-nav-direction="list"]::view-transition-new(app-screen)', {
+  animation: `${screenTransitionInFromLeft} 320ms cubic-bezier(0.22, 1, 0.36, 1) both`,
+})
+
+globalStyle('html[data-nav-direction="planner"]::view-transition-old(app-screen)', {
+  animation: `${screenTransitionOutToLeft} 240ms ease both`,
+})
+
+globalStyle('html[data-nav-direction="planner"]::view-transition-new(app-screen)', {
+  animation: `${screenTransitionInFromRight} 320ms cubic-bezier(0.22, 1, 0.36, 1) both`,
+})
+
+globalStyle("::view-transition-group(bottom-nav-active-pill)", {
+  animationDuration: "320ms",
+  animationTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)",
+})
+
+globalStyle("::view-transition-old(bottom-nav-active-pill)", {
+  mixBlendMode: "normal",
+})
+
+globalStyle("::view-transition-new(bottom-nav-active-pill)", {
+  mixBlendMode: "normal",
 })
 
 globalStyle("*", {

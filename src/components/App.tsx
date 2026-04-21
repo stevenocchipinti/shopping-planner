@@ -1,11 +1,9 @@
 import React, { FC } from "react"
 import { Plus, ShoppingCart, ShoppingCartIcon, CalendarDays, Trash2 } from "lucide-react"
 import {
-  Link,
+  useLocation,
   Route,
   Routes,
-  useLocation,
-  useNavigate,
   useParams,
 } from "react-router-dom"
 
@@ -19,17 +17,43 @@ import ShoppingLists from "./ShoppingLists"
 import {
   appScreen,
   bottomNav,
+  bottomNavActivePill,
+  bottomNavLinkContent,
   bottomNavLabel,
   bottomNavLink,
   fab,
 } from "./app-shell.css"
 import { IconButton } from "./ui"
+import { NavigationDirection, TransitionLink, useNavigateWithTransition } from "../viewTransitions"
+
+interface BottomNavItemProps {
+  active: boolean
+  children: React.ReactNode
+  direction: NavigationDirection
+  to: string
+}
+
+const BottomNavItem: FC<BottomNavItemProps> = ({ active, children, direction, to }) => {
+  return (
+    <TransitionLink
+      className={bottomNavLink}
+      data-active={active}
+      aria-current={active ? "page" : undefined}
+      direction={direction}
+      replace
+      to={to}
+    >
+      {active ? <span className={bottomNavActivePill} aria-hidden /> : null}
+      <span className={bottomNavLinkContent}>{children}</span>
+    </TransitionLink>
+  )
+}
 
 const App: FC = () => {
   const { pathname } = useLocation()
-  const navigate = useNavigate()
   const { listId } = useParams()
   const tabUrls = [`/list/${listId}`, `/list/${listId}/planner`]
+  const navigateWithTransition = useNavigateWithTransition()
 
   const { items, planner, loading } = useAppState()
   const backend = useBackend()
@@ -41,23 +65,22 @@ const App: FC = () => {
   const hasSomePlannedItems = Object.values(planner).some(day => day?.items?.length > 0)
 
   const navigationItems = [
-    { label: "List", icon: <ShoppingCart size={18} />, to: tabUrls[0] },
-    { label: "Planner", icon: <CalendarDays size={18} />, to: tabUrls[1] },
+    { direction: "list" as const, label: "List", icon: <ShoppingCart size={18} />, to: tabUrls[0] },
+    { direction: "planner" as const, label: "Planner", icon: <CalendarDays size={18} />, to: tabUrls[1] },
   ]
 
   const bottomNavigation = (
     <nav className={bottomNav} aria-label="Primary navigation">
       {navigationItems.map(item => (
-        <Link
+        <BottomNavItem
           key={item.to}
-          className={bottomNavLink}
-          data-active={pathname === item.to}
+          active={pathname === item.to}
+          direction={item.direction}
           to={item.to}
-          replace
         >
           {item.icon}
           <span className={bottomNavLabel}>{item.label}</span>
-        </Link>
+        </BottomNavItem>
       ))}
     </nav>
   )
@@ -131,7 +154,7 @@ const App: FC = () => {
               open={addPlanToListDialogOpen}
               onSubmit={entry => {
                 backend.handleAddPlanToList(entry)
-                navigate(tabUrls[0], { replace: true })
+                navigateWithTransition(tabUrls[0], { replace: true, direction: "list" })
               }}
               onClose={() => setAddPlanToListDialogOpen(false)}
             />

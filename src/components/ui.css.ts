@@ -259,6 +259,8 @@ export const button = recipe({
   },
 })
 
+export const buttonLink = button
+
 export const iconButton = recipe({
   base: {
     display: "inline-flex",
@@ -295,6 +297,8 @@ export const iconButton = recipe({
     tone: "default",
   },
 })
+
+export const iconButtonLink = iconButton
 
 export const spinner = style({
   width: "1.75rem",

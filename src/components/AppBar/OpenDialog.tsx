@@ -1,13 +1,15 @@
 import React, { FC, useMemo, useState } from "react"
-import { Link, useNavigate, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 
 import AutoComplete from "../Autocomplete"
 import { generateListName } from "../../components/Backend"
 import useLocalStorage from "../../useLocalStorage"
 import Dialog from "../Dialogs/Dialog"
 import { Button } from "../ui"
+import { TransitionLink, useNavigateWithTransition } from "../../viewTransitions"
 import { centeredText, dialogActions, openDialogActions, spacer } from "../dialogs.css"
 import {
+  buttonLink,
   dialogBody,
   dialogDescription,
   dialogHeader,
@@ -24,7 +26,7 @@ interface OpenDialogProps {
 const OpenDialog: FC<OpenDialogProps> = ({ open, onClose }) => {
   const [listMRU, setListMRU] = useLocalStorage<string[]>("listMRU", [])
   const [newList, setNewList] = useState("")
-  const navigate = useNavigate()
+  const navigateWithTransition = useNavigateWithTransition()
   const { listId: id } = useParams()
 
   const addToListMRU = (list: string) => setListMRU([...new Set([...listMRU, list])])
@@ -47,7 +49,7 @@ const OpenDialog: FC<OpenDialogProps> = ({ open, onClose }) => {
     } catch {}
 
     addToListMRU(list)
-    navigate(`/list/${list}`)
+    navigateWithTransition(`/list/${list}`)
     onClose()
   }
 
@@ -75,11 +77,13 @@ const OpenDialog: FC<OpenDialogProps> = ({ open, onClose }) => {
 
           <p className={centeredText}>or</p>
 
-          <Link to={`/list/${generateListName()}`} onClick={onClose}>
-            <Button variant="outline" size="lg" fullWidth>
-              Create new list
-            </Button>
-          </Link>
+          <TransitionLink
+            className={buttonLink({ variant: "outline", size: "lg", fullWidth: true })}
+            to={`/list/${generateListName()}`}
+            onClick={onClose}
+          >
+            Create new list
+          </TransitionLink>
         </div>
       </div>
 

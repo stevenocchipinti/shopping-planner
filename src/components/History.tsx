@@ -1,6 +1,6 @@
 import React, { FC } from "react"
 import { ChefHat, History as HistoryIcon } from "lucide-react"
-import { useLocation, useNavigate, useParams } from "react-router-dom"
+import { useLocation, useParams } from "react-router-dom"
 
 import Catalogue from "./Catalogue"
 import Recipes from "./Recipes"
@@ -9,6 +9,7 @@ import {
   pageShell,
 } from "./app-shell.css"
 import { historySegmentedControl, historySegmentedButton } from "./ui.css"
+import { useNavigateWithTransition } from "../viewTransitions"
 
 interface HistoryProps {
   onDelete: (item: string) => void
@@ -16,7 +17,7 @@ interface HistoryProps {
 
 const History: FC<HistoryProps> = ({ onDelete }) => {
   const { pathname } = useLocation()
-  const navigate = useNavigate()
+  const navigateWithTransition = useNavigateWithTransition()
   const { listId } = useParams()
   const activeTab = pathname === `/list/${listId}/recipes` ? "recipes" : "items"
 
@@ -28,7 +29,7 @@ const History: FC<HistoryProps> = ({ onDelete }) => {
             className={historySegmentedButton}
             data-selected={activeTab === "items"}
             type="button"
-            onClick={() => navigate(`/list/${listId}/catalogue`, { replace: true })}
+            onClick={() => navigateWithTransition(`/list/${listId}/catalogue`, { replace: true })}
           >
             <HistoryIcon size={16} />
             <span>Items</span>
@@ -37,7 +38,7 @@ const History: FC<HistoryProps> = ({ onDelete }) => {
             className={historySegmentedButton}
             data-selected={activeTab === "recipes"}
             type="button"
-            onClick={() => navigate(`/list/${listId}/recipes`, { replace: true })}
+            onClick={() => navigateWithTransition(`/list/${listId}/recipes`, { replace: true })}
           >
             <ChefHat size={16} />
             <span>Recipes</span>

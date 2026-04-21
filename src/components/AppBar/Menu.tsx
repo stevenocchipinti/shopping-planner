@@ -6,7 +6,7 @@ import {
   Share2,
   ArrowRightLeft,
 } from "lucide-react"
-import { Link, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 
 import { DarkModeToggle } from "../ThemeProvider"
 import { Drawer, IconButton } from "../ui"
@@ -23,18 +23,17 @@ import {
   drawerList,
   drawerTitle,
 } from "../app-shell.css"
-import { eyebrow } from "../ui.css"
 import AboutDialog from "./AboutDialog"
 import OpenDialog from "./OpenDialog"
 import ShareDialog from "./ShareDialog"
+import { TransitionLink } from "../../viewTransitions"
 
 interface MenuProps {
   open: boolean
-  onOpen: () => void
   onClose: () => void
 }
 
-const Menu: FC<MenuProps> = ({ open, onOpen, onClose }) => {
+const Menu: FC<MenuProps> = ({ open, onClose }) => {
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
   const [openDialogOpen, setOpenDialogOpen] = useState(false)
   const [aboutDialogOpen, setAboutDialogOpen] = useState(false)
@@ -102,8 +101,9 @@ const Menu: FC<MenuProps> = ({ open, onOpen, onClose }) => {
               <span className={drawerItemLabel}>Change list</span>
             </button>
 
-            <Link
+            <TransitionLink
               className={drawerItem}
+              direction="planner"
               to={`/list/${listId}/catalogue`}
               onClick={() => onClose()}
             >
@@ -111,7 +111,7 @@ const Menu: FC<MenuProps> = ({ open, onOpen, onClose }) => {
                 <History size={18} />
               </span>
               <span className={drawerItemLabel}>History</span>
-            </Link>
+            </TransitionLink>
 
             <button
               className={drawerItem}

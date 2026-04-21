@@ -1,9 +1,8 @@
 import React from "react"
 import { createRoot } from "react-dom/client"
 import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
+  RouterProvider,
+  createBrowserRouter,
   useParams,
 } from "react-router-dom"
 
@@ -26,21 +25,24 @@ const ListRoute = () => {
   )
 }
 
+const router = createBrowserRouter(
+  [
+    { path: "/", element: <Home /> },
+    { path: "/list/:listId/*", element: <ListRoute /> },
+  ],
+  {
+    future: {
+      v7_startTransition: true,
+      v7_relativeSplatPath: true,
+    },
+  }
+)
+
 const Root = () => {
   return (
     <ThemeProvider>
       <div className={appRoot}>
-        <Router
-          future={{
-            v7_startTransition: true,
-            v7_relativeSplatPath: true,
-          }}
-        >
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/list/:listId/*" element={<ListRoute />} />
-          </Routes>
-        </Router>
+        <RouterProvider router={router} />
       </div>
     </ThemeProvider>
   )

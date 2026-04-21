@@ -1,6 +1,6 @@
 import React, { FC, ReactNode, useState } from "react"
 import { ArrowLeft, Menu as MenuIcon } from "lucide-react"
-import { Link, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 
 import {
   appBar,
@@ -11,7 +11,8 @@ import {
 } from "../app-shell.css"
 import Menu from "./Menu"
 import { IconButton } from "../ui"
-import { progressIndicator, progressTrack } from "../ui.css"
+import { iconButtonLink, progressIndicator, progressTrack } from "../ui.css"
+import { TransitionLink } from "../../viewTransitions"
 
 interface AppBarProps {
   title?: string
@@ -48,11 +49,14 @@ const AppBar: FC<AppBarProps> = ({
                 <MenuIcon size={18} />
               </IconButton>
             ) : (
-              <Link to={backUrl} aria-label="back">
-                <IconButton className={appBarButton} aria-label="back">
-                  <ArrowLeft size={18} />
-                </IconButton>
-              </Link>
+              <TransitionLink
+                className={`${iconButtonLink()} ${appBarButton}`}
+                direction="list"
+                to={backUrl}
+                aria-label="back"
+              >
+                <ArrowLeft size={18} />
+              </TransitionLink>
             )}
           </div>
 
@@ -74,7 +78,6 @@ const AppBar: FC<AppBarProps> = ({
       {variant === "main" ? (
         <Menu
           open={drawerOpen}
-          onOpen={() => setDrawerOpen(true)}
           onClose={() => setDrawerOpen(false)}
         />
       ) : null}

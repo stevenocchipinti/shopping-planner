@@ -37,7 +37,12 @@ export const homeCopy = style([
   },
 ])
 
-export const appScreen = screen
+export const appScreen = style([
+  screen,
+  {
+    viewTransitionName: "app-screen",
+  },
+])
 
 export const shellWidth = style({
   width: "min(100% - 2rem, 45rem)",
@@ -388,8 +393,12 @@ export const bottomNav = style([
 
 export const bottomNavLink = style({
   flex: 1,
+  position: "relative",
+  overflow: "hidden",
   minHeight: "3.25rem",
+  border: 0,
   borderRadius: "0.75rem",
+  background: "transparent",
   color: vars.color.textMuted,
   textDecoration: "none",
   display: "flex",
@@ -399,12 +408,31 @@ export const bottomNavLink = style({
   gap: "0.125rem",
   fontSize: "0.6875rem",
   fontWeight: 600,
+  cursor: "pointer",
   selectors: {
     '&[data-active="true"]': {
-      background: vars.color.actionSelected,
       color: vars.color.text,
     },
   },
+})
+
+export const bottomNavActivePill = style({
+  position: "absolute",
+  inset: 0,
+  borderRadius: "inherit",
+  background: vars.color.actionSelected,
+  viewTransitionName: "bottom-nav-active-pill",
+})
+
+export const bottomNavLinkContent = style({
+  position: "relative",
+  zIndex: 1,
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: "0.125rem",
+  minHeight: "3.25rem",
 })
 
 export const bottomNavLabel = style({
