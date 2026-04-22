@@ -346,6 +346,12 @@ export const dialogViewport = style({
   placeItems: "center",
   padding: "0.75rem",
   boxSizing: "border-box",
+  "@media": {
+    "screen and (max-width: 40rem)": {
+      alignItems: "start",
+      paddingTop: "max(0.75rem, env(safe-area-inset-top))",
+    },
+  },
 })
 
 export const dialogPanel = style({

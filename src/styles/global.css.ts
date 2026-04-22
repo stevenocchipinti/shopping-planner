@@ -147,6 +147,20 @@ globalStyle("::view-transition-new(bottom-nav-active-pill)", {
   mixBlendMode: "normal",
 })
 
+globalStyle("::view-transition-group(app-fab)", {
+  zIndex: 17,
+})
+
+globalStyle("::view-transition-old(app-fab)", {
+  animation: "none",
+  mixBlendMode: "normal",
+})
+
+globalStyle("::view-transition-new(app-fab)", {
+  animation: "none",
+  mixBlendMode: "normal",
+})
+
 globalStyle("*", {
   boxSizing: "border-box",
 })

@@ -342,6 +342,7 @@ export const fab = style({
   right: 20,
   bottom: "calc(78px + max(10px, env(safe-area-inset-bottom)))",
   zIndex: 16,
+  viewTransitionName: "app-fab",
   width: "3.5rem",
   height: "3.5rem",
   borderRadius: "50%",
