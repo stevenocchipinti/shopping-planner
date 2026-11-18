@@ -1,0 +1,183 @@
+# Shopping Planner voice commands for Home Assistant. See README.md in this folder.
+#
+# THIS IS A TEMPLATE. Before using it, replace REPLACE_WITH_YOUR_LIST_ID (twice, in
+# both intents below) with your own list id: the part of the app URL after /list/.
+# e.g. for https://shoppingplanner.web.app/list/abc123 the list id is abc123.
+# Until you do, nothing is added to any list you can see.
+#
+# Home Assistant's built-in sentences ("add apples to my shopping list",
+# "check off apples from my shopping list") produce the intents HassShoppingListAddItem
+# and HassShoppingListCompleteItem. The intent_script handlers below write to the app's
+# Firestore database the same way the app does:
+#   * an item added before goes back into its old section (catalogue entry is kept);
+#   * "egg" finds "Eggs" (singular/plural);
+#   * "2 eggs", "a dozen eggs", "two packets of chips" set the quantity;
+#   * an item already on the list isn't duplicated; a ticked-off one is un-ticked.
+#
+# Keep your real list id out of version control: anyone with it can read and edit the list.
+# The project id and API key are the app's public web config (src/firebase.ts).
+
+rest_command:
+  # Read several documents at once. Missing ones come back as {"missing": name}.
+  shopping_planner_batch_get:
+    url: "https://firestore.googleapis.com/v1/projects/shopping-list-app-de905/databases/(default)/documents:batchGet?key=AIzaSyCtgligqZSkUwWkWIAcMOW0nIW2mfgVdcw"
+    method: post
+    content_type: application/json
+    payload: "{{ {'documents': documents} | tojson }}"
+
+  # Apply a list of Firestore writes atomically (an empty list is fine).
+  shopping_planner_commit:
+    url: "https://firestore.googleapis.com/v1/projects/shopping-list-app-de905/databases/(default)/documents:commit?key=AIzaSyCtgligqZSkUwWkWIAcMOW0nIW2mfgVdcw"
+    method: post
+    content_type: application/json
+    payload: "{{ {'writes': writes} | tojson }}"
+
+intent_script:
+  HassShoppingListAddItem:
+    action:
+      - variables:
+          # >>> REPLACE_WITH_YOUR_LIST_ID with your list id (the part of the app URL after /list/) <<<
+          list_doc: "projects/shopping-list-app-de905/databases/(default)/documents/lists/REPLACE_WITH_YOUR_LIST_ID"
+          # Spoken item -> quantity, the app's prettify()d name, its slugify()d id, and
+          # singular/plural ids to look for in the catalogue.
+          parsed: &parse_item >-
+            {%- set numbers = {'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5, 'six': 6,
+                               'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10, 'eleven': 11, 'twelve': 12,
+                               'a dozen': 12, 'a couple of': 2, 'a couple': 2} -%}
+            {%- set containers = '(?:(?:packets?|bottles?|cans?|bags?|box(?:es)?|tins?|jars?|loaves|loaf|cartons?|tubs?|blocks?) of\\s+)' -%}
+            {%- set text = item | trim | regex_replace('\\s+', ' ') -%}
+            {%- set text = text | regex_replace('^(?:a\\s+|some\\s+)?' ~ containers, '', ignorecase=True) -%}
+            {%- set m = text | regex_findall('^(\\d{1,2}|a dozen|a couple of|a couple|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)\\s+(?:x\\s+)?' ~ containers ~ '?(.+)$', ignorecase=True) -%}
+            {%- set q = namespace(qty=none, text=text) -%}
+            {%- if m and not (m[0][1] | lower).startswith(('minute ', 'percent')) -%}
+              {%- set n = m[0][0] | lower -%}
+              {%- set number = (n | int) if n.isdigit() else numbers[n] -%}
+              {%- if number > 0 -%}{%- set q.qty = number -%}{%- set q.text = m[0][1] -%}{%- endif -%}
+            {%- endif -%}
+            {%- set w = namespace(out=[]) -%}
+            {%- for word in q.text.split() -%}{%- set w.out = w.out + [word[0] | upper ~ word[1:]] -%}{%- endfor -%}
+            {%- set name = w.out | join(' ') -%}
+            {%- set s = name | lower | regex_replace('[^a-z0-9_]+', '-') | regex_replace('^-+|-+$', '') -%}
+            {%- set c = [s, s ~ 's', s ~ 'es'] -%}
+            {%- if s.endswith('ies') and s | length > 4 -%}{%- set c = c + [s[:-3] ~ 'y'] -%}{%- endif -%}
+            {%- if s.endswith('es') and s | length > 3 -%}{%- set c = c + [s[:-2]] -%}{%- endif -%}
+            {%- if s.endswith('s') and s | length > 2 -%}{%- set c = c + [s[:-1]] -%}{%- endif -%}
+            {%- if s.endswith('y') and s | length > 2 -%}{%- set c = c + [s[:-1] ~ 'ies'] -%}{%- endif -%}
+            {{ {'quantity': q.qty, 'name': name, 'slug': s, 'candidates': c if s else []} }}
+      - action: rest_command.shopping_planner_batch_get
+        data:
+          documents: &documents >-
+            {{ (parsed.candidates | map('regex_replace', '^', list_doc ~ '/catalogue/') | list)
+               + (parsed.candidates | map('regex_replace', '^', list_doc ~ '/items/') | list) }}
+        response_variable: found
+      - variables:
+          plan: >-
+            {%- set docs = namespace(d={}) -%}
+            {%- for r in (found.content if found.status == 200 and found.content is list else []) -%}
+              {%- if r.found is defined -%}{%- set docs.d = dict(docs.d, **{r.found.name: r.found.fields}) -%}{%- endif -%}
+            {%- endfor -%}
+            {%- set cat = list_doc ~ '/catalogue/' -%}
+            {%- set itm = list_doc ~ '/items/' -%}
+            {%- set k = namespace(slug=none) -%}
+            {%- for c in parsed.candidates -%}
+              {%- if k.slug is none and (cat ~ c) in docs.d -%}{%- set k.slug = c -%}{%- endif -%}
+            {%- endfor -%}
+            {%- set known = k.slug is not none -%}
+            {%- set slug = k.slug if known else parsed.slug -%}
+            {%- set u = namespace(out=[]) -%}
+            {%- for part in slug.split('-') -%}{%- set u.out = u.out + [part[:1] | upper ~ part[1:]] -%}{%- endfor -%}
+            {%- set name = parsed.name if slug == parsed.slug else u.out | join(' ') -%}
+            {%- set qty = parsed.quantity -%}
+            {%- set cur = docs.d.get(itm ~ slug) -%}
+            {%- if found.status != 200 -%}
+              {%- set result = {'writes': [], 'speech': "I couldn't reach the shopping list."} -%}
+            {%- elif not slug -%}
+              {%- set result = {'writes': [], 'speech': "I didn't catch the item."} -%}
+            {%- elif cur -%}
+              {%- set cname = cur.name.stringValue if cur.name is defined else name -%}
+              {%- set cqty = (cur.quantity.integerValue | int(1)) if cur.quantity is defined else 1 -%}
+              {%- set done = cur.done.booleanValue if cur.done is defined else false -%}
+              {%- if done -%}
+                {%- set fields = {'done': {'booleanValue': false}} -%}
+                {%- if qty -%}{%- set fields = dict(fields, quantity={'integerValue': qty | string}) -%}{%- endif -%}
+                {%- set result = {'writes': [{'update': {'name': itm ~ slug, 'fields': fields},
+                                              'updateMask': {'fieldPaths': fields | list},
+                                              'currentDocument': {'exists': true}}],
+                                  'speech': 'Added ' ~ ((qty ~ ' ') if qty and qty > 1 else '') ~ cname ~ ' to the shopping list.'} -%}
+              {%- elif qty and qty != cqty -%}
+                {%- set result = {'writes': [{'update': {'name': itm ~ slug, 'fields': {'quantity': {'integerValue': qty | string}}},
+                                              'updateMask': {'fieldPaths': ['quantity']},
+                                              'currentDocument': {'exists': true}}],
+                                  'speech': 'Changed ' ~ cname ~ ' to ' ~ qty ~ '.'} -%}
+              {%- else -%}
+                {%- set result = {'writes': [], 'speech': cname ~ ' is already on the list.'} -%}
+              {%- endif -%}
+            {%- else -%}
+              {%- set writes = [{'update': {'name': itm ~ slug,
+                                            'fields': {'name': {'stringValue': name},
+                                                       'quantity': {'integerValue': (qty or 1) | string},
+                                                       'done': {'booleanValue': false}}}}] -%}
+              {%- if not known -%}
+                {%- set writes = writes + [{'update': {'name': cat ~ slug,
+                                                       'fields': {'section': {'stringValue': ''}, 'emoji': {'nullValue': none}}},
+                                            'currentDocument': {'exists': false}}] -%}
+              {%- endif -%}
+              {%- set result = {'writes': writes,
+                                'speech': 'Added ' ~ ((qty ~ ' ') if qty and qty > 1 else '') ~ name ~ ' to the shopping list.'} -%}
+            {%- endif -%}
+            {{ result }}
+      - action: rest_command.shopping_planner_commit
+        data:
+          writes: "{{ plan.writes }}"
+        response_variable: committed
+      - variables:
+          reply: >-
+            {{ {'speech': plan.speech if committed.status == 200 else "I couldn't reach the shopping list."} }}
+      - stop: done
+        response_variable: reply
+    speech:
+      text: "{{ action_response.speech }}"
+
+  HassShoppingListCompleteItem:
+    action:
+      - variables:
+          # >>> REPLACE_WITH_YOUR_LIST_ID with your list id (the part of the app URL after /list/) <<<
+          list_doc: "projects/shopping-list-app-de905/databases/(default)/documents/lists/REPLACE_WITH_YOUR_LIST_ID"
+          parsed: *parse_item
+      - action: rest_command.shopping_planner_batch_get
+        data:
+          documents: *documents
+        response_variable: found
+      - variables:
+          plan: >-
+            {%- set itm = list_doc ~ '/items/' -%}
+            {%- set k = namespace(slug=none, name=none) -%}
+            {%- for r in (found.content if found.status == 200 and found.content is list else []) -%}
+              {%- if r.found is defined and r.found.name.startswith(itm) and k.slug is none
+                     and not (r.found.fields.done is defined and r.found.fields.done.booleanValue) -%}
+                {%- set k.slug = r.found.name[itm | length:] -%}
+                {%- set k.name = r.found.fields.name.stringValue if r.found.fields.name is defined else parsed.name -%}
+              {%- endif -%}
+            {%- endfor -%}
+            {%- if found.status != 200 -%}
+              {%- set result = {'writes': [], 'speech': "I couldn't reach the shopping list."} -%}
+            {%- elif k.slug is none -%}
+              {%- set result = {'writes': [], 'speech': (parsed.name or 'That') ~ " isn't on the list."} -%}
+            {%- else -%}
+              {%- set result = {'writes': [{'update': {'name': itm ~ k.slug, 'fields': {'done': {'booleanValue': true}}},
+                                            'updateMask': {'fieldPaths': ['done']},
+                                            'currentDocument': {'exists': true}}],
+                                'speech': 'Ticked ' ~ k.name ~ ' off the shopping list.'} -%}
+            {%- endif -%}
+            {{ result }}
+      - action: rest_command.shopping_planner_commit
+        data:
+          writes: "{{ plan.writes }}"
+        response_variable: committed
+      - variables:
+          reply: >-
+            {{ {'speech': plan.speech if committed.status == 200 else "I couldn't reach the shopping list."} }}
+      - stop: done
+        response_variable: reply
+    speech:
+      text: "{{ action_response.speech }}"

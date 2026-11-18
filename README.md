@@ -12,6 +12,12 @@ Development
 - `npm run build`
 - `npm test -- --run`
 
+Home Assistant
+--------------
+
+`home-assistant/` lets Home Assistant's voice assistant add items to a list and tick them
+off. See [home-assistant/README.md](home-assistant/README.md).
+
 Notes
 -----
 
